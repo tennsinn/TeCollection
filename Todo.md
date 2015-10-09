@@ -1,5 +1,6 @@
 # Todo
 
+## Typecho插件部分
 + Action
 	- 增加手动新增记录action
 + Panel
@@ -11,3 +12,5 @@
 	- PS默认Cover
 	- 吐槽增加缩进或边框
 	- 按type和status分类汇总
+
+## 移动端
