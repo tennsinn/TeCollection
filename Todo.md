@@ -4,7 +4,6 @@
 + Action
 	- 增加手动新增记录action
 + Panel
-	- 增加Cover、名称的编辑
 	- rate修改方式变更
 	- 增加手动新增记录表格
 + template
