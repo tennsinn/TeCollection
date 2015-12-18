@@ -1,6 +1,10 @@
 # Todo
 
 ## Typecho插件部分
++ Plugin
+	- 增加图片显示选项
+	- 增加类型通用地址
+	- 增加记录联系
 + Action
 	- 增加手动新增记录action
 + Panel
