@@ -41,16 +41,14 @@ $timeoffset = Helper::options()->timezone;
 				echo '<div class="subject-cover"><img src="';
 				if(!$subject['image'])
 					Helper::options()->pluginUrl('Collection/template/default_cover.jpg');
-				elseif($subject['bangumi_id'])
-					echo 'http://lain.bgm.tv/pic/cover/m/'.$subject['image'];
 				else
-					echo Helper::options()->plugin('Collection')->imageUrl ? $options->plugin('Collection')->imageUrl.'m/'.$subject['image'] : $subject['image'];;
+					echo $subject['image'];
 				echo '"></div>';
 			?>
 			<div class="subject-info">
 				<div class="subject-name">
 					<i class="subject_class-ico subject_class-<?php echo $subject['class']; ?>"></i>
-					<?php echo $subject['bangumi_id'] ? '<a href="http://bangumi.tv/subject/'.$subject['bangumi_id'].'" rel="nofollow">'.$subject['name'].'</a>' : $subject['name']; ?>
+					<?php echo $subject['subject_id'] ? '<a href="http://bangumi.tv/subject/'.$subject['subject_id'].'" rel="nofollow">'.$subject['name'].'</a>' : $subject['name']; ?>
 					<?php echo $subject['name_cn'] ? '<small>（'.$subject['name_cn'].'）</small>' : ''; ?>
 				</div>
 				<div class="subject-meta">

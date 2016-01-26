@@ -1,10 +1,10 @@
 <?php
 /**
- * 一个模仿Bangumi同时利用其部分信息的本地收藏整理展示插件
+ * 一个本地收藏整理展示插件
  * 
  * @package Collection
  * @author 息E-敛
- * @version 1.2.1
+ * @version 1.3.0
  * @link http://tennsinn.com
  */
 class Collection_Plugin implements Typecho_Plugin_Interface
@@ -24,8 +24,9 @@ class Collection_Plugin implements Typecho_Plugin_Interface
 			`image` varchar(200) default NULL,
 			`ep_count` smallint(4) unsigned default NULL,
 			`sp_count` smallint(3) unsigned default NULL,
-			`notes` varchar(50) default NULL,
-			`bangumi_id` int unsigned default NULL,
+			`source` varchar(10) default 'Collection',
+			`subject_id` varchar(10) default NULL,
+			`parent` int unsigned default NULL,
 			`status` char(7) NOT NULL,
 			`time_start` int(10) unsigned default NULL,
 			`time_finish` int(10) unsigned default NULL,
@@ -57,24 +58,6 @@ class Collection_Plugin implements Typecho_Plugin_Interface
 	{
 		$drop = new Typecho_Widget_Helper_Form_Element_Radio('drop', array(0 => _t('不刪除'), 1 => _t('刪除')), 0, _t('禁用时是否删除数据'), _t('选择在禁用插件的同时是否删除数据库中的插件数据内容'));
 		$form->addInput($drop);
-
-		$uid = new Typecho_Widget_Helper_Form_Element_Text(
-			'uid', 
-			NULL, 
-			NULL, 
-			_t('Bangumi用户uid'), 
-			_t('Bangumi的用户uid，可用于获取部分收藏信息')
-		);
-		$form->addInput($uid);
-
-		$imageUrl = new Typecho_Widget_Helper_Form_Element_Text(
-			'imageUrl',
-			NULL,
-			NULL,
-			_t('默认图片路径'),
-			_t('对于自行添加的记录默认Cover路径，为空时将直接输出记录图片地址')
-		);
-		$form->addInput($imageUrl);
 	}
 	
 	public static function personalConfig(Typecho_Widget_Helper_Form $form){}
