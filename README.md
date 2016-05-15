@@ -2,16 +2,18 @@
 
 **一个不明意义的Typecho插件**
 
-模仿Bangumi同时利用其部分信息进行本地收藏整理并且展示
+建立本地收藏记录，并管理与展示
 
 ## Instructions
 
-通过新增中使用搜索获取到Bangumi.tv上的对应项目添加记录信息
+*版本更新请根据需要自行重建数据表*
 
-可使用同步按钮根据设置中保存的bangumi uid获取到Bangumi.tv上正在观看的最近50条记录
+通过搜索和自主输入建立收藏记录条目信息，可通过Bangumi、豆瓣的api获取部分信息
 
-注：此插件仅能获取Bangumi.tv上的部分信息，无法同步Bangumi进行管理
+在管理面版可进行条目状态的更改，并在博客页面进行展示
 
 `Collection_Plugin::render();` 预设模板输出
 
-`$collections = Typecho_Widget::widget('Collection_Action')->getCollection($pageSize);` 根据请求的collection, type等参数返回相应的记录条目，$pageSize为分页大小（返回格式`array('resault' => ture/false, 'message' => false时的错误信息, 'list' => 记录条目, 'nav' => 分页盒)）
+`action/collection?do=getCollection` 获取公开收藏信息
+
+`$collections = Typecho_Widget::widget('Collection_Action')->showCollection($pageSize);` 根据请求的参数返回相应的记录条目，$pageSize为分页大小（返回格式`array('resault' => ture/false, 'message' => false时的错误信息, 'list' => 记录条目, 'nav' => 分页盒)）

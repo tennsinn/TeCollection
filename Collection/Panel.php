@@ -8,7 +8,8 @@ include 'table-js.php';
 $do = isset($request->do) ? $request->get('do') : 'manage';
 $class = isset($request->class) ? $request->get('class') : '0';
 $status = isset($request->status) ? $request->get('status') : 'do';
-$status_trans = array(
+
+$arrayClassStatus = array(
 	'all' => array('全部', '书籍', '动画', '音乐', '游戏', '广播', '影视'),
 	'do' => array('进行', '在读', '在看', '在听', '在玩', '在听', '在看'),
 	'collect' => array('完成', '读过', '看过', '听过', '玩过', '听过', '看过'),
@@ -16,47 +17,33 @@ $status_trans = array(
 	'on_hold' => array('搁置', '搁置', '搁置', '搁置', '搁置', '搁置', '搁置'),
 	'dropped' => array('抛弃', '抛弃', '抛弃', '抛弃', '抛弃', '抛弃', '抛弃')
 );
-$type_trans = array(
-	'1' => array(
-		'Collection' => array('收藏', '进度一', '进度二'),
-		'Series' => array('系列', '卷', '番外'),
-		'Tankōbon' => array('单行本', '章', '节')
-	),
-	'2' => array(
-		'Collection' => array('收藏', '进度一', '进度二'),
-		'TV' => array('TV', '本篇', '特典'),
-		'OVA' => array('OVA', '本篇', '特典'),
-		'OAD' => array('OVD', '本篇', '特典'),
-		'Movie' => array('Movie', '本篇', '特典')
-	),
-	'3' => array(
-		'Collection' => array('收藏', '进度一', '进度二'),
-		'Album' => array('专辑', '本篇', '特典'),
-		'Single' => array('单曲', '本篇', '特典')
-	),
-	'4' => array(
-		'Collection' => array('收藏', '进度一', '进度二'),
-		'iOS' => array('iOS', '本篇', '特典'),
-		'Android' => array('Andriod', '本篇', '特典'),
-		'PSV' => array('PSV', '奖杯', '收集'),
-		'3DS' => array('3DS', '本篇', '特典'),
-		'PC' => array('PC', '结局', '收集')
-	),
-	'5' => array(
-		'Collection' => array('收藏', '进度一', '进度二'),
-		'RadioDrama' => array('广播剧', '本篇', '番外')
-	),
-	'6' => array(
-		'Collection' => array('收藏', '进度一', '进度二'),
-		'Teleplay' => array('电视剧', '本篇', '特典'),
-		'TalkShow' => array('脱口秀', '本篇', '特典'),
-		'Movie' => array('电影', '本篇', '特典')
-	)
+
+$dictClass = array(1 => '书籍', 2 => '动画', 3 => '音乐', 4 => '游戏', 5 => '广播', 6 => '影视');
+
+$dictType = array(
+	'Mix' => '混合', 'Series' => '系列',
+	'Novel' => '小说', 'Comic' => '漫画', 'Doujinshi' => '同人志', 'Textbook' => '课本',
+	'TV' => 'TV', 'OVA' => 'OVA', 'OAD' => 'OAD', 'Movie' => '剧场',
+	'Album' => '专辑', 'Single' => '单曲', 'Maxi' => 'Maxi', 'EP' => '细碟', 'Selections' => '选集',
+	'iOS' => 'iOS', 'Android' => 'Android', 'PSP' => 'PSP', 'PSV' => 'PSV', 'PS' => 'PS', 'NDS' => 'NDS', '3DS' => '3DS', 'XBox' => 'XBox', 'Windows' => 'Windows', 'Online' => '网游', 'Table' => '桌游', 
+	'RadioDrama' => '广播剧', 'Drama' => '歌剧',
+	'Film' => '电影', 'Teleplay' => '电视剧', 'TalkShow' => '脱口秀', 'VarietyShow' => '综艺'
 );
 ?>
 
 <link rel="stylesheet" type="text/css" href="<?php $options->pluginUrl('Collection/template/stylesheet-common.css'); ?>">
 <link rel="stylesheet" type="text/css" href="<?php $options->pluginUrl('Collection/template/stylesheet-panel.css'); ?>">
+<script type="text/javascript">
+var dictType = {
+	0:{'Mix':'混合', 'Series':'系列'},
+	1:{'Novel':'小说', 'Comic':'漫画', 'Doujinshi':'同人志', 'Textbook':'课本'},
+	2:{'TV':'TV', 'OVA':'OVA', 'OAD':'OAD', 'Movie':'剧场'},
+	3:{'Album':'专辑', 'Single':'单曲', 'Maxi':'Maxi', 'EP':'细碟', 'Selections':'选集'},
+	4:{'iOS':'iOS', 'Android':'Android', 'PSP':'PSP', 'PSV':'PSV', 'PS':'PS', 'NDS':'NDS', '3DS':'3DS', 'XBox':'XBox', 'Windows':'Windows', 'Online':'网游', 'Table':'桌游'}, 
+	5:{'RadioDrama':'广播剧', 'Drama':'歌剧'},
+	6:{'Film':'电影', 'Teleplay':'电视剧', 'TalkShow':'脱口秀', 'VarietyShow':'综艺'}
+};
+</script>
 <div class="main">
 	<div class="body container">
 		<?php include 'page-title.php'; ?>
@@ -64,17 +51,17 @@ $type_trans = array(
 			<div class="col-mb-12">
 				<?php if($do == 'manage'): ?>
 					<ul class="typecho-option-tabs right">
-						<?php foreach($status_trans as $key => $value): ?>
-							<li <?php if($status == $key): ?>class="current"<?php endif; ?>><a href="<?php $options->adminUrl('extending.php?panel=Collection%2FPanel.php&class='.$class.'&status='.$key); ?>"><?php _e($status_trans[$key][$class]); ?></a></li>
+						<?php foreach($arrayClassStatus as $key => $value): ?>
+							<li<?php if($status == $key): ?> class="current"<?php endif; ?>><a href="<?php $options->adminUrl('extending.php?panel=Collection%2FPanel.php&class='.$class.'&status='.$key); ?>"><?php _e($arrayClassStatus[$key][$class]); ?></a></li>
 						<?php endforeach; ?>
 					</ul>
 					<ul class="typecho-option-tabs clearfix">
-						<?php foreach($status_trans['all'] as $key => $value): ?>
+						<?php foreach($arrayClassStatus['all'] as $key => $value): ?>
 							<li<?php if($class == $key): ?> class="current"<?php endif; ?>><a href="<?php $options->adminUrl('extending.php?panel=Collection%2FPanel.php&class='.$key.'&status='.$status); ?>"><?php _e($value); ?></a></li>
 						<?php endforeach; ?>
 					</ul>
 					<div class="col-mb-12 typecho-list" role="main">
-						<?php $response = Typecho_Widget::widget('Collection_Action')->getCollection(); ?>
+						<?php $response = Typecho_Widget::widget('Collection_Action')->showCollection(); ?>
 						<div class="typecho-list-operate clearfix">
 							<form method="get">
 								<div class="operate">
@@ -83,7 +70,7 @@ $type_trans = array(
 										<button class="dropdown-toggle btn-s" type="button"><?php _e('<i class="sr-only">操作</i>选中项'); ?> <i class="i-caret-down"></i></button>
 										<ul class="dropdown-menu">
 											<?php foreach(array('do', 'collect', 'wish', 'on_hold', 'dropped') as $value): ?>
-												<li><a lang="<?php _e('你确认要修改这些记录到'.$status_trans[$value][$class].'吗?'); ?>" href="<?php $options->index('/action/collection?do=editStatus&&status='.$value); ?>"><?php _e('修改到'.$status_trans[$value][$class]); ?></a></li>
+												<li><a lang="<?php _e('你确认要修改这些记录到'.$arrayClassStatus[$value][$class].'吗?'); ?>" href="<?php $options->index('/action/collection?do=editStatus&&status='.$value); ?>"><?php _e('修改到'.$arrayClassStatus[$value][$class]); ?></a></li>
 											<?php endforeach; ?>
 											<li><a lang="<?php _e('你确认要删除记录中的这些记录吗?'); ?>" href="<?php $options->index('/action/collection?do=editStatus&status=delete'); ?>"><?php _e('删除记录'); ?></a></li>
 										</ul>
@@ -103,7 +90,7 @@ $type_trans = array(
 										<col width="20px">
 										<col width="120px">
 										<col width="200px">
-										<col width="">
+										<col min-width="100px">
 									</colgroup>
 									<thead>
 										<tr>
@@ -116,15 +103,15 @@ $type_trans = array(
 									<tbody>
 										<?php if($response['result']): ?>
 											<?php foreach($response['list'] as $subject): ?>
-												<tr id="subject-<?php echo $subject['id']; ?>" data-subject="<?php echo htmlspecialchars(json_encode($subject)); ?>">
+												<tr id="Collection-subject-<?php echo $subject['id']; ?>" data-subject="<?php echo htmlspecialchars(json_encode($subject)); ?>">
 													<td><input type="checkbox" name="id[]" value="<?php echo $subject['id']; ?>"></td>
 													<td>
-														<div class="subject-image"><img src="<?php echo $subject['image'] ? $subject['image'] : Typecho_common::url('Collection/template/default_cover.jpg', $options->pluginUrl); ?>" width="100px"></div>
-														<div><?php echo $status_trans['all'][$subject['class']].'/'.$type_trans[$subject['class']][$subject['type']][0]; ?></div>
+														<div class="Collection-subject-image"><img src="<?php echo $subject['image'] ? $subject['image'] : Typecho_common::url('Collection/template/default_cover.jpg', $options->pluginUrl); ?>" width="100px"></div>
+														<div><?php echo $dictClass[$subject['class']].'/'.(isset($dictType[$subject['type']]) ? $dictType[$subject['type']] : 'Unkown'); ?></div>
 													</td>
-													<td class="subject-meta">
-														<div class="subject-name">
-															<i class="subject_class-ico subject_class-<?php echo $subject['class']; ?>"></i>
+													<td class="Collection-subject-meta">
+														<div class="Collection-subject-name">
+															<i class="Collection-subject-class-ico Collection-subject-class-<?php echo $subject['class']; ?>"></i>
 															<?php
 																if($subject['source'])
 																{
@@ -135,8 +122,8 @@ $type_trans = array(
 																			echo 'http://bangumi.tv/subject/';
 																			break;
 																		case 'Douban':
-																			$arrayDoubanClass = array('1' => 'book', '3' => 'music', '6' => 'movie');
-																			echo 'http://'.$arrayDoubanClass[$subject['class']].'.douban.com/subject/';
+																			$dictDoubanClass = array('1' => 'book', '3' => 'music', '6' => 'movie');
+																			echo 'http://'.$dictDoubanClass[$subject['class']].'.douban.com/subject/';
 																			break;
 																	}
 																	echo $subject['subject_id'].'">'.$subject['name'].'</a>';
@@ -145,42 +132,41 @@ $type_trans = array(
 																	echo $subject['name'];
 															?>
 														</div>
-														<?php if($subject['name_cn']) echo '<div class="subject-name_cn">'.$subject['name_cn'].'</div>'; ?>
-														
+														<?php if($subject['name_cn']) echo '<div class="Collection-subject-name_cn">'.$subject['name_cn'].'</div>'; ?>
 														<?php
-															echo '<div id="subject-'.$subject['id'].'-ep">';
+															echo '<div id="Collection-subject-'.$subject['id'].'-ep">';
 															if(!is_null($subject['ep_count']) && !is_null($subject['ep_status']))
 															{
-																echo '<label for="subject-'.$subject['id'].'-ep_progress">'._t($type_trans[$subject['class']][$subject['type']][1].'进度').'</label>';
-																echo '<div id="subject-'.$subject['id'].'-ep_progress" class="subject-progress"><div class="subject-progress-inner" style="color:white; width:'.($subject['ep_count'] ? $subject['ep_status']/$subject['ep_count']*100 : 50).'%"><small>'.$subject['ep_status'].' / '.($subject['ep_count'] ? $subject['ep_count'] : '??').'</small></div></div>';
+																echo '<label for="Collection-subject-'.$subject['id'].'-progress-ep">'._t('进度一进度').'</label>';
+																echo '<div id="Collection-subject-'.$subject['id'].'-progress-ep" class="Collection-subject-progress"><div class="Collection-subject-progress-inner" style="color:white; width:'.($subject['ep_count'] ? $subject['ep_status']/$subject['ep_count']*100 : 50).'%"><small>'.$subject['ep_status'].' / '.($subject['ep_count'] ? $subject['ep_count'] : '??').'</small></div></div>';
 																if(!$subject['ep_count'] || $subject['ep_count']>$subject['ep_status'])
 																{
 																	echo '<div class="hidden-by-mouse"><small><a href="#'.$subject['id'].'" rel="';
 																	$options->index('/action/collection?do=plusEp&plus=ep');
-																	echo '" class="subject-plus" id="subject-'.$subject['id'].'-ep_plus">ep.'.($subject['ep_status']+1).'已'.$status_trans['collect'][$subject['class']].'</a></small></div>';
+																	echo '" class="Collection-subject-progress-plus" id="Collection-subject-'.$subject['id'].'-progress-ep-plus">ep.'.($subject['ep_status']+1).'已'.$arrayClassStatus['collect'][$subject['class']].'</a></small></div>';
 																}
 															}
 															echo '</div>';
-															echo '<div id="subject-'.$subject['id'].'-sp">';
+															echo '<div id="Collection-subject-'.$subject['id'].'-sp">';
 															if(!is_null($subject['sp_count']) && !is_null($subject['sp_status']))
 															{
-																echo '<label for="subject-'.$subject['id'].'-sp_progress">'._t($type_trans[$subject['class']][$subject['type']][2].'进度').'</label>';
-																echo '<div id="subject-'.$subject['id'].'-sp_progress" class="subject-progress"><div class="subject-progress-inner" style="color:white; width:'.($subject['sp_count'] ? $subject['sp_status']/$subject['sp_count']*100 : 50).'%"><small>'.$subject['sp_status'].' / '.($subject['sp_count'] ? $subject['sp_count'] : '??').'</small></div></div>';
+																echo '<label for="Collection-subject-'.$subject['id'].'-progress-sp">'._t('进度二进度').'</label>';
+																echo '<div id="Collection-subject-'.$subject['id'].'-progress-sp" class="Collection-subject-progress"><div class="Collection-subject-progress-inner" style="color:white; width:'.($subject['sp_count'] ? $subject['sp_status']/$subject['sp_count']*100 : 50).'%"><small>'.$subject['sp_status'].' / '.($subject['sp_count'] ? $subject['sp_count'] : '??').'</small></div></div>';
 																if(!$subject['sp_count'] || $subject['sp_count']>$subject['sp_status'])
 																{
 																	echo '<div class="hidden-by-mouse"><small><a href="#'.$subject['id'].'" rel="';
 																	$options->index('/action/collection?do=plusEp&plus=sp');
-																	echo '" class="subject-plus" id="subject-'.$subject['id'].'-sp_plus">sp.'.($subject['sp_status']+1).'已'.$status_trans['collect'][$subject['class']].'</a></small></div>';
+																	echo '" class="Collection-subject-progress-plus" id="Collection-subject-'.$subject['id'].'-progress-sp-plus">sp.'.($subject['sp_status']+1).'已'.$arrayClassStatus['collect'][$subject['class']].'</a></small></div>';
 																}
 															}
 															echo '</div>';
 														?>
 													</td>
-													<td class="subject-review">
-														<p class="subject-rate"><i>评价：</i><?php echo str_repeat('<span class="rate-star rate-star-rating"></span>', $subject['rate']); echo str_repeat('<span class="rate-star rate-star-blank"></span>', 10-$subject['rate']); ?></p>
-														<p class="subject-tags"><i>标签：</i><?php echo $subject['tags'] ? $subject['tags'] : '无'; ?></p>
-														<p class="subject-comment"><i>吐槽：</i><?php echo $subject['comment'] ? $subject['comment'] : '无'; ?></p>
-														<p class="hidden-by-mouse"><a href="#<?php echo $subject['id']; ?>" rel="<?php $options->index('/action/collection?do=editSubject'); ?>" class="subject-edit"><?php _e('编辑'); ?></a></p>
+													<td class="Collection-subject-review">
+														<p class="Collection-subject-rate"><i>评价：</i><?php echo str_repeat('<span class="Collection-subject-rate-star Collection-subject-rate-star-rating"></span>', $subject['rate']); echo str_repeat('<span class="Collection-subject-rate-star Collection-subject-rate-star-blank"></span>', 10-$subject['rate']); ?></p>
+														<p class="Collection-subject-tags"><i>标签：</i><?php echo $subject['tags'] ? $subject['tags'] : '无'; ?></p>
+														<p class="Collection-subject-comment"><i>吐槽：</i><?php echo $subject['comment'] ? $subject['comment'] : '无'; ?></p>
+														<p class="hidden-by-mouse"><a href="#<?php echo $subject['id']; ?>" rel="<?php $options->index('/action/collection?do=editSubject'); ?>" class="Collection-subject-edit"><?php _e('编辑'); ?></a></p>
 													</td>
 												</tr>
 											<?php endforeach; ?>
@@ -199,7 +185,7 @@ $type_trans = array(
 										<button class="dropdown-toggle btn-s" type="button"><?php _e('<i class="sr-only">操作</i>选中项'); ?> <i class="i-caret-down"></i></button>
 										<ul class="dropdown-menu">
 											<?php foreach(array('do', 'collect', 'wish', 'on_hold', 'dropped') as $value): ?>
-												<li><a lang="<?php _e('你确认要修改这些记录到'.$status_trans[$value][$class].'吗?'); ?>" href="<?php $options->index('/action/collection?do=editStatus&status='.$value); ?>"><?php _e('修改到'.$status_trans[$value][$class]); ?></a></li>
+												<li><a lang="<?php _e('你确认要修改这些记录到'.$arrayClassStatus[$value][$class].'吗?'); ?>" href="<?php $options->index('/action/collection?do=editStatus&status='.$value); ?>"><?php _e('修改到'.$arrayClassStatus[$value][$class]); ?></a></li>
 											<?php endforeach; ?>
 											<li><a lang="<?php _e('你确认要删除记录中的这些记录吗?'); ?>" href="<?php $options->index('/action/collection?do=editStatus&status=delete'); ?>"><?php _e('删除记录'); ?></a></li>
 										</ul>
@@ -215,7 +201,8 @@ $type_trans = array(
 					</div>
 					<script type="text/javascript">
 						$(document).ready(function () {
-							$('.subject-plus').click(function(){
+							var arrayStatus = ['读过', '看过', '听过', '玩过', '听过', '看过'];
+							$('.Collection-subject-progress-plus').click(function(){
 								var tr = $(this).parents('tr');
 								var t = $(this);
 								var id = tr.attr('id');
@@ -231,7 +218,7 @@ $type_trans = array(
 											else
 												t.html('ep.'+(Number(data.ep_status)+1)+'已看过');
 											tr.data('subject', subject);
-											t.parent().parent().prev().html('<div class="subject-progress-inner" style="color:white; width:'+(subject.ep_count != '0' ? subject.ep_status/subject.ep_count*100 : 50)+'%"><small>'+subject.ep_status+' / '+(subject.ep_count != '0' ? subject.ep_count : '??')+'</small></div>');
+											t.parent().parent().prev().html('<div class="Collection-subject-progress-inner" style="color:white; width:'+(subject.ep_count != 0 ? subject.ep_status/subject.ep_count*100 : 50)+'%"><small>'+subject.ep_status+' / '+(subject.ep_count != 0 ? subject.ep_count : '??')+'</small></div>');
 											if(subject.ep_count != 0 && subject.ep_status == subject.ep_count)
 												t.parent().parent().remove();
 										}
@@ -243,139 +230,112 @@ $type_trans = array(
 											else
 												t.html('sp.'+(Number(data.sp_status)+1)+'已看过');
 											tr.data('subject', subject);
-											t.parent().parent().prev().html('<div class="subject-progress-inner" style="color:white; width:'+(subject.sp_count != '0' ? subject.sp_status/subject.sp_count*100 : 50)+'%"><small>'+subject.sp_status+' / '+(subject.sp_count != '0' ? subject.sp_count : '??')+'</small></div>');
+											t.parent().parent().prev().html('<div class="Collection-subject-progress-inner" style="color:white; width:'+(subject.sp_count != 0 ? subject.sp_status/subject.sp_count*100 : 50)+'%"><small>'+subject.sp_status+' / '+(subject.sp_count != 0 ? subject.sp_count : '??')+'</small></div>');
 											if(subject.sp_count != 0 && subject.sp_status == subject.sp_count)
 												t.parent().parent().remove();
 										}
 									} 
 									else
 										alert(data.message);
-										
 								});
 							});
 
-							$('.subject-edit').click(function () {
+							$('.Collection-subject-edit').click(function () {
 								var tr = $(this).parents('tr');
 								var t = $(this);
 								var id = tr.attr('id');
 								var subject = tr.data('subject');
 								tr.hide();
-								var arrayType = [
-									[
-										['Collection', '收藏', '进度一', '进度二'],
-										['Series', '系列', '卷', '番外'],
-										['Tankōbon', '单行本', '章', '节']
-									],
-									[
-										['Collection', '收藏', '进度一', '进度二'],
-										['TV', 'TV', '本篇', '特典'],
-										['OVA', 'OVA', '本篇', '特典'],
-										['OAD', 'OVD', '本篇', '特典'],
-										['Movie', 'Movie', '本篇', '特典']
-									],
-									[
-										['Collection', '收藏', '进度一', '进度二'],
-										['Album', '专辑', '本篇', '特典'],
-										['Single', '单曲', '本篇', '特典']
-									],
-									[
-										['Collection', '收藏', '进度一', '进度二'],
-										['iOS', 'iOS', '本篇', '特典'],
-										['Android', 'Andriod', '本篇', '特典'],
-										['PSV', 'PSV', '奖杯', '收集'],
-										['3DS', '3DS', '本篇', '特典'],
-										['PC', 'PC', '结局', '收集']
-									],
-									[
-										['Collection', '收藏', '进度一', '进度二'],
-										['RadioDrama', '广播剧', '本篇', '番外']
-									],
-									[
-										['Collection', '收藏', '进度一', '进度二'],
-										['Teleplay', '电视剧', '本篇', '特典'],
-										['TalkShow', '脱口秀', '本篇', '特典'],
-										['Movie', '电影', '本篇', '特典']
-									]
-								];
-								var arrayStatus = ['读过', '看过', '听过', '玩过', '听过', '看过'];
-								var string = '<tr class="subject-edit">'
+								var string = '<tr class="Collection-subject-edit">'
 									+ '<td> </td>'
-									+ '<td><form method="post" action="'+t.attr('rel')+'" class="subject-edit-content">'
+									+ '<td><form method="post" action="'+t.attr('rel')+'" class="Collection-subject-edit-content">'
 										+ '<p><label for="'+id+'-image"><?php _e('封面'); ?></label>'
 										+ '<textarea name="image" id="'+id+'-image" rows="3" class="w-100 mono"></textarea></p>'
 										+ '<p><label for="'+id+'-class"><?php _e('种类'); ?></label><select id="'+id+'-class" name="class" class="w-100">'
-											+ '<option value=1>书籍</option>'
-											+ '<option value=2>动画</option>'
-											+ '<option value=3>音乐</option>'
-											+ '<option value=4>游戏</option>'
-											+ '<option value=5>广播</option>'
-											+ '<option value=6>影视</option>'
+											+ '<option value="1">书籍</option>'
+											+ '<option value="2">动画</option>'
+											+ '<option value="3">音乐</option>'
+											+ '<option value="4">游戏</option>'
+											+ '<option value="5">广播</option>'
+											+ '<option value="6">影视</option>'
 										+ '</select></p>'
-										+ '<p><label for="'+id+'-type"><?php _e('类型'); ?></label><select id="'+id+'-type" name="type" class="w-100">';
-								$.each(arrayType[String(Number(subject.class)-1)], function(i, nType){
-									string += '<option value='+nType[0]+'>'+nType[1]+'</option>';
+										+ '<p><label for="'+id+'-type"><?php _e('类型'); ?></label><select id="'+id+'-type" name="type" class="w-100">'
+										+ '<option value="Mix">混合</option>'
+										+ '<option value="Series">系列</option>';
+								$.each(dictType[subject.class], function(key, value){
+									string += '<option value="'+key+'">'+value+'</option>';
 								});
 								string += '</select></p>'
+									+ '<p><label for="'+id+'-source"><?php _e('信息来源'); ?></label><select id="'+id+'-source" name="source" class="w-100">'
+										+ '<option value="Collection">收藏</option>'
+										+ '<option value="Bangumi">Bangumi</option>'
+										+ '<option value="Douban">豆瓣</option>'
+									+ '</select></p>'
+									+ '<p><label for="'+id+'-subject_id">来源ID</label><input class="text-s" type="text" id="'+id+'-subject_id" name="subject_id"></p>'
 									+ '</form></td>'
-									+ '<td><form method="post" action="'+t.attr('rel')+'" class="subject-edit-info">'
-										+ '<p><label for="'+id+'-name">原名</label><input class="text-s" type="text" id="'+id+'-name" name="name"></p>'
-										+ '<p><label for="'+id+'-name_cn">译名</label><input class="text-s" type="text" id="'+id+'-name_cn" name="name_cn"></p>'
-										+ '<p><label for="'+id+'-ep_status"></label><input class="text-s w-100" id="'+id+'-ep_status" name="ep_status" type="text"></p>'
-										+ '<p><label for="'+id+'-ep_count"></label><input class="text-s w-100" type="text" name="ep_count" id="'+id+'-ep_count"></p>'
-										+ '<p><label for="'+id+'-sp_status"></label><input class="text-s w-100" id="'+id+'-sp_status" name="sp_status" type="text"></p>'
-										+ '<p><label for="'+id+'-sp_count"></label><input class="text-s w-100" type="text" name="sp_count" id="'+id+'-sp_count"></p>'
+									+ '<td><form method="post" action="'+t.attr('rel')+'" class="Collection-subject-edit-info">'
+									+ '<p><label for="'+id+'-name">原名</label><input class="text-s" type="text" id="'+id+'-name" name="name"></p>'
+									+ '<p><label for="'+id+'-name_cn">译名</label><input class="text-s" type="text" id="'+id+'-name_cn" name="name_cn"></p>'
+									+ '<p><label for="'+id+'-parent">所属系列</label><select id="'+id+'-parent" name="parent" class="w-100"></select></p>'
+									+ '<p><label for="'+id+'-ep_status">进度一进度</label><input class="text-s w-100" id="'+id+'-ep_status" name="ep_status" type="number" min="0" max="9999"></p>'
+									+ '<p><label for="'+id+'-ep_count">进度一总数</label><input class="text-s w-100" type="number" name="ep_count" id="'+id+'-ep_count" min="0" max="9999"></p>'
+									+ '<p><label for="'+id+'-sp_status">进度二进度</label><input class="text-s w-100" id="'+id+'-sp_status" name="sp_status" type="number" min="0" max="999"></p>'
+									+ '<p><label for="'+id+'-sp_count">进度二总数</label><input class="text-s w-100" type="number" name="sp_count" id="'+id+'-sp_count" min="0" max="999"></p>'
 									+ '</form></td>'
-									+ '<td id="review-'+subject.subject_id+'"><form method="post" action="'+t.attr('rel')+'" class="subject-edit-content">'
-										+ '<p><label for="'+id+'-rate"><?php _e('评价'); ?></label>'
-										+ '<input class="text-s w-100" type="text" name="rate" id="'+id+'-rate"></p>'
-										+ '<p><label for="'+id+'-tags"><?php _e('标签'); ?></label>'
-										+ '<input class="text-s w-100" type="text" name="tags" id="'+id+'-tags"></p>'
-										+ '<p><label for="'+id+'-comment"><?php _e('吐槽'); ?></label>'
-										+ '<textarea name="comment" id="'+id+'-comment" rows="6" class="w-100 mono"></textarea></p>'
-										+ '<p><button type="submit" class="btn-s primary"><?php _e('提交'); ?></button> '
-										+ '<button type="button" class="btn-s cancel"><?php _e('取消'); ?></button></p>'
+									+ '<td id="review-'+subject.subject_id+'"><form method="post" action="'+t.attr('rel')+'" class="Collection-subject-edit-content">'
+									+ '<p><label for="'+id+'-grade">显示分级</label>'
+									+ '<input type="radio" id="Collection-subject-'+id+'-edit-grade-0" name="grade" value="0" class="Collection-subject-edit-grade"><label for="Collection-subject-'+id+'-edit-grade-0">私密</label>'
+									+ '<input type="radio" id="Collection-subject-'+id+'-edit-grade-1" name="grade" value="1" class="Collection-subject-edit-grade"><label for="Collection-subject-'+id+'-edit-grade-1">公开</label></p>'
+									+ '<p><label for="'+id+'-rate">评价：'
+										+'<span class="Collection-subject-rate-star Collection-subject-rate-star-rating"></span>'.repeat(subject.rate)
+										+'<span class="Collection-subject-rate-star Collection-subject-rate-star-blank"></span>'.repeat(10-subject.rate)
+									+'</label><input class="text-s w-100" type="range" name="rate" id="'+id+'-rate" min="0" max="10"></p>'
+									+ '<p><label for="'+id+'-tags">标签</label>'
+									+ '<input class="text-s w-100" type="text" name="tags" id="'+id+'-tags"></p>'
+									+ '<p><label for="'+id+'-comment">吐槽</label>'
+									+ '<textarea name="comment" id="'+id+'-comment" rows="6" class="w-100 mono"></textarea></p>'
+									+ '<p><button type="submit" class="btn-s primary">提交</button>'
+									+ '<button type="button" class="btn-s cancel">取消</button></p>'
 									+ '</form></td>'
 									+ '</tr>';
 								var edit = $(string).data('id', id).data('subject', subject).insertAfter(tr);
-								var objectClass = $('select[name=class]', edit);
-								var objectType = $('select[name=type]', edit);
 
 								$('textarea[name=image]', edit).val(subject.image);
 								$('select[name=class]', edit).val(subject.class);
 								$('select[name=type]', edit).val(subject.type);
+								$('select[name=source]', edit).val(subject.source);
+								$('input[name=subject_id]', edit).val(subject.subject_id);
 								$('input[name=name]', edit).val(subject.name);
 								$('input[name=name_cn]', edit).val(subject.name_cn);
+								$('select[name=parent]', edit).val(subject.parent);
 								$('input[name=ep_status]', edit).val(subject.ep_status);
 								$('input[name=ep_count]', edit).val(subject.ep_count);
 								$('input[name=sp_status]', edit).val(subject.sp_status);
 								$('input[name=sp_count]', edit).val(subject.sp_count);
+								$('input[name=grade][value="'+subject.grade+'"]', edit).attr("checked", true);
 								$('input[name=rate]', edit).val(subject.rate);
 								$('input[name=tags]', edit).val(subject.tags);
 								$('textarea[name=comment]', edit).val(subject.comment).focus();
+								$.post('<?php $options->index('/action/collection'); ?>', {'do': 'getSeries'}, function(data){
+									var tempHTML = '<option value="0">无</option>';
+									$.each(data, function(i, value){
+										tempHTML +='<option value="'+value['id']+'">'+value['name']+'</option>';
+									});
+									$('select[name=parent]', edit).html(tempHTML);
+									$('select[name=parent]', edit).val(subject.parent);
+								}, 'json');
 
-								var changeType = function()
-								{
-									var n = objectClass.get(0).selectedIndex;
-									var m = objectType.get(0).selectedIndex;
-									$('label[for='+id+'-ep_status]', edit).html(arrayType[n][m][2]+'进度');
-									$('label[for='+id+'-ep_count]', edit).html(arrayType[n][m][2]+'总数');
-									$('label[for='+id+'-sp_status]', edit).html(arrayType[n][m][3]+'进度');
-									$('label[for='+id+'-sp_count]', edit).html(arrayType[n][m][3]+'总数');
-								}
-								changeType();
-
-								objectClass.change(function(){
-									var options = '';
-									var n = objectClass.get(0).selectedIndex;
-									$.each(arrayType[n], function(i, nType){
-										options += '<option value='+nType[0]+'>'+nType[1]+'</option>';
-									})
-									objectType.html(options)
-									changeType();
+								$('select[name=class]', edit).change(function(){
+									var tempHTML = '';
+									tempHTML = '<option value="Mix">混合</option>';
+									$.each(dictType[$('select[name=class]', edit).val()], function(key, value){
+										tempHTML += '<option value="'+key+'">'+value+'</option>';
+									});
+									$('select[name=type]', edit).html(tempHTML);
 								});
 
-								objectType.change(function(){
-									changeType();
+								$('input[name=rate]', edit).change(function(){
+									$('label[for="'+id+'-rate"]', edit).html('评价：'+'<span class="Collection-subject-rate-star Collection-subject-rate-star-rating"></span>'.repeat($('input[name=rate]', edit).val())+'<span class="Collection-subject-rate-star Collection-subject-rate-star-blank"></span>'.repeat(10-$('input[name=rate]', edit).val()));
 								});
 
 								$('.cancel', edit).click(function () {
@@ -402,36 +362,64 @@ $type_trans = array(
 
 									$.post(t.attr('action'), subject, function (data) {
 										var stringProgress = '';
-										var n = objectClass.get(0).selectedIndex;
-										var m = objectType.get(0).selectedIndex;
 										if(data.status)
 										{
-											$('.subject-image', oldTr).html('<img src="'+(subject.image ? subject.image : '<?php $options->pluginUrl('Collection/template/default_cover.jpg'); ?>')+'" width="100px">');
-											$('.subject-name', oldTr).html('<i class="subject_class-ico subject_class-'+subject.class+'"></i>'+(subject.subject_id ? '<a href="http://bangumi.tv/subject/'+subject.subject_id+'">'+subject.name+'</a>' : subject.name)+'</div>');
-											$('.subject-name_cn', oldTr).html(subject.name_cn);
+											$('.Collection-subject-image', oldTr).html('<img src="'+(subject.image ? subject.image : '<?php $options->pluginUrl('Collection/template/default_cover.jpg'); ?>')+'" width="100px">');
+											var tempHTML = '<i class="Collection-subject-class-ico Collection-subject-class-'+subject.class+'"></i>';
+											if(subject.source)
+											{
+												tempHTML += '<a href="';
+												switch(subject.source)
+												{
+													case 'Bangumi':
+														tempHTML += 'http://bangumi.tv/subject/';
+														break;
+													case 'Douban':
+														tempHTML += 'http://';
+														switch(subject.class)
+														{
+															case '1':
+																tempHTML += 'book';
+																break;
+															case '3':
+																tempHTML += 'music';
+																break;
+															case '6':
+																tempHTML += 'movie';
+																break;
+														}
+														tempHTML += '.douban.com/subject/'
+														break;
+												}
+												tempHTML += subject.id+'">'+subject.name+'</a>';
+											}
+											else
+												tempHTML += subject.name;
+											$('.Collection-subject-name', oldTr).html(tempHTML);
+											$('.Collection-subject-name_cn', oldTr).html(subject.name_cn);
 											if(subject.ep_count == '' && subject.ep_status == '')
-												$('#subject-'+subject.id+'-ep', oldTr).html('');
+												$('#Collection-subject-'+subject.id+'-ep', oldTr).html('');
 											else
 											{
-												stringProgress = '<label for="subject-'+subject.id+'-ep_progress">'+arrayType[n][m][2]+'进度</label>'
-													+ '<div id="subject-'+subject.id+'-ep_progress" class="subject-progress"><div class="subject-progress-inner" style="color:white; width:'+(subject.ep_count != '0' ? subject.ep_status/subject.ep_count*100 : 50)+'%"><small>'+subject.ep_status+' / '+(subject.ep_count != '0' ? subject.ep_count : '??')+'</small></div></div>';
+												stringProgress += '<label for="Collection-subject-'+subject.id+'-progress-ep">进度一进度</label>'
+													+ '<div id="Collection-subject-'+subject.id+'-progress-ep" class="Collection-subject-progress"><div class="Collection-subject-progress-inner" style="color:white; width:'+(subject.ep_count != 0 ? subject.ep_status/subject.ep_count*100 : 50)+'%"><small>'+subject.ep_status+' / '+(subject.ep_count != 0 ? subject.ep_count : '??')+'</small></div></div>';
 												if(subject.ep_count == '0' || Number(subject.ep_count) > Number(subject.ep_status))
-													stringProgress += '<div class="hidden-by-mouse"><small><a href="#'+subject.id+'" rel="<?php $options->index('/action/collection?do=plusEp&plus=ep'); ?>" class="subject-plus" id="subject-'+subject.id+'-ep_plus">ep.'+String(Number(subject.ep_status)+1)+'已'+arrayStatus[String(subject.class-1)]+'</a></small></div>';
-												$('#subject-'+subject.id+'-ep', oldTr).html(stringProgress);
+													stringProgress += '<div class="hidden-by-mouse"><small><a href="#'+subject.id+'" rel="<?php $options->index('/action/collection?do=plusEp&plus=ep'); ?>" class="Collection-subject-progress-plus" id="Collection-subject-'+subject.id+'-progress-ep-plus">ep.'+String(Number(subject.ep_status)+1)+'已'+arrayStatus[String(subject.class-1)]+'</a></small></div>';
+												$('#Collection-subject-'+subject.id+'-ep', oldTr).html(stringProgress);
 											}
 											if(subject.sp_count == '' && subject.sp_status == '')
-												$('#subject-'+subject.id+'-sp', oldTr).html('');
+												$('#Collection-subject-'+subject.id+'-sp', oldTr).html('');
 											else
 											{
-												stringProgress = '<label for="subject-'+subject.id+'-sp_progress">'+arrayType[n][m][3]+'进度</label>'
-													+ '<div id="subject-'+subject.id+'-sp_progress" class="subject-progress"><div class="subject-progress-inner" style="color:white; width:'+(subject.sp_count != '0' ? subject.sp_status/subject.sp_count*100 : 50)+'%"><small>'+subject.sp_status+' / '+(subject.sp_count != '0' ? subject.sp_count : '??')+'</small></div></div>';
+												stringProgress = '<label for="Collection-subject-'+subject.id+'-progress-sp">进度二进度</label>'
+													+ '<div id="Collection-subject-'+subject.id+'-progress-sp" class="Collection-subject-progress"><div class="Collection-subject-progress-inner" style="color:white; width:'+(subject.sp_count != 0 ? subject.sp_status/subject.sp_count*100 : 50)+'%"><small>'+subject.sp_status+' / '+(subject.sp_count != 0 ? subject.sp_count : '??')+'</small></div></div>';
 												if(subject.sp_count == '0' || Number(subject.sp_count) > Number(subject.sp_status))
-													stringProgress += '<div class="hidden-by-mouse"><small><a href="#'+subject.id+'" rel="<?php $options->index('/action/collection?do=plusEp&plus=sp'); ?>" class="subject-plus" id="subject-'+subject.id+'-sp_plus">sp.'+String(Number(subject.sp_status)+1)+'已'+arrayStatus[String(subject.class-1)]+'</a></small></div>';
-												$('#subject-'+subject.id+'-sp', oldTr).html(stringProgress);
+													stringProgress += '<div class="hidden-by-mouse"><small><a href="#'+subject.id+'" rel="<?php $options->index('/action/collection?do=plusEp&plus=sp'); ?>" class="Collection-subject-progress-plus" id="Collection-subject-'+subject.id+'-progress-sp-plus">sp.'+String(Number(subject.sp_status)+1)+'已'+arrayStatus[String(subject.class-1)]+'</a></small></div>';
+												$('#Collection-subject-'+subject.id+'-sp', oldTr).html(stringProgress);
 											}
-											$('.subject-rate', oldTr).html('<i>评价：</i>'+ '<span class="rate-star rate-star-rating"></span>'.repeat(subject.rate)+'<span class="rate-star rate-star-blank"></span>'.repeat(10-subject.rate));
-											$('.subject-tags', oldTr).html('<i>标签：</i>'+(subject.tags ? subject.tags : '无'));
-											$('.subject-comment', oldTr).html('<i>吐槽：</i>'+(subject.comment ? subject.comment : '无'));
+											$('.Collection-subject-rate', oldTr).html('<i>评价：</i>'+ '<span class="Collection-subject-rate-star Collection-subject-rate-star-rating"></span>'.repeat(subject.rate)+'<span class="Collection-subject-rate-star Collection-subject-rate-star-blank"></span>'.repeat(10-subject.rate));
+											$('.Collection-subject-tags', oldTr).html('<i>标签：</i>'+(subject.tags ? subject.tags : '无'));
+											$('.Collection-subject-comment', oldTr).html('<i>吐槽：</i>'+(subject.comment ? subject.comment : '无'));
 											$(oldTr).effect('highlight');
 										}
 										else
@@ -451,65 +439,10 @@ $type_trans = array(
 				<?php else: ?>
 					<a href="<?php $options->adminUrl('extending.php?panel=Collection%2FPanel.php'); ?>">返回</a>
 					<ul class="typecho-option-tabs right">
-						<li<?php if($do == 'new'): ?> class="current"<?php endif; ?>><a href="<?php $options->adminUrl('extending.php?panel=Collection%2FPanel.php&do=new'); ?>">输入</a></li>
 						<li<?php if($do == 'search'): ?> class="current"<?php endif; ?>><a href="<?php $options->adminUrl('extending.php?panel=Collection%2FPanel.php&do=search'); ?>">搜索</a></li>
+						<li<?php if($do == 'input'): ?> class="current"<?php endif; ?>><a href="<?php $options->adminUrl('extending.php?panel=Collection%2FPanel.php&do=input'); ?>">输入</a></li>
 					</ul>
-					<?php if($do == 'new'): ?>
-						<div class="col-mb-12 typecho-list" role="main">
-							<?php Typecho_Widget::widget('Collection_Action')->formNew()->render(); ?>
-						</div>
-						<script type="text/javascript">
-							$(document).ready(function(){
-								var arrayType = [
-									[
-										['Collection', '收藏', '进度一', '进度二'],
-										['Series', '系列', '卷', '番外'],
-										['Tankōbon', '单行本', '章', '节']
-									],
-									[
-										['Collection', '收藏', '进度一', '进度二'],
-										['TV', 'TV', '本篇', '特典'],
-										['OVA', 'OVA', '本篇', '特典'],
-										['OAD', 'OVD', '本篇', '特典'],
-										['Movie', 'Movie', '本篇', '特典']
-									],
-									[
-										['Collection', '收藏', '进度一', '进度二'],
-										['Album', '专辑', '本篇', '特典'],
-										['Single', '单曲', '本篇', '特典']
-									],
-									[
-										['Collection', '收藏', '进度一', '进度二'],
-										['iOS', 'iOS', '本篇', '特典'],
-										['Android', 'Andriod', '本篇', '特典'],
-										['PSV', 'PSV', '奖杯', '收集'],
-										['3DS', '3DS', '本篇', '特典'],
-										['PC', 'PC', '结局', '收集']
-									],
-									[
-										['Collection', '收藏', '进度一', '进度二'],
-										['RadioDrama', '广播剧', '本篇', '番外']
-									],
-									[
-										['Collection', '收藏', '进度一', '进度二'],
-										['Teleplay', '电视剧', '本篇', '特典'],
-										['TalkShow', '脱口秀', '本篇', '特典'],
-										['Movie', '电影', '本篇', '特典']
-									]
-								];
-								$('input[name=class]').click(function(){
-									var inputs = '<li><label class="typecho-label">类型</label>';
-									var n = $('input[name=class]').index(this);
-									$.each(arrayType[n], function(key, value){
-										inputs += '<span><input name="type" type="radio" value="'+value[0]+'" id="type-'+value[0]+'"<label for="type-'+value[0]+'">'+value[1]+'</label></span>';
-									});
-									inputs += '</li>';
-									$('#typecho-option-item-type-2').html(inputs);
-									$('input[name=type]:eq(0)').attr('checked', 'checked');
-								});
-							});
-						</script>
-					<?php else: ?>
+					<?php if($do == 'search'): ?>
 						<div class="col-mb-12 typecho-list" role="main">
 							<?php $response = Typecho_Widget::widget('Collection_Action')->search(); ?>
 							<div class="typecho-list-operate clearfix">
@@ -520,7 +453,7 @@ $type_trans = array(
 											<button class="dropdown-toggle btn-s" type="button"><?php _e('<i class="sr-only">操作</i>选中项'); ?> <i class="i-caret-down"></i></button>
 											<ul class="dropdown-menu">
 												<?php foreach(array('do', 'collect', 'wish', 'on_hold', 'dropped') as $value): ?>
-													<li><a lang="<?php _e('你确认要添加这些记录到'.$status_trans[$value][$class].'吗?'); ?>" href="<?php $options->index('/action/collection?do=editStatus&status='.$value.'&source='.$request->source.'&class='.$request->class); ?>"><?php _e('添加到'.$status_trans[$value][$class]); ?></a></li>
+													<li><a lang="<?php _e('你确认要添加这些记录到'.$arrayClassStatus[$value][$class].'吗?'); ?>" href="<?php $options->index('/action/collection?do=editStatus&status='.$value.'&source='.$request->source.'&class='.$request->class); ?>"><?php _e('添加到'.$arrayClassStatus[$value][$class]); ?></a></li>
 												<?php endforeach; ?>
 											</ul>
 										</div>
@@ -563,7 +496,7 @@ $type_trans = array(
 														<td><input type="checkbox" name="subject_id[]" value="<?php echo $subject_id; ?>"></td>
 														<td><img src="<?php echo $subject['image']; ?>" width="100px"></td>
 														<td><div>
-															<i class="subject_class-ico subject_class-<?php echo $subject['class']; ?>"></i>
+															<i class="Collection-subject-class-ico Collection-subject-class-<?php echo $subject['class']; ?>"></i>
 															<?php
 																echo '<a href="';
 																switch($request->get('source'))
@@ -600,35 +533,41 @@ $type_trans = array(
 						</div>
 						<script type="text/javascript">
 							$(document).ready(function(){
-								var arrayClass = [
-									[
-										['0', '全部'],
-										['1', '书籍'],
-										['2', '动画'],
-										['3', '音乐'],
-										['4', '游戏'],
-										['5', '广播'],
-										['6', '影视']
-									],
-									[
-										['1', '图书'],
-										['3', '音乐'],
-										['6', '电影']
-									]
-								];
+								var dictClass = {
+									'Bangumi':{0:'全部', 1:'书籍', 2:'动画', 3:'音乐', 4:'游戏', 5:'广播', 6:'影视'},
+									'Douban':{1:'图书',3:'音乐',6:'电影'}
+								};
 								var objectSource = $('select[name=source]');
 								var changeSource = function(){
-									var options = '';
-									var n = objectSource.get(0).selectedIndex;
-									$.each(arrayClass[n], function(key, value){
-										options += '<option value ='+value[0]+'>'+value[1]+'</option>';
+									var tempHTML = '';
+									$.each(dictClass[objectSource.val()], function(key, value){
+										tempHTML += '<option value ='+key+'>'+value+'</option>';
 									});
-									$('select[name=class]').html(options);
+									$('select[name=class]').html(tempHTML);
 								}
 								changeSource();
 								$('select[name=class]').val(<?php echo $request->get('class'); ?>);
 								objectSource.change(function(){
 									changeSource();
+								});
+							});
+						</script>
+					<?php else: ?>
+						<div class="col-mb-12 typecho-list" role="main">
+							<?php Typecho_Widget::widget('Collection_Action')->formInput()->render(); ?>
+						</div>
+						<script type="text/javascript">
+							$(document).ready(function(){
+								$('input[name=class]').click(function(){
+									var tempHTML = '';
+									tempHTML = '<li><label class="typecho-label">类型</label>';
+									tempHTML += '<span><input name="type" type="radio" value="Mix" id="type-Mix" checked><label for="type-Mix">混合</label></span>';
+									tempHTML += '<span><input name="type" type="radio" value="Series" id="type-Series"><label for="type-Series">系列</label></span>';
+									$.each(dictType[$('input[name=class]:checked').val()], function(key, value){
+										tempHTML += '<span><input name="type" type="radio" value="'+key+'" id="type-'+key+'"><label for="type-'+key+'">'+value+'</label></span>';
+									});
+									tempHTML += '</li>';
+									$('#typecho-option-item-type-2').html(tempHTML);
 								});
 							});
 						</script>

@@ -2,7 +2,7 @@
  * class
  */
 
-.subject_class-ico
+.Collection-subject-class-ico
 {
 	display: block;
 	height: 15px;
@@ -12,23 +12,23 @@
 	float: left;
 }
 
-.subject_class-1
+.Collection-subject-class-1
 {
 	background-position: 0px 0px;
 }
 
-.subject_class-2,
-.subject_class-6
+.Collection-subject-class-2,
+.Collection-subject-class-6
 {
 	background-position: 0px -19px;
 }
 
-.subject_class-3
+.Collection-subject-class-3
 {
 	background-position: 0px -34px;
 }
 
-.subject_class-4
+.Collection-subject-class-4
 {
 	background-position: 0px -48px;
 }
@@ -37,7 +37,7 @@
  * rate
  */
 
-.rate-star
+.Collection-subject-rate-star
 {
 	background: url('subject_star.gif') no-repeat scroll 0% 0% transparent;
 	display: inline-block;
@@ -46,12 +46,12 @@
 	width: 16px;
 }
 
-.rate-star-rating
+.Collection-subject-rate-star-rating
 {
 	background-position: 0px bottom;
 }
 
-.rate-star-blank
+.Collection-subject-rate-star-blank
 {
 	background-position: 0px top;
 }
@@ -60,7 +60,7 @@
  * progress
  */
 
-.subject-progress
+.Collection-subject-progress
 {
 	width: 150px;
 	border: 1px solid #CCC;
@@ -68,7 +68,7 @@
 	padding: 1px;
 }
 
-.subject-progress-inner
+.Collection-subject-progress-inner
 {
 	height: 15px;
 	line-height: 15px;
@@ -76,7 +76,7 @@
 	position: relative;
 }
 
-.subject-progress-inner small
+.Collection-subject-progress-inner small
 {
 	position: absolute;
 	width: 100px;

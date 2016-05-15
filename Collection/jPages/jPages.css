@@ -1,0 +1,35 @@
+.Collection-nav {
+	margin: 15px 0;
+}
+
+.Collection-nav a {
+	font-size: 12px;
+	cursor: pointer;
+	margin: 0 5px;
+	color: #333;
+}
+
+.Collection-nav a:hover {
+	background-color: #222;
+	color: #fff;
+}
+
+.Collection-nav a.jp-previous { margin-right: 15px; }
+.Collection-nav a.jp-next { margin-left: 15px; }
+
+.Collection-nav a.jp-current, a.jp-current:hover { 
+	color: #FF4242;
+	font-weight: bold;
+}
+
+.Collection-nav a.jp-disabled, a.jp-disabled:hover {
+	color: #bbb;
+}
+
+.Collection-nav a.jp-current, a.jp-current:hover,
+.Collection-nav a.jp-disabled, a.jp-disabled:hover {
+	cursor: default; 
+	background: none;
+}
+
+.Collection-nav span { margin: 0 5px; }
