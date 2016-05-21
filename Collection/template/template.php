@@ -205,7 +205,7 @@ $(document).ready(function(){
 				containerID : "Collection-list",
 				perPage : 20,
 				minHeight : false,
-				animation : "fadeInUp"
+				animation : "<?php echo Helper::options()->plugin('Collection')->animation; ?>"
 			});
 		}, 'json');
 		return false;

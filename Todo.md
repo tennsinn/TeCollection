@@ -3,10 +3,8 @@
 ## Typecho插件部分
 + Plugin
 	- 增加按账号多级分级
-	- 增加template动画选项
 + Action
 	- editStatus函数配合JS搜索
-	- getCollection两次搜索尝试合并
 + Panel
 	- rate修改方式变更
 	- 搜索JS实现
