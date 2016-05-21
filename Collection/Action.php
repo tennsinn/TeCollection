@@ -38,44 +38,45 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 	 */
 	public function getCollection()
 	{
-		$query = $this->_db->select(array('COUNT(table.collection.id)' => 'num'))->from('table.collection')->where('grade>=1');
-		//两次判断合并尝试
+		$queryNum = $this->_db->select(array('COUNT(table.collection.id)' => 'num'))->from('table.collection')->where('grade>=1');
+		$queryRow = $this->_db->select()->from('table.collection')->where('grade>=1');
+		
 		if(empty(array_diff($this->request->filter('int')->getArray('class'), array(1, 2, 3, 4, 5, 6))))
-			$query->where('class='.implode(' OR class=', $this->request->filter('int')->getArray('class')));
+		{
+			$queryNum->where('class='.implode(' OR class=', $this->request->filter('int')->getArray('class')));
+			$queryRow->where('class='.implode(' OR class=', $this->request->filter('int')->getArray('class')));
+		}
 		
 		if(in_array($this->request->getArray('type'), $this->arrayType))
-			$query->where("type='".implode("' OR type='", $this->request->getArray('type'))."'");
+		{
+			$queryNum->where("type='".implode("' OR type='", $this->request->getArray('type'))."'");
+			$queryRow->where("type='".implode("' OR type='", $this->request->getArray('type'))."'");
+		}
 
 		if(empty(array_diff($this->request->getArray('status'), array('do', 'wish', 'finish', 'on_hold', 'dropped'))))
-			$query->where("status='".implode("' OR status='", $this->request->getArray('status'))."'");
+		{
+			$queryNum->where("status='".implode("' OR status='", $this->request->getArray('status'))."'");
+			$queryRow->where("status='".implode("' OR status='", $this->request->getArray('status'))."'");
+		}
 
 		$rate = explode(',', $this->request->get('rate'));
 		if($rate[0]<=$rate[1] && $rate[0]>=0 && $rate[1]<=10)
-			$query->where('rate>='.$rate[0].' AND rate<='.$rate[1]);
+		{
+			$queryNum->where('rate>='.$rate[0].' AND rate<='.$rate[1]);
+			$queryRow->where('rate>='.$rate[0].' AND rate<='.$rate[1]);
+		}
 
-		$num = $this->_db->fetchObject($query)->num;
+		$num = $this->_db->fetchObject($queryNum)->num;
 		if(!$num)
 			$this->response->throwJson(array('result' => false, 'message' => '存在0条记录'));
+		else
+		{
+			if(in_array($this->request->get('orderby'), array('id', 'rate', 'time_touch', 'time_start', 'time_finish')) && in_array($this->request->get('order'), array('DESC', 'ASC')))
+				$queryRow->order($this->request->get('orderby'), $this->request->get('order'));
 
-		$query = $this->_db->select()->from('table.collection')->where('grade>=1');
-
-		if(empty(array_diff($this->request->filter('int')->getArray('class'), array(1, 2, 3, 4, 5, 6))))
-			$query->where('class='.implode(' OR class=', $this->request->filter('int')->getArray('class')));
-
-		if(in_array($this->request->getArray('type'), $this->arrayType))
-			$query->where("type='".implode("' OR type='", $this->request->getArray('type'))."'");
-
-		if(empty(array_diff($this->request->getArray('status'), array('do', 'wish', 'finish', 'on_hold', 'dropped'))))
-			$query->where("status='".implode("' OR status='", $this->request->getArray('status'))."'");
-
-		if($rate[0]<=$rate[1] && $rate[0]>=0 && $rate[1]<=10)
-			$query->where('rate>='.$rate[0].' AND rate<='.$rate[1]);
-
-		if(in_array($this->request->get('orderby'), array('id', 'rate', 'time_touch', 'time_start', 'time_finish')) && in_array($this->request->get('order'), array('DESC', 'ASC')))
-			$query->order($this->request->get('orderby'), $this->request->get('order'));
-
-		$rows = $this->_db->fetchAll($query);
-		$this->response->throwJson(array('result' => true, 'count' => $num, 'list' => $rows));
+			$rows = $this->_db->fetchAll($queryRow);
+			$this->response->throwJson(array('result' => true, 'count' => $num, 'list' => $rows));
+		}
 	}
 
 	/**
@@ -741,15 +742,10 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 		$progress = new Typecho_Widget_Helper_Form_Element_Checkbox('progress', $arrayProgress, NULL, '进度信息', '选择将要添加的信息，默认为0/0，不选择则认为无进度项');
 		$form->addInput($progress->multiMode());
 
-		$parent = new Typecho_Widget_Helper_Form_Element_Text('parent', NULL, 0, '父记录ID');
-		$parent->addRule('required', '必须填写父记录ID，无则为0');
-		$parent->addRule('isInteger', '父记录ID为数字');
-		$parent->addRule('maxLength', '父记录ID最大为10位');
-		$parent->input->setAttribute('class', 'w-30 mono');
+		$parent = new Typecho_Widget_Helper_Form_Element_Select('parent', array(0=>'无'), 0, '父记录');
 		$form->addInput($parent);
 
-		$arrayGrade = array(0 => '私密', 1 => '公开');
-		$grade = new Typecho_Widget_Helper_Form_Element_radio('grade', $arrayGrade, 1, '显示分级');
+		$grade = new Typecho_Widget_Helper_Form_Element_radio('grade', array(0 => '私密', 1 => '公开'), 1, '显示分级');
 		$grade->addRule('required', '必须选择显示分级');
 		$form->addInput($grade);
 
@@ -759,9 +755,11 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 		$form->addInput($status);
 
 		$rate = new Typecho_Widget_Helper_Form_Element_Text('rate', NULL, 0, '评价', '请使用0-10的数字表示，0为无评价');
-		$rate->input->setAttribute('class', 'num text-s mono');
-		$rate->addRule('required', '必须输入评价');
+		$rate->input->setAttribute('class', 'text-s');
 		$rate->addRule('isInteger', '请使用0-10的数字表示');
+		$rate->input->setAttribute('type', 'number');
+		$rate->input->setAttribute('min', '0');
+		$rate->input->setAttribute('max', '10');
 		$form->addInput($rate);
 
 		$tags = new Typecho_Widget_Helper_Form_Element_Text('tags', NULL, NULL, '标签', '请使用空格分隔');

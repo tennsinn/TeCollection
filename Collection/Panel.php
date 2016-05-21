@@ -90,7 +90,7 @@ var dictType = {
 										<col width="20px">
 										<col width="120px">
 										<col width="200px">
-										<col min-width="100px">
+										<col>
 									</colgroup>
 									<thead>
 										<tr>
@@ -282,14 +282,15 @@ var dictType = {
 									+ '<p><label for="'+id+'-sp_status">进度二进度</label><input class="text-s w-100" id="'+id+'-sp_status" name="sp_status" type="number" min="0" max="999"></p>'
 									+ '<p><label for="'+id+'-sp_count">进度二总数</label><input class="text-s w-100" type="number" name="sp_count" id="'+id+'-sp_count" min="0" max="999"></p>'
 									+ '</form></td>'
-									+ '<td id="review-'+subject.subject_id+'"><form method="post" action="'+t.attr('rel')+'" class="Collection-subject-edit-content">'
+									+ '<td id="review-'+id+'"><form method="post" action="'+t.attr('rel')+'" class="Collection-subject-edit-content">'
 									+ '<p><label for="'+id+'-grade">显示分级</label>'
 									+ '<input type="radio" id="Collection-subject-'+id+'-edit-grade-0" name="grade" value="0" class="Collection-subject-edit-grade"><label for="Collection-subject-'+id+'-edit-grade-0">私密</label>'
 									+ '<input type="radio" id="Collection-subject-'+id+'-edit-grade-1" name="grade" value="1" class="Collection-subject-edit-grade"><label for="Collection-subject-'+id+'-edit-grade-1">公开</label></p>'
-									+ '<p><label for="'+id+'-rate">评价：'
-										+'<span class="Collection-subject-rate-star Collection-subject-rate-star-rating"></span>'.repeat(subject.rate)
-										+'<span class="Collection-subject-rate-star Collection-subject-rate-star-blank"></span>'.repeat(10-subject.rate)
-									+'</label><input class="text-s w-100" type="range" name="rate" id="'+id+'-rate" min="0" max="10"></p>'
+									//+ '<p><label for="'+id+'-rate">评价：'
+										//+'<span class="Collection-subject-rate-star Collection-subject-rate-star-rating"></span>'.repeat(subject.rate)
+										//+'<span class="Collection-subject-rate-star Collection-subject-rate-star-blank"></span>'.repeat(10-subject.rate)
+									//+'</label><input class="text-s w-100" type="range" name="rate" id="'+id+'-rate" min="0" max="10"></p>'
+									+ '<p><label for="'+id+'-rate">评价：</label><input class="text-s w-100" type="number" name="rate" id="'+id+'-rate" min="0" max="10"></p>'
 									+ '<p><label for="'+id+'-tags">标签</label>'
 									+ '<input class="text-s w-100" type="text" name="tags" id="'+id+'-tags"></p>'
 									+ '<p><label for="'+id+'-comment">吐槽</label>'
@@ -299,7 +300,7 @@ var dictType = {
 									+ '</form></td>'
 									+ '</tr>';
 								var edit = $(string).data('id', id).data('subject', subject).insertAfter(tr);
-
+								
 								$('textarea[name=image]', edit).val(subject.image);
 								$('select[name=class]', edit).val(subject.class);
 								$('select[name=type]', edit).val(subject.type);
@@ -558,6 +559,14 @@ var dictType = {
 						</div>
 						<script type="text/javascript">
 							$(document).ready(function(){
+								$.post('<?php $options->index('/action/collection'); ?>', {'do': 'getSeries'}, function(data){
+									var tempHTML = '<option value="0">无</option>';
+									$.each(data, function(i, value){
+										tempHTML +='<option value="'+value['id']+'">'+value['name']+'</option>';
+									});
+									$('select[name=parent]').html(tempHTML);
+								}, 'json');
+
 								$('input[name=class]').click(function(){
 									var tempHTML = '';
 									tempHTML = '<li><label class="typecho-label">类型</label>';
