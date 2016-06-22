@@ -34,6 +34,7 @@ $dictType = array(
 <link rel="stylesheet" type="text/css" href="<?php $options->pluginUrl('Collection/template/stylesheet-common.css'); ?>">
 <link rel="stylesheet" type="text/css" href="<?php $options->pluginUrl('Collection/template/stylesheet-panel.css'); ?>">
 <script type="text/javascript">
+var dictClass = {1:'书籍', 2:'动画', 3:'音乐', 4:'游戏', 5:'广播', 6:'影视'};
 var dictType = {
 	0:{'Mix':'混合', 'Series':'系列'},
 	1:{'Novel':'小说', 'Comic':'漫画', 'Doujinshi':'同人志', 'Textbook':'课本'},
@@ -107,7 +108,7 @@ var dictType = {
 													<td><input type="checkbox" name="id[]" value="<?php echo $subject['id']; ?>"></td>
 													<td>
 														<div class="Collection-subject-image"><img src="<?php echo $subject['image'] ? $subject['image'] : Typecho_common::url('Collection/template/default_cover.jpg', $options->pluginUrl); ?>" width="100px"></div>
-														<div><?php echo $dictClass[$subject['class']].'/'.(isset($dictType[$subject['type']]) ? $dictType[$subject['type']] : 'Unkown'); ?></div>
+														<div class="Collection-subject-type"><?php echo $dictClass[$subject['class']].'/'.(isset($dictType[$subject['type']]) ? $dictType[$subject['type']] : 'Unkown'); ?></div>
 													</td>
 													<td class="Collection-subject-meta">
 														<div class="Collection-subject-name">
@@ -132,7 +133,9 @@ var dictType = {
 																	echo $subject['name'];
 															?>
 														</div>
-														<?php if($subject['name_cn']) echo '<div class="Collection-subject-name_cn">'.$subject['name_cn'].'</div>'; ?>
+														<div class="Collection-subject-name_cn">
+															<?php echo $subject['name_cn'] ? $subject['name_cn'] : ''; ?>
+														</div>
 														<?php
 															echo '<div id="Collection-subject-'.$subject['id'].'-ep">';
 															if(!is_null($subject['ep_count']) && !is_null($subject['ep_status']))
@@ -366,6 +369,7 @@ var dictType = {
 										if(data.status)
 										{
 											$('.Collection-subject-image', oldTr).html('<img src="'+(subject.image ? subject.image : '<?php $options->pluginUrl('Collection/template/default_cover.jpg'); ?>')+'" width="100px">');
+											$('.Collection-subject-type', oldTr).html(dictClass[subject.class]+'/'+(subject.type=='Mix'||subject.type=='Series' ? dictType[0][subject.type] : dictType[subject.class][subject.type]));
 											var tempHTML = '<i class="Collection-subject-class-ico Collection-subject-class-'+subject.class+'"></i>';
 											if(subject.source)
 											{

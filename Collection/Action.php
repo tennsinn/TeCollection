@@ -53,7 +53,7 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 			$queryRow->where("type='".implode("' OR type='", $this->request->getArray('type'))."'");
 		}
 
-		if(empty(array_diff($this->request->getArray('status'), array('do', 'wish', 'finish', 'on_hold', 'dropped'))))
+		if(empty(array_diff($this->request->getArray('status'), array('do', 'wish', 'collect', 'on_hold', 'dropped'))))
 		{
 			$queryNum->where("status='".implode("' OR status='", $this->request->getArray('status'))."'");
 			$queryRow->where("status='".implode("' OR status='", $this->request->getArray('status'))."'");

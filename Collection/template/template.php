@@ -181,10 +181,10 @@ $(document).ready(function(){
 					if(subject.ep_count != null && subject.ep_status != null)
 					{
 						tempHTML += '<div>进度一：</div>'
-							+ '<div class="Collection-subject-progress"><div class="Collection-subject-progress-inner" style="color:white; width:'+(subject.ep_count==0 ? subject.ep_status/subject.ep_count*100 : 50)+'%"><small>'+subject.ep_status+' / '+(subject.ep_count==0 ? subject.ep_count : '??')+'</small></div></div>';
+							+ '<div class="Collection-subject-progress"><div class="Collection-subject-progress-inner" style="color:white; width:'+(subject.ep_count!=0 ? subject.ep_status/subject.ep_count*100 : 50)+'%"><small>'+subject.ep_status+' / '+(subject.ep_count!=0 ? subject.ep_count : '??')+'</small></div></div>';
 						if(subject.sp_count != null && subject.sp_status != null)
 							tempHTML += '<div>进度二：</div>'
-							+ '<div class="Collection-subject-progress"><div class="Collection-subject-progress-inner" style="color:white; width:'+(subject.sp_count==0 ? subject.sp_status/subject.sp_count*100 : 50)+'%"><small>'+subject.sp_status+' / '+(subject.sp_count==0 ? subject.sp_count : '??')+'</small></div></div>';
+							+ '<div class="Collection-subject-progress"><div class="Collection-subject-progress-inner" style="color:white; width:'+(subject.sp_count!=0 ? subject.sp_status/subject.sp_count*100 : 50)+'%"><small>'+subject.sp_status+' / '+(subject.sp_count!=0 ? subject.sp_count : '??')+'</small></div></div>';
 					}
 					tempHTML += '</div>'
 						+ '<div class="Collection-subject-review">'
