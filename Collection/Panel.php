@@ -130,7 +130,7 @@ var dictType = {
 																			echo 'http://www.wandoujia.com/apps/';
 																			break;
 																	}
-																	echo $subject['subject_id'].'">'.$subject['name'].'</a>';
+																	echo $subject['subject_id'].'" target="_blank">'.$subject['name'].'</a>';
 																}
 																else
 																	echo $subject['name'];
@@ -403,7 +403,7 @@ var dictType = {
 														tempHTML += 'http://www.wandoujia.com/apps/';
 														break;
 												}
-												tempHTML += subject.subject_id+'">'+subject.name+'</a>';
+												tempHTML += subject.subject_id+'" target="_blank">'+subject.name+'</a>';
 											}
 											else
 												tempHTML += subject.name;

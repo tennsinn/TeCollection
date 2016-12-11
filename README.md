@@ -2,18 +2,12 @@
 
 **一个不明意义的Typecho插件**
 
-建立本地收藏记录，并管理与展示
+一个用于记录条目，管理进度的Typecho插件，数据存储于博客的数据库中
 
 ## Instructions
 
-*版本更新请根据需要自行重建数据表*
+1. 开启插件并进行相关设置，在后台“管理-Collection”页面中进行条目的管理。
 
-通过搜索和自主输入建立收藏记录条目信息，可通过Bangumi、豆瓣的api获取部分信息
+2. “新增”按钮用于增加条目信息，可选择“搜索添加”或者“手动输入”的方式。添加条目后使用“选中项”、“编辑”、“已看过”等功能对其状态及具体信息进行编辑。
 
-在管理面版可进行条目状态的更改，并在博客页面进行展示
-
-`Collection_Plugin::render();` 预设模板输出
-
-`action/collection?do=getCollection` 获取公开收藏信息
-
-`$collections = Typecho_Widget::widget('Collection_Action')->showCollection($pageSize);` 根据请求的参数返回相应的记录条目，$pageSize为分页大小（返回格式`array('resault' => ture/false, 'message' => false时的错误信息, 'list' => 记录条目, 'nav' => 分页盒)）
+3. 使用`Collection_Plugin::render();` 可在Typecho中进行预设模板的输出。

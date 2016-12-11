@@ -7,7 +7,7 @@ $dictType = array(
 	3 => array('Album' => '专辑', 'Single' => '单曲', 'Maxi' => 'Maxi', 'EP' => '细碟', 'Selections' => '选集'),
 	4 => array('iOS' => 'iOS', 'Android' => 'Andriod', 'PSP' => 'PSP', 'PSV' => 'PSV', 'PS' => 'PS', 'NDS' => 'NDS', '3DS' => '3DS', 'XBox' => 'XBox', 'Windows' => 'Windows', 'Online' => '网游', 'Table' => '桌游'),
 	5 => array('RadioDrama' => '广播剧', 'Drama' => '歌剧'),
-	6 => array('Film' => '电影', 'Teleplay' => '电视剧', 'TalkShow' => '脱口秀', 'VarietyShow' => '综艺')
+	6 => array('Film' => '电影', 'Teleplay' => '电视剧', 'Documentary' => '纪录片', 'TalkShow' => '脱口秀', 'VarietyShow' => '综艺')
 );
 $dictStatus = array('do' => '进行', 'wish' => '计划', 'collect' => '完成', 'on_hold' => '搁置', 'dropped' => '抛弃');
 $dictOrderby = array('id' => 'ID', 'rate' => '评价', 'time_touch' => '最后修改', 'time_start' => '开始时间', 'time_finish' => '结束时间');
@@ -94,7 +94,7 @@ var dictTypeTrans = {
 	3:{'Mix':'混合', 'Series':'系列', 'Album':'专辑', 'Single':'单曲', 'Selections':'选集'},
 	4:{'Mix':'混合', 'Series':'系列', 'iOS':'iOS', 'Android':'Andriod', 'PSP':'PSP', 'PSV':'PSV', 'PS':'PS', 'NDS':'NDS', '3DS':'3DS', 'XBox':'XBox', 'Windows':'Windows', 'Online':'网游', 'Table':'桌游'},
 	5:{'Mix':'混合', 'Series':'系列', 'RadioDrama':'广播剧', 'Drama':'歌剧'},
-	6:{'Mix':'混合', 'Series':'系列', 'Movie':'电影', 'Teleplay':'电视剧', 'TalkShow':'脱口秀', 'VarietyShow':'综艺'}
+	6:{'Mix':'混合', 'Series':'系列', 'Film':'电影', 'Teleplay':'电视剧', 'Documentary':'纪录片', 'TalkShow':'脱口秀', 'VarietyShow':'综艺'}
 };
 
 var dictStatusTrans = {
@@ -138,7 +138,7 @@ $(document).ready(function(){
 						+ '<div class="Collection-subject-name">'
 						+ '<i class="Collection-subject-class-ico Collection-subject-class-'+subject.class+'"></i>'
 						+ '<small>（'+dictTypeTrans[subject.class][subject.type]+'）</small>';
-					if(subject.source)
+					if(subject.source != 'Collection')
 					{
 						tempHTML += '<a href="';
 						switch(subject.source)
@@ -162,8 +162,11 @@ $(document).ready(function(){
 								}
 								tempHTML += '.douban.com/subject/';
 								break;
+							case 'Wandoujia':
+								tempHTML += 'http://www.wandoujia.com/apps/';
+								break;
 						}
-						tempHTML += subject.subject_id+'">'+subject.name+'</a>';
+						tempHTML += subject.subject_id+'" target="_blank">'+subject.name+'</a>';
 					}
 					else
 						tempHTML += subject.name;
