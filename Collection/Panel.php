@@ -27,7 +27,7 @@ $dictType = array(
 	'Album' => '专辑', 'Single' => '单曲', 'Maxi' => 'Maxi', 'EP' => '细碟', 'Selections' => '选集',
 	'iOS' => 'iOS', 'Android' => 'Android', 'PSP' => 'PSP', 'PSV' => 'PSV', 'PS' => 'PS', 'NDS' => 'NDS', '3DS' => '3DS', 'XBox' => 'XBox', 'Windows' => 'Windows', 'Online' => '网游', 'Table' => '桌游', 
 	'RadioDrama' => '广播剧', 'Drama' => '歌剧',
-	'Film' => '电影', 'Teleplay' => '电视剧', 'TalkShow' => '脱口秀', 'VarietyShow' => '综艺'
+	'Film' => '电影', 'Teleplay' => '电视剧', 'Documentary' => '纪录片', 'TalkShow' => '脱口秀', 'VarietyShow' => '综艺'
 );
 ?>
 
@@ -42,7 +42,7 @@ var dictType = {
 	3:{'Album':'专辑', 'Single':'单曲', 'Maxi':'Maxi', 'EP':'细碟', 'Selections':'选集'},
 	4:{'iOS':'iOS', 'Android':'Android', 'PSP':'PSP', 'PSV':'PSV', 'PS':'PS', 'NDS':'NDS', '3DS':'3DS', 'XBox':'XBox', 'Windows':'Windows', 'Online':'网游', 'Table':'桌游'}, 
 	5:{'RadioDrama':'广播剧', 'Drama':'歌剧'},
-	6:{'Film':'电影', 'Teleplay':'电视剧', 'TalkShow':'脱口秀', 'VarietyShow':'综艺'}
+	6:{'Film':'电影', 'Teleplay':'电视剧', 'Documentary':'纪录片', 'TalkShow':'脱口秀', 'VarietyShow':'综艺'}
 };
 </script>
 <div class="main">
@@ -114,7 +114,7 @@ var dictType = {
 														<div class="Collection-subject-name">
 															<i class="Collection-subject-class-ico Collection-subject-class-<?php echo $subject['class']; ?>"></i>
 															<?php
-																if($subject['source'])
+																if($subject['source'] != 'Collection')
 																{
 																	echo '<a href="';
 																	switch($subject['source'])
@@ -125,6 +125,9 @@ var dictType = {
 																		case 'Douban':
 																			$dictDoubanClass = array('1' => 'book', '3' => 'music', '6' => 'movie');
 																			echo 'http://'.$dictDoubanClass[$subject['class']].'.douban.com/subject/';
+																			break;
+																		case 'Wandoujia':
+																			echo 'http://www.wandoujia.com/apps/';
 																			break;
 																	}
 																	echo $subject['subject_id'].'">'.$subject['name'].'</a>';
@@ -273,6 +276,7 @@ var dictType = {
 										+ '<option value="Collection">收藏</option>'
 										+ '<option value="Bangumi">Bangumi</option>'
 										+ '<option value="Douban">豆瓣</option>'
+										+ '<option value="Wandoujia">豌豆荚</option>'
 									+ '</select></p>'
 									+ '<p><label for="'+id+'-subject_id">来源ID</label><input class="text-s" type="text" id="'+id+'-subject_id" name="subject_id"></p>'
 									+ '</form></td>'
@@ -371,7 +375,7 @@ var dictType = {
 											$('.Collection-subject-image', oldTr).html('<img src="'+(subject.image ? subject.image : '<?php $options->pluginUrl('Collection/template/default_cover.jpg'); ?>')+'" width="100px">');
 											$('.Collection-subject-type', oldTr).html(dictClass[subject.class]+'/'+(subject.type=='Mix'||subject.type=='Series' ? dictType[0][subject.type] : dictType[subject.class][subject.type]));
 											var tempHTML = '<i class="Collection-subject-class-ico Collection-subject-class-'+subject.class+'"></i>';
-											if(subject.source)
+											if(subject.source != 'Collection')
 											{
 												tempHTML += '<a href="';
 												switch(subject.source)
@@ -395,8 +399,11 @@ var dictType = {
 														}
 														tempHTML += '.douban.com/subject/'
 														break;
+													case 'Wandoujia':
+														tempHTML += 'http://www.wandoujia.com/apps/';
+														break;
 												}
-												tempHTML += subject.id+'">'+subject.name+'</a>';
+												tempHTML += subject.subject_id+'">'+subject.name+'</a>';
 											}
 											else
 												tempHTML += subject.name;

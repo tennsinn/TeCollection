@@ -4,7 +4,7 @@
  * 
  * @package Collection
  * @author 息E-敛
- * @version 1.4.3
+ * @version 1.4.4
  * @link http://tennsinn.com
  */
 class Collection_Plugin implements Typecho_Plugin_Interface
@@ -18,14 +18,14 @@ class Collection_Plugin implements Typecho_Plugin_Interface
 		$query = 'CREATE TABLE IF NOT EXISTS '. $db->getPrefix() . 'collection' ." (
 			`id` int unsigned NOT NULL auto_increment PRIMARY KEY,
 			`class` tinyint(1) unsigned NOT NULL,
-			`type` varchar(10) NOT NULL default 'Mix',
+			`type` varchar(20) NOT NULL default 'Mix',
 			`name` varchar(50) NOT NULL,
 			`name_cn` varchar(50) default NULL,
 			`image` varchar(200) default NULL,
 			`ep_count` smallint(4) unsigned default NULL,
 			`sp_count` smallint(3) unsigned default NULL,
 			`source` varchar(10) NOT NULL default 'Collection',
-			`subject_id` varchar(10) default NULL,
+			`subject_id` varchar(50) default NULL,
 			`parent` int unsigned NOT NULL default 0,
 			`grade` tinyint(1) unsigned NOT NULL default 1,
 			`status` char(7) NOT NULL default 'wish',

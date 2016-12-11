@@ -28,7 +28,7 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 		'Album', 'Single', 'Maxi', 'EP', 'Selections',
 		'iOS', 'Android', 'PSP', 'PSV', 'PS', 'NDS', '3DS', 'XBox', 'Windows', 'Online', 'Table', 
 		'RadioDrama', 'Drama',
-		'Film', 'Teleplay', 'TalkShow', 'VarietyShow'
+		'Film', 'Teleplay', 'Documentary', 'TalkShow', 'VarietyShow'
 	);
 
 	/**
@@ -38,43 +38,33 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 	 */
 	public function getCollection()
 	{
-		$queryNum = $this->_db->select(array('COUNT(table.collection.id)' => 'num'))->from('table.collection')->where('grade>=1');
-		$queryRow = $this->_db->select()->from('table.collection')->where('grade>=1');
-		
-		if(empty(array_diff($this->request->filter('int')->getArray('class'), array(1, 2, 3, 4, 5, 6))))
-		{
-			$queryNum->where('class='.implode(' OR class=', $this->request->filter('int')->getArray('class')));
-			$queryRow->where('class='.implode(' OR class=', $this->request->filter('int')->getArray('class')));
-		}
-		
-		if(in_array($this->request->getArray('type'), $this->arrayType))
-		{
-			$queryNum->where("type='".implode("' OR type='", $this->request->getArray('type'))."'");
-			$queryRow->where("type='".implode("' OR type='", $this->request->getArray('type'))."'");
-		}
-
-		if(empty(array_diff($this->request->getArray('status'), array('do', 'wish', 'collect', 'on_hold', 'dropped'))))
-		{
-			$queryNum->where("status='".implode("' OR status='", $this->request->getArray('status'))."'");
-			$queryRow->where("status='".implode("' OR status='", $this->request->getArray('status'))."'");
-		}
-
+		$interClass = array_intersect($this->request->filter('int')->getArray('class'), array(1, 2, 3, 4, 5, 6));
+		$interType = array_intersect($this->request->getArray('type'), $this->arrayType);
+		$interStatus = array_intersect($this->request->getArray('status'), array('do', 'wish', 'collect', 'on_hold', 'dropped'));
 		$rate = explode(',', $this->request->get('rate'));
-		if($rate[0]<=$rate[1] && $rate[0]>=0 && $rate[1]<=10)
-		{
-			$queryNum->where('rate>='.$rate[0].' AND rate<='.$rate[1]);
-			$queryRow->where('rate>='.$rate[0].' AND rate<='.$rate[1]);
-		}
+		$minRate = ($rate[0]<=$rate[1] && $rate[0]>=0) ? $rate[0] : '0';
+		$maxRate = ($rate[0]<=$rate[1] && $rate[1]<=10) ? $rate[1] : '10';
 
-		$num = $this->_db->fetchObject($queryNum)->num;
+		$query = $this->_db->select(array('COUNT(table.collection.id)' => 'num'))->from('table.collection')->where('grade>=1');
+		$query->where('class='.implode(' OR class=', $interClass));
+		$query->where("type='".implode("' OR type='", $interType)."'");
+		$query->where("status='".implode("' OR status='", $interStatus)."'");
+		$query->where('rate>='.$minRate.' AND rate<='.$maxRate);
+
+		$num = $this->_db->fetchObject($query)->num;
 		if(!$num)
 			$this->response->throwJson(array('result' => false, 'message' => '存在0条记录'));
 		else
 		{
+			$query = $this->_db->select()->from('table.collection')->where('grade>=1');
+			$query->where('class='.implode(' OR class=', $interClass));
+			$query->where("type='".implode("' OR type='", $interType)."'");
+			$query->where("status='".implode("' OR status='", $interStatus)."'");
+			$query->where('rate>='.$minRate.' AND rate<='.$maxRate);
 			if(in_array($this->request->get('orderby'), array('id', 'rate', 'time_touch', 'time_start', 'time_finish')) && in_array($this->request->get('order'), array('DESC', 'ASC')))
-				$queryRow->order($this->request->get('orderby'), $this->request->get('order'));
+				$query->order($this->request->get('orderby'), $this->request->get('order'));
 
-			$rows = $this->_db->fetchAll($queryRow);
+			$rows = $this->_db->fetchAll($query);
 			$this->response->throwJson(array('result' => true, 'count' => $num, 'list' => $rows));
 		}
 	}
@@ -158,7 +148,7 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 		if(!$this->request->get('name'))
 			$this->response->throwJson(array('success' => false, 'message' => '必须输入名称'));
 
-		if(!filter_var($this->request->get('image'), FILTER_VALIDATE_URL))
+		if(!filter_var($this->request->get('image'), FILTER_VALIDATE_URL) && !is_null($this->request->get('image')))
 			$this->response->throwJson(array('success' => false, 'message' => '图片地址错误'));
 
 		if((!is_null($this->request->get('ep_status')) || !is_null($this->request->get('ep_count'))) && (!is_numeric($this->request->ep_status) || !is_numeric($this->request->ep_count) || $this->request->ep_status<0 || $this->request->ep_count<0 || ($this->request->ep_count>0 && $this->request->ep_status>$this->request->ep_count)))
@@ -167,7 +157,7 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 		if((!is_null($this->request->get('sp_status')) || !is_null($this->request->get('sp_count'))) && (!is_numeric($this->request->sp_status) || !is_numeric($this->request->sp_count) || $this->request->sp_status<0 || $this->request->sp_count<0 || ($this->request->sp_count>0 && $this->request->sp_status>$this->request->sp_count)))
 			$this->response->throwJson(array('success' => false, 'message' => '请输入正确的特典进度'));
 
-		if(!in_array($this->request->get('source'), array('Collection', 'Bangumi', 'Douban')))
+		if(!in_array($this->request->get('source'), array('Collection', 'Bangumi', 'Douban', 'Wandoujia')))
 			$this->response->throwJson(array('success' => false, 'message' => '来源信息错误'));
 
 		if($this->request->get('parent') && !is_numeric($this->request->parent) && $this->_db->fetchRow($this->_db->select()->from('table.collection')->where('id = ?', $this->request->parent)))
@@ -202,6 +192,7 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 		if(($this->request->ep_count > 0 && $this->request->ep_count == $this->request->ep_status) && (is_null($this->request->sp_count) || ($this->request->sp_count > 0 && $this->request->sp_count == $this->request->sp_status)))
 		{
 			$row['status'] = 'collect';
+			$row['time_finish'] = Typecho_Date::gmtTime();
 			$json['status'] = 'collect';
 		}
 		else
@@ -377,7 +368,7 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 												$row['tags'] = implode(' ', $response['genres']);
 											if(isset($response['subtype']) && $response['subtype'] && in_array($response['subtype'], array('movie', 'tv')))
 											{
-												$dictVideoType = array('movie' => 'Movie', 'tv' => 'Teleplay');
+												$dictVideoType = array('movie' => 'Film', 'tv' => 'Teleplay');
 												$row['type'] = $dictVideoType[$response['subtype']];
 											}
 											if(isset($response['episodes_count']) && $response['episodes_count'])
@@ -453,6 +444,10 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 					case 'Douban':
 						$image = $this->request->douban_image;
 						$subject_id = $this->request->douban_id;
+						break;
+					case 'Wandoujia':
+						$image = $this->request->wandoujia_image;
+						$subject_id = $this->request->wandoujia_id;
 						break;
 					case 'Collection':
 					default:
@@ -729,7 +724,8 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 		$arraySource = array(
 			'Collection' => '手动输入 封面： <input type="text" class="text-s mono w-50" name="collection_image">',
 			'Bangumi' => 'Bangumi ID： <input type="text" class="text-s mono w-30" name="bangumi_id"> 封面： <input type="text" class="text-s mono w-50" name="bangumi_image">',
-			'Douban' => '豆瓣 ID： <input type="text" class="text-s mono w-30" name="douban_image"> 封面： <input type="text" class="text-s mono w-50" name="douban_id">'
+			'Douban' => '豆瓣 ID： <input type="text" class="text-s mono w-30" name="douban_image"> 封面： <input type="text" class="text-s mono w-50" name="douban_id">',
+			'Douban' => '豌豆荚 ID： <input type="text" class="text-s mono w-30" name="wandoujia_image"> 封面： <input type="text" class="text-s mono w-50" name="wandoujia_id">'
 		);
 		$source = new Typecho_Widget_Helper_Form_Element_Radio('source', $arraySource, 'Collection', '信息来源');
 		$source->addRule('required', '必须选择来源');

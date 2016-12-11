@@ -188,7 +188,7 @@ $(document).ready(function(){
 					}
 					tempHTML += '</div>'
 						+ '<div class="Collection-subject-review">'
-							+ '<div><i>评价：</i></div>'
+							+ '<div><i>评价：</i>'+'<span class="Collection-subject-rate-star Collection-subject-rate-star-rating"></span>'.repeat(subject.rate)+'<span class="Collection-subject-rate-star Collection-subject-rate-star-blank"></span>'.repeat(10-subject.rate)+'</div>'
 							+ '<div><i>标签：</i><span>'+(subject.tags ? subject.tags : '无')+'</span></div>'
 							+ '<div><i>吐槽：</i><span>'+(subject.comment ? subject.comment : '无')+'</span></div>'
 						+ '</div>'
