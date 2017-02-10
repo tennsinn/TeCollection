@@ -22,12 +22,20 @@ $dictClass = array(1 => '书籍', 2 => '动画', 3 => '音乐', 4 => '游戏', 5
 
 $dictType = array(
 	'Mix' => '混合', 'Series' => '系列',
-	'Novel' => '小说', 'Comic' => '漫画', 'Doujinshi' => '同人志', 'Textbook' => '课本',
+	'Novel' => '小说', 'Comic' => '漫画', 'Doujinshi' => '同人志', 'Textbook' => '教材',
 	'TV' => 'TV', 'OVA' => 'OVA', 'OAD' => 'OAD', 'Movie' => '剧场',
 	'Album' => '专辑', 'Single' => '单曲', 'Maxi' => 'Maxi', 'EP' => '细碟', 'Selections' => '选集',
-	'iOS' => 'iOS', 'Android' => 'Android', 'PSP' => 'PSP', 'PSV' => 'PSV', 'PS' => 'PS', 'NDS' => 'NDS', '3DS' => '3DS', 'XBox' => 'XBox', 'Windows' => 'Windows', 'Online' => '网游', 'Table' => '桌游', 
+	'iOS' => 'iOS', 'Android' => 'Android', 'PSP' => 'PSP', 'PSV' => 'PSV', 'PS4' => 'PS4', 'NDS' => 'NDS', '3DS' => '3DS', 'NSwitch' => 'NSwitch', 'XBox' => 'XBox', 'Windows' => 'Windows', 'Online' => '网游', 'Table' => '桌游', 
 	'RadioDrama' => '广播剧', 'Drama' => '歌剧',
 	'Film' => '电影', 'Teleplay' => '电视剧', 'Documentary' => '纪录片', 'TalkShow' => '脱口秀', 'VarietyShow' => '综艺'
+);
+
+$dictSource = array(
+	'Bangumi' => array('name' => 'Bangumi', 'url' => 'http://bangumi.tv/subject/'),
+	'Douban' => array('name' => '豆瓣', 'url' => 'https://www.douban.com/subject/'),
+	'Steam' => array('name' => 'Steam', 'url' => 'http://store.steampowered.com/app/'),
+	'Wandoujia' => array('name' => '豌豆荚', 'url' => 'http://www.wandoujia.com/apps/'),
+	'TapTap' => array('name' => 'TapTap', 'url' => 'https://www.taptap.com/app/')
 );
 ?>
 
@@ -37,12 +45,19 @@ $dictType = array(
 var dictClass = {1:'书籍', 2:'动画', 3:'音乐', 4:'游戏', 5:'广播', 6:'影视'};
 var dictType = {
 	0:{'Mix':'混合', 'Series':'系列'},
-	1:{'Novel':'小说', 'Comic':'漫画', 'Doujinshi':'同人志', 'Textbook':'课本'},
+	1:{'Novel':'小说', 'Comic':'漫画', 'Doujinshi':'同人志', 'Textbook':'教材'},
 	2:{'TV':'TV', 'OVA':'OVA', 'OAD':'OAD', 'Movie':'剧场'},
 	3:{'Album':'专辑', 'Single':'单曲', 'Maxi':'Maxi', 'EP':'细碟', 'Selections':'选集'},
-	4:{'iOS':'iOS', 'Android':'Android', 'PSP':'PSP', 'PSV':'PSV', 'PS':'PS', 'NDS':'NDS', '3DS':'3DS', 'XBox':'XBox', 'Windows':'Windows', 'Online':'网游', 'Table':'桌游'}, 
+	4:{'iOS':'iOS', 'Android':'Android', 'PSP':'PSP', 'PSV':'PSV', 'PS4':'PS4', 'NDS':'NDS', '3DS':'3DS', 'NSwitch':'NSwitch', 'XBox':'XBox', 'Windows':'Windows', 'Online':'网游', 'Table':'桌游'}, 
 	5:{'RadioDrama':'广播剧', 'Drama':'歌剧'},
 	6:{'Film':'电影', 'Teleplay':'电视剧', 'Documentary':'纪录片', 'TalkShow':'脱口秀', 'VarietyShow':'综艺'}
+};
+var dictSource = {
+	'Bangumi' : {'name' : 'Bangumi', 'url' : 'http://bangumi.tv/subject/'},
+	'Douban' : {'name' : '豆瓣', 'url' : 'https://www.douban.com/subject/'},
+	'Steam' : {'name' : 'Steam', 'url' : 'http://store.steampowered.com/app/'},
+	'Wandoujia' : {'name' : '豌豆荚', 'url' : 'http://www.wandoujia.com/apps/'},
+	'TapTap' : {'name' : 'TapTap', 'url' : 'https://www.taptap.com/app/'}
 };
 </script>
 <div class="main">
@@ -77,12 +92,18 @@ var dictType = {
 										</ul>
 									</div>
 								</div>
+								<div class="search" role="search">
+									<input type="hidden" value="Collection/Panel.php" name="panel">
+									<input type="hidden" value="manage" name="do">
+									<input type="hidden" value="<?php echo $class; ?>" name="class">
+									<input type="hidden" value="<?php echo $status; ?>" name="status">
+									<?php if ('' != $request->keywords || '' != $request->category): ?>
+                            			<a href="<?php $options->adminUrl('extending.php?panel=Collection%2FPanel.php' . (isset($request->class) ? '?class=' . htmlspecialchars($request->get('class')) : '') . (isset($request->status) ? '?status=' . htmlspecialchars($request->get('status')) : '')); ?>"><?php _e('&laquo; 取消筛选'); ?></a>
+                            		<?php endif; ?>
+									<input type="text" class="text-s" placeholder="<?php _e('请输入关键字'); ?>" value="<?php echo htmlspecialchars($request->keywords); ?>"<?php if ('' == $request->keywords): ?> onclick="value='';name='keywords';" <?php else: ?> name="keywords"<?php endif; ?>>
+									<button type="submit" class="btn-s"><?php _e('搜索'); ?></button>
+								</div>
 							</form>
-							<?php if($response['result']): ?>
-								<ul class="typecho-pager">
-									<?php $response['nav']->render(_t('&laquo;'), _t('&raquo;')); ?>
-								</ul>
-							<?php endif; ?>
 						</div>
 						<form method="post" class="operate-form">
 							<div class="typecho-table-wrap">
@@ -114,24 +135,8 @@ var dictType = {
 														<div class="Collection-subject-name">
 															<i class="Collection-subject-class-ico Collection-subject-class-<?php echo $subject['class']; ?>"></i>
 															<?php
-																if($subject['source'] != 'Collection')
-																{
-																	echo '<a href="';
-																	switch($subject['source'])
-																	{
-																		case 'Bangumi':
-																			echo 'http://bangumi.tv/subject/';
-																			break;
-																		case 'Douban':
-																			$dictDoubanClass = array('1' => 'book', '3' => 'music', '6' => 'movie');
-																			echo 'http://'.$dictDoubanClass[$subject['class']].'.douban.com/subject/';
-																			break;
-																		case 'Wandoujia':
-																			echo 'http://www.wandoujia.com/apps/';
-																			break;
-																	}
-																	echo $subject['subject_id'].'" target="_blank">'.$subject['name'].'</a>';
-																}
+																if(array_key_exists($subject['source'], $dictSource))
+																	echo '<a href="'.$dictSource[$subject['source']]['url'].$subject['subject_id'].'" target="_blank">'.$subject['name'].'</a>';
 																else
 																	echo $subject['name'];
 															?>
@@ -276,7 +281,9 @@ var dictType = {
 										+ '<option value="Collection">收藏</option>'
 										+ '<option value="Bangumi">Bangumi</option>'
 										+ '<option value="Douban">豆瓣</option>'
+										+ '<option value="Steam">Steam</option>'
 										+ '<option value="Wandoujia">豌豆荚</option>'
+										+ '<option value="TapTap">TapTap</option>'
 									+ '</select></p>'
 									+ '<p><label for="'+id+'-subject_id">来源ID</label><input class="text-s" type="text" id="'+id+'-subject_id" name="subject_id"></p>'
 									+ '</form></td>'
@@ -375,36 +382,8 @@ var dictType = {
 											$('.Collection-subject-image', oldTr).html('<img src="'+(subject.image ? subject.image : '<?php $options->pluginUrl('Collection/template/default_cover.jpg'); ?>')+'" width="100px">');
 											$('.Collection-subject-type', oldTr).html(dictClass[subject.class]+'/'+(subject.type=='Mix'||subject.type=='Series' ? dictType[0][subject.type] : dictType[subject.class][subject.type]));
 											var tempHTML = '<i class="Collection-subject-class-ico Collection-subject-class-'+subject.class+'"></i>';
-											if(subject.source != 'Collection')
-											{
-												tempHTML += '<a href="';
-												switch(subject.source)
-												{
-													case 'Bangumi':
-														tempHTML += 'http://bangumi.tv/subject/';
-														break;
-													case 'Douban':
-														tempHTML += 'http://';
-														switch(subject.class)
-														{
-															case '1':
-																tempHTML += 'book';
-																break;
-															case '3':
-																tempHTML += 'music';
-																break;
-															case '6':
-																tempHTML += 'movie';
-																break;
-														}
-														tempHTML += '.douban.com/subject/'
-														break;
-													case 'Wandoujia':
-														tempHTML += 'http://www.wandoujia.com/apps/';
-														break;
-												}
-												tempHTML += subject.subject_id+'" target="_blank">'+subject.name+'</a>';
-											}
+											if(dictSource.hasOwnProperty(subject.source))
+												tempHTML += '<a href="' + dictSource[subject.source]['url'] + subject.subject_id + '" target="_blank">' + subject.name + '</a>';
 											else
 												tempHTML += subject.name;
 											$('.Collection-subject-name', oldTr).html(tempHTML);

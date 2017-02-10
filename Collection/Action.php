@@ -26,7 +26,7 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 		'Novel', 'Comic', 'Doujinshi', 'Textbook',
 		'TV', 'OVA', 'OAD', 'Movie',
 		'Album', 'Single', 'Maxi', 'EP', 'Selections',
-		'iOS', 'Android', 'PSP', 'PSV', 'PS', 'NDS', '3DS', 'XBox', 'Windows', 'Online', 'Table', 
+		'iOS', 'Android', 'PSP', 'PSV', 'PS4', 'NDS', '3DS', 'NSwitch', 'XBox', 'Windows', 'Online', 'Table', 
 		'RadioDrama', 'Drama',
 		'Film', 'Teleplay', 'Documentary', 'TalkShow', 'VarietyShow'
 	);
@@ -157,7 +157,7 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 		if((!is_null($this->request->get('sp_status')) || !is_null($this->request->get('sp_count'))) && (!is_numeric($this->request->sp_status) || !is_numeric($this->request->sp_count) || $this->request->sp_status<0 || $this->request->sp_count<0 || ($this->request->sp_count>0 && $this->request->sp_status>$this->request->sp_count)))
 			$this->response->throwJson(array('success' => false, 'message' => '请输入正确的特典进度'));
 
-		if(!in_array($this->request->get('source'), array('Collection', 'Bangumi', 'Douban', 'Wandoujia')))
+		if(!in_array($this->request->get('source'), array('Collection', 'Bangumi', 'Douban', 'Steam', 'Wandoujia', 'TapTap')))
 			$this->response->throwJson(array('success' => false, 'message' => '来源信息错误'));
 
 		if($this->request->get('parent') && !is_numeric($this->request->parent) && $this->_db->fetchRow($this->_db->select()->from('table.collection')->where('id = ?', $this->request->parent)))
@@ -189,7 +189,7 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 			'comment' => $this->request->comment
 		);
 		$json = array('result' => true, 'message' => '修改成功');
-		if(($this->request->ep_count > 0 && $this->request->ep_count == $this->request->ep_status) && (is_null($this->request->sp_count) || ($this->request->sp_count > 0 && $this->request->sp_count == $this->request->sp_status)))
+		if($this->request->status == 'do' && ($this->request->ep_count > 0 && $this->request->ep_count == $this->request->ep_status) && (is_null($this->request->sp_count) || ($this->request->sp_count > 0 && $this->request->sp_count == $this->request->sp_status)))
 		{
 			$row['status'] = 'collect';
 			$row['time_finish'] = Typecho_Date::gmtTime();
@@ -435,25 +435,6 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 				$this->widget('Widget_Notice')->set('当前记录已存在', 'notice');
 			else
 			{
-				switch($this->request->source)
-				{
-					case 'Bangumi':
-						$image = $this->request->bangumi_image;
-						$subject_id = $this->request->bangumi_id;
-						break;
-					case 'Douban':
-						$image = $this->request->douban_image;
-						$subject_id = $this->request->douban_id;
-						break;
-					case 'Wandoujia':
-						$image = $this->request->wandoujia_image;
-						$subject_id = $this->request->wandoujia_id;
-						break;
-					case 'Collection':
-					default:
-						$image = $this->request->collection_image;
-						$subject_id = NULL;
-				}
 				$progress = $this->request->getArray('progress');
 				if(in_array('ep_progress', $progress))
 				{
@@ -492,11 +473,11 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 						'type' => $this->request->type,
 						'name' => $this->request->name,
 						'name_cn' => $this->request->name_cn,
-						'image' => $image,
+						'image' => $this->request->image,
 						'ep_count' => $ep_count,
 						'sp_count' => $sp_count,
 						'source' => $this->request->source,
-						'subject_id' => $subject_id,
+						'subject_id' => $this->request->subject_id,
 						'parent' => $this->request->parent,
 						'grade' => $this->request->grade,
 						'status' => $this->request->status,
@@ -527,28 +508,36 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 		$status = isset($this->request->status) ? $this->request->get('status') : 'do';
 		$class = isset($this->request->class) ? $this->request->get('class') : 0;
 		$type = isset($this->request->type) ? $this->request->get('type') : 'all';
-		$query = $this->_db->select(array('COUNT(table.collection.id)' => 'num'))->from('table.collection');
+		$query = $this->_db->select()->from('table.collection');
 		if($status != 'all')
 			$query->where('status = ?', $status);
 		if($class != 0)
 			$query->where('class = ?', $class);
 		if($type != 'all')
 			$query->where('type = ?', $type);
-		$num = $this->_db->fetchObject($query)->num;
-		if(!$num)
+		if(NULL != ($keywords = $this->request->filter('search')->keywords))
+		{
+			$args = array();
+			$keywordsList = explode(' ', $keywords);
+			$args[] = implode(' AND ', array_fill(0, count($keywordsList), 'table.collection.name OR table.collection.name_cn LIKE ?'));
+			foreach($keywordsList as $keyword)
+			{
+				$args[] = '%' . $keyword . '%';
+			}
+			call_user_func_array(array($query, 'where'), $args);
+		}
+		$queryNum = clone $query;
+		$num = $this->_db->fetchObject($queryNum->select(array('COUNT(table.collection.id)' => 'num')))->num;
+		if($num)
+		{
+			$page = isset($this->request->page) ? $this->request->get('page') : 1;
+			$rows = $this->_db->fetchAll($query->order('time_touch', Typecho_Db::SORT_DESC)->page($page, $pageSize));
+			$query = $this->request->makeUriByRequest('page={page}');
+			$nav = new Typecho_Widget_Helper_PageNavigator_Box($num, $page, $pageSize, $query);
+			return array('result' => true, 'list' => $rows, 'nav' => $nav);
+		}
+		else
 			return array('result' => false, 'message' => '存在0条记录');
-		$page = isset($this->request->page) ? $this->request->get('page') : 1;
-		$query = $this->_db->select()->from('table.collection')->order('time_touch', Typecho_Db::SORT_DESC)->page($page, $pageSize);
-		if($status != 'all')
-			$query->where('status = ?', $status);
-		if($class != 0)
-			$query->where('class = ?', $class);
-		if($type != 'all')
-			$query->where('type = ?', $type);
-		$rows = $this->_db->fetchAll($query);
-		$query = $this->request->makeUriByRequest('page={page}');
-		$nav = new Typecho_Widget_Helper_PageNavigator_Box($num, $page, $pageSize, $query);
-		return array('result' => true, 'list' => $rows, 'nav' => $nav);
 	}
 
 	/**
@@ -557,7 +546,7 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 	 * @param  integer $pageSize 分页大小
 	 * @return array
 	 */
-	public function search($pageSize=10)
+	public function search($pageSize=20)
 	{
 		if(!isset($this->request->keywords))
 			return array('result' => false, 'message' => '请输入关键字');
@@ -714,22 +703,24 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 
 		$name = new Typecho_Widget_Helper_Form_Element_Text('name', NULL, NULL, '名称 *');
 		$name->addRule('required', '必须填写记录名称');
-		$name->input->setAttribute('class', 'w-40 mono');
+		$name->input->setAttribute('class', 'text-s w-40');
 		$form->addInput($name);
 
 		$name_cn = new Typecho_Widget_Helper_Form_Element_Text('name_cn', NULL, NULL, '译名');
-		$name_cn->input->setAttribute('class', 'w-40 mono');
+		$name_cn->input->setAttribute('class', 'text-s w-40');
 		$form->addInput($name_cn);
 
-		$arraySource = array(
-			'Collection' => '手动输入 封面： <input type="text" class="text-s mono w-50" name="collection_image">',
-			'Bangumi' => 'Bangumi ID： <input type="text" class="text-s mono w-30" name="bangumi_id"> 封面： <input type="text" class="text-s mono w-50" name="bangumi_image">',
-			'Douban' => '豆瓣 ID： <input type="text" class="text-s mono w-30" name="douban_image"> 封面： <input type="text" class="text-s mono w-50" name="douban_id">',
-			'Douban' => '豌豆荚 ID： <input type="text" class="text-s mono w-30" name="wandoujia_image"> 封面： <input type="text" class="text-s mono w-50" name="wandoujia_id">'
-		);
-		$source = new Typecho_Widget_Helper_Form_Element_Radio('source', $arraySource, 'Collection', '信息来源');
+		$arraySource = array('Collection' => '无来源', 'Bangumi' => 'Bangumi', 'Douban' => '豆瓣', 'wandoujia' => '豌豆荚', 'Steam' => 'Steam', 'TapTap' => 'TapTap');
+		$source = new Typecho_Widget_Helper_Form_Element_Select('source', $arraySource, 'Collection', '信息来源');
 		$source->addRule('required', '必须选择来源');
-		$form->addInput($source->multiMode());
+		$form->addInput($source);
+
+		$subject_id = new Typecho_Widget_Helper_Form_Element_Text('subject_id', NULL, NULL, '来源ID');
+		$subject_id->input->setAttribute('class', 'text-s w-30');
+		$form->addInput($subject_id);
+
+		$image = new Typecho_Widget_Helper_Form_Element_Text('image', NULL, NULL, '封面地址');
+		$form->addInput($image);
 
 		$arrayProgress = array(
 			'ep_progress' => '输入进度一：<input type="text" class="text-s num mono" name="ep_status"> / <input type="text" class="text num text-s" name="ep_count"> ',
@@ -759,6 +750,7 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 		$form->addInput($rate);
 
 		$tags = new Typecho_Widget_Helper_Form_Element_Text('tags', NULL, NULL, '标签', '请使用空格分隔');
+		$tags->input->setAttribute('class', 'text-s');
 		$form->addInput($tags);
 
 		$comment = new Typecho_Widget_Helper_Form_Element_Textarea('comment', NULL, NULL, '评论');
