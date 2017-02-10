@@ -83,10 +83,10 @@ var dictSource = {
 								<div class="operate">
 									<label><i class="sr-only"><?php _e('全选'); ?></i><input type="checkbox" class="typecho-table-select-all" /></label>
 									<div class="btn-group btn-drop">
-										<button class="dropdown-toggle btn-s" type="button"><?php _e('<i class="sr-only">操作</i>选中项'); ?> <i class="i-caret-down"></i></button>
+										<button class="btn dropdown-toggle btn-s" type="button"><?php _e('<i class="sr-only">操作</i>选中项'); ?> <i class="i-caret-down"></i></button>
 										<ul class="dropdown-menu">
 											<?php foreach(array('do', 'collect', 'wish', 'on_hold', 'dropped') as $value): ?>
-												<li><a lang="<?php _e('你确认要修改这些记录到'.$arrayClassStatus[$value][$class].'吗?'); ?>" href="<?php $options->index('/action/collection?do=editStatus&&status='.$value); ?>"><?php _e('修改到'.$arrayClassStatus[$value][$class]); ?></a></li>
+												<li><a lang="<?php _e('你确认要修改这些记录到'.$arrayClassStatus[$value][$class].'吗?'); ?>" href="<?php $options->index('/action/collection?do=editStatus&status='.$value); ?>"><?php _e('修改到'.$arrayClassStatus[$value][$class]); ?></a></li>
 											<?php endforeach; ?>
 											<li><a lang="<?php _e('你确认要删除记录中的这些记录吗?'); ?>" href="<?php $options->index('/action/collection?do=editStatus&status=delete'); ?>"><?php _e('删除记录'); ?></a></li>
 										</ul>
@@ -97,11 +97,29 @@ var dictSource = {
 									<input type="hidden" value="manage" name="do">
 									<input type="hidden" value="<?php echo $class; ?>" name="class">
 									<input type="hidden" value="<?php echo $status; ?>" name="status">
-									<?php if ('' != $request->keywords || '' != $request->category): ?>
-                            			<a href="<?php $options->adminUrl('extending.php?panel=Collection%2FPanel.php' . (isset($request->class) ? '?class=' . htmlspecialchars($request->get('class')) : '') . (isset($request->status) ? '?status=' . htmlspecialchars($request->get('status')) : '')); ?>"><?php _e('&laquo; 取消筛选'); ?></a>
+									<?php if ('' != $request->keywords || '' != $request->field): ?>
+                            			<a href="<?php $options->adminUrl('extending.php?panel=Collection%2FPanel.php' . (isset($request->class) ? '&class=' . htmlspecialchars($request->get('class')) : '') . (isset($request->status) ? '&status=' . htmlspecialchars($request->get('status')) : '')); ?>"><?php _e('&laquo; 取消筛选'); ?></a>
                             		<?php endif; ?>
+                            		<label>搜索</label>
 									<input type="text" class="text-s" placeholder="<?php _e('请输入关键字'); ?>" value="<?php echo htmlspecialchars($request->keywords); ?>"<?php if ('' == $request->keywords): ?> onclick="value='';name='keywords';" <?php else: ?> name="keywords"<?php endif; ?>>
-									<button type="submit" class="btn-s"><?php _e('搜索'); ?></button>
+									<select name="field">
+										<option value="name"<?php if($request->get('field') == 'name'): ?> selected="true"<?php endif; ?>>名称</option>
+										<option value="tags"<?php if($request->get('field') == 'tags'): ?> selected="true"<?php endif; ?>>标签</option>
+										<option value="comment"<?php if($request->get('field') == 'comment'): ?> selected="true"<?php endif; ?>>吐槽</option>
+									</select>
+									<label>排序</label>
+									<select name="orderby">
+										<option value="id"<?php if($request->get('orderby') == 'id'): ?> selected="true"<?php endif; ?>>ID</option>
+										<option value="rate"<?php if($request->get('orderby') == 'rate'): ?> selected="true"<?php endif; ?>>评价</option>
+										<option value="time_touch"<?php if($request->get('orderby') == 'time_touch'): ?> selected="true"<?php endif; ?>>最后修改</option>
+										<option value="time_start"<?php if($request->get('orderby') == 'time_start'): ?> selected="true"<?php endif; ?>>开始时间</option>
+										<option value="time_finish"<?php if($request->get('orderby') == 'time_finish'): ?> selected="true"<?php endif; ?>>完成时间</option>
+									</select>
+									<select name="order">
+										<option value="DESC"<?php if($request->get('order') == 'DESC'): ?> selected="true"<?php endif; ?>>降序</option>
+										<option value="ASC"<?php if($request->get('order') == 'ASC'): ?> selected="true"<?php endif; ?>>升序</option>
+									</select>
+									<button type="submit" class="btn btn-s"><?php _e('筛选'); ?></button>
 								</div>
 							</form>
 						</div>
@@ -133,7 +151,7 @@ var dictSource = {
 													</td>
 													<td class="Collection-subject-meta">
 														<div class="Collection-subject-name">
-															<i class="Collection-subject-class-ico Collection-subject-class-<?php echo $subject['class']; ?>"></i>
+															<i class="Collection-subject-class-ico Collection-subject-class-<?php echo $subject['class']; ?>"></i><small>(#<?php echo $subject['id']; ?>)</small>
 															<?php
 																if(array_key_exists($subject['source'], $dictSource))
 																	echo '<a href="'.$dictSource[$subject['source']]['url'].$subject['subject_id'].'" target="_blank">'.$subject['name'].'</a>';

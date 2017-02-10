@@ -45,28 +45,24 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 		$minRate = ($rate[0]<=$rate[1] && $rate[0]>=0) ? $rate[0] : '0';
 		$maxRate = ($rate[0]<=$rate[1] && $rate[1]<=10) ? $rate[1] : '10';
 
-		$query = $this->_db->select(array('COUNT(table.collection.id)' => 'num'))->from('table.collection')->where('grade>=1');
+		$query = $this->_db->select()->from('table.collection')->where('grade = ?', 1);
 		$query->where('class='.implode(' OR class=', $interClass));
 		$query->where("type='".implode("' OR type='", $interType)."'");
 		$query->where("status='".implode("' OR status='", $interStatus)."'");
 		$query->where('rate>='.$minRate.' AND rate<='.$maxRate);
 
-		$num = $this->_db->fetchObject($query)->num;
-		if(!$num)
-			$this->response->throwJson(array('result' => false, 'message' => '存在0条记录'));
-		else
+		$queryNum = clone $query;
+		
+		$num = $this->_db->fetchObject($queryNum->select(array('COUNT(table.collection.id)' => 'num')))->num;
+		if($num)		
 		{
-			$query = $this->_db->select()->from('table.collection')->where('grade>=1');
-			$query->where('class='.implode(' OR class=', $interClass));
-			$query->where("type='".implode("' OR type='", $interType)."'");
-			$query->where("status='".implode("' OR status='", $interStatus)."'");
-			$query->where('rate>='.$minRate.' AND rate<='.$maxRate);
 			if(in_array($this->request->get('orderby'), array('id', 'rate', 'time_touch', 'time_start', 'time_finish')) && in_array($this->request->get('order'), array('DESC', 'ASC')))
 				$query->order($this->request->get('orderby'), $this->request->get('order'));
-
 			$rows = $this->_db->fetchAll($query);
 			$this->response->throwJson(array('result' => true, 'count' => $num, 'list' => $rows));
 		}
+		else
+			$this->response->throwJson(array('result' => false, 'message' => '存在0条记录'));
 	}
 
 	/**
@@ -508,6 +504,7 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 		$status = isset($this->request->status) ? $this->request->get('status') : 'do';
 		$class = isset($this->request->class) ? $this->request->get('class') : 0;
 		$type = isset($this->request->type) ? $this->request->get('type') : 'all';
+		$field = isset($this->request->field) ? $this->request->get('field') : 'name';
 		$query = $this->_db->select()->from('table.collection');
 		if($status != 'all')
 			$query->where('status = ?', $status);
@@ -519,7 +516,20 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 		{
 			$args = array();
 			$keywordsList = explode(' ', $keywords);
-			$args[] = implode(' AND ', array_fill(0, count($keywordsList), 'table.collection.name OR table.collection.name_cn LIKE ?'));
+			switch($field)
+			{
+				case 'tags':
+					$args[] = implode(' AND ', array_fill(0, count($keywordsList), 'table.collection.tags LIKE ?'));
+					break;
+				case 'comment':
+					$args[] = implode(' AND ', array_fill(0, count($keywordsList), 'table.collection.comment LIKE ?'));
+					break;
+				case 'name':
+				default:
+					$args[] = implode(' AND ', array_fill(0, count($keywordsList), 'CONCAT(table.collection.name,table.collection.name_cn) LIKE ?'));
+					break;
+			}
+			
 			foreach($keywordsList as $keyword)
 			{
 				$args[] = '%' . $keyword . '%';
@@ -531,7 +541,11 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 		if($num)
 		{
 			$page = isset($this->request->page) ? $this->request->get('page') : 1;
-			$rows = $this->_db->fetchAll($query->order('time_touch', Typecho_Db::SORT_DESC)->page($page, $pageSize));
+			if(in_array($orderby = $this->request->get('orderby'), array('id', 'rate', 'time_touch', 'time_start', 'time_finish')) && in_array($order = $this->request->get('order'), array('DESC', 'ASC')))
+				$query->order($orderby, $order);
+			else
+				$query->order('time_touch', Typecho_Db::SORT_DESC);
+			$rows = $this->_db->fetchAll($query->page($page, $pageSize));
 			$query = $this->request->makeUriByRequest('page={page}');
 			$nav = new Typecho_Widget_Helper_PageNavigator_Box($num, $page, $pageSize, $query);
 			return array('result' => true, 'list' => $rows, 'nav' => $nav);

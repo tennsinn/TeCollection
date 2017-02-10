@@ -4,7 +4,7 @@
  * 
  * @package Collection
  * @author 息E-敛
- * @version 1.4.6
+ * @version 1.4.7
  * @link http://tennsinn.com
  */
 class Collection_Plugin implements Typecho_Plugin_Interface
