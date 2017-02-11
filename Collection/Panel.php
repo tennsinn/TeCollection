@@ -106,6 +106,7 @@ var dictSource = {
 										<option value="name"<?php if($request->get('field') == 'name'): ?> selected="true"<?php endif; ?>>名称</option>
 										<option value="tags"<?php if($request->get('field') == 'tags'): ?> selected="true"<?php endif; ?>>标签</option>
 										<option value="comment"<?php if($request->get('field') == 'comment'): ?> selected="true"<?php endif; ?>>吐槽</option>
+										<option value="note"<?php if($request->get('field') == 'note'): ?> selected="true"<?php endif; ?>>备注</option>
 									</select>
 									<label>排序</label>
 									<select name="orderby">
@@ -192,6 +193,7 @@ var dictSource = {
 														?>
 													</td>
 													<td class="Collection-subject-review">
+														<p class="Collection-subject-note"><i>备注：</i><?php echo $subject['note'] ? $subject['note'] : '无'; ?></p>
 														<p class="Collection-subject-rate"><i>评价：</i><?php echo str_repeat('<span class="Collection-subject-rate-star Collection-subject-rate-star-rating"></span>', $subject['rate']); echo str_repeat('<span class="Collection-subject-rate-star Collection-subject-rate-star-blank"></span>', 10-$subject['rate']); ?></p>
 														<p class="Collection-subject-tags"><i>标签：</i><?php echo $subject['tags'] ? $subject['tags'] : '无'; ?></p>
 														<p class="Collection-subject-comment"><i>吐槽：</i><?php echo $subject['comment'] ? $subject['comment'] : '无'; ?></p>
@@ -308,7 +310,7 @@ var dictSource = {
 									+ '<td><form method="post" action="'+t.attr('rel')+'" class="Collection-subject-edit-info">'
 									+ '<p><label for="'+id+'-name">原名</label><input class="text-s" type="text" id="'+id+'-name" name="name"></p>'
 									+ '<p><label for="'+id+'-name_cn">译名</label><input class="text-s" type="text" id="'+id+'-name_cn" name="name_cn"></p>'
-									+ '<p><label for="'+id+'-parent">所属系列</label><select id="'+id+'-parent" name="parent" class="w-100"></select></p>'
+									+ '<p><label for="'+id+'-parent">关联记录</label><input class="text-s" type="text" id="'+id+'-parent" name="parent"></p>'
 									+ '<p><label for="'+id+'-ep_status">进度一进度</label><input class="text-s w-100" id="'+id+'-ep_status" name="ep_status" type="number" min="0" max="9999"></p>'
 									+ '<p><label for="'+id+'-ep_count">进度一总数</label><input class="text-s w-100" type="number" name="ep_count" id="'+id+'-ep_count" min="0" max="9999"></p>'
 									+ '<p><label for="'+id+'-sp_status">进度二进度</label><input class="text-s w-100" id="'+id+'-sp_status" name="sp_status" type="number" min="0" max="999"></p>'
@@ -318,6 +320,8 @@ var dictSource = {
 									+ '<p><label for="'+id+'-grade">显示分级</label>'
 									+ '<input type="radio" id="Collection-subject-'+id+'-edit-grade-0" name="grade" value="0" class="Collection-subject-edit-grade"><label for="Collection-subject-'+id+'-edit-grade-0">私密</label>'
 									+ '<input type="radio" id="Collection-subject-'+id+'-edit-grade-1" name="grade" value="1" class="Collection-subject-edit-grade"><label for="Collection-subject-'+id+'-edit-grade-1">公开</label></p>'
+									+ '<p><label for="'+id+'-note">备注</label>'
+									+ '<textarea name="note" id="'+id+'-note" rows="2" class="w-100 mono"></textarea></p>'
 									//+ '<p><label for="'+id+'-rate">评价：'
 										//+'<span class="Collection-subject-rate-star Collection-subject-rate-star-rating"></span>'.repeat(subject.rate)
 										//+'<span class="Collection-subject-rate-star Collection-subject-rate-star-blank"></span>'.repeat(10-subject.rate)
@@ -327,8 +331,8 @@ var dictSource = {
 									+ '<input class="text-s w-100" type="text" name="tags" id="'+id+'-tags"></p>'
 									+ '<p><label for="'+id+'-comment">吐槽</label>'
 									+ '<textarea name="comment" id="'+id+'-comment" rows="6" class="w-100 mono"></textarea></p>'
-									+ '<p><button type="submit" class="btn-s primary">提交</button>'
-									+ '<button type="button" class="btn-s cancel">取消</button></p>'
+									+ '<p><button type="submit" class="btn btn-s primary">提交</button>'
+									+ '<button type="button" class="btn btn-s cancel">取消</button></p>'
 									+ '</form></td>'
 									+ '</tr>';
 								var edit = $(string).data('id', id).data('subject', subject).insertAfter(tr);
@@ -340,23 +344,16 @@ var dictSource = {
 								$('input[name=subject_id]', edit).val(subject.subject_id);
 								$('input[name=name]', edit).val(subject.name);
 								$('input[name=name_cn]', edit).val(subject.name_cn);
-								$('select[name=parent]', edit).val(subject.parent);
+								$('input[name=parent]', edit).val(subject.parent);
 								$('input[name=ep_status]', edit).val(subject.ep_status);
 								$('input[name=ep_count]', edit).val(subject.ep_count);
 								$('input[name=sp_status]', edit).val(subject.sp_status);
 								$('input[name=sp_count]', edit).val(subject.sp_count);
 								$('input[name=grade][value="'+subject.grade+'"]', edit).attr("checked", true);
+								$('textarea[name=note]', edit).val(subject.note);
 								$('input[name=rate]', edit).val(subject.rate);
 								$('input[name=tags]', edit).val(subject.tags);
 								$('textarea[name=comment]', edit).val(subject.comment).focus();
-								$.post('<?php $options->index('/action/collection'); ?>', {'do': 'getSeries'}, function(data){
-									var tempHTML = '<option value="0">无</option>';
-									$.each(data, function(i, value){
-										tempHTML +='<option value="'+value['id']+'">'+value['name']+'</option>';
-									});
-									$('select[name=parent]', edit).html(tempHTML);
-									$('select[name=parent]', edit).val(subject.parent);
-								}, 'json');
 
 								$('select[name=class]', edit).change(function(){
 									var tempHTML = '';
@@ -426,6 +423,7 @@ var dictSource = {
 													stringProgress += '<div class="hidden-by-mouse"><small><a href="#'+subject.id+'" rel="<?php $options->index('/action/collection?do=plusEp&plus=sp'); ?>" class="Collection-subject-progress-plus" id="Collection-subject-'+subject.id+'-progress-sp-plus">sp.'+String(Number(subject.sp_status)+1)+'已'+arrayStatus[String(subject.class-1)]+'</a></small></div>';
 												$('#Collection-subject-'+subject.id+'-sp', oldTr).html(stringProgress);
 											}
+											$('.Collection-subject-note', oldTr).html('<i>备注：</i>'+(subject.note ? subject.note : '无'));
 											$('.Collection-subject-rate', oldTr).html('<i>评价：</i>'+ '<span class="Collection-subject-rate-star Collection-subject-rate-star-rating"></span>'.repeat(subject.rate)+'<span class="Collection-subject-rate-star Collection-subject-rate-star-blank"></span>'.repeat(10-subject.rate));
 											$('.Collection-subject-tags', oldTr).html('<i>标签：</i>'+(subject.tags ? subject.tags : '无'));
 											$('.Collection-subject-comment', oldTr).html('<i>吐槽：</i>'+(subject.comment ? subject.comment : '无'));
@@ -567,19 +565,10 @@ var dictSource = {
 						</div>
 						<script type="text/javascript">
 							$(document).ready(function(){
-								$.post('<?php $options->index('/action/collection'); ?>', {'do': 'getSeries'}, function(data){
-									var tempHTML = '<option value="0">无</option>';
-									$.each(data, function(i, value){
-										tempHTML +='<option value="'+value['id']+'">'+value['name']+'</option>';
-									});
-									$('select[name=parent]').html(tempHTML);
-								}, 'json');
-
 								$('input[name=class]').click(function(){
 									var tempHTML = '';
 									tempHTML = '<li><label class="typecho-label">类型</label>';
 									tempHTML += '<span><input name="type" type="radio" value="Mix" id="type-Mix" checked><label for="type-Mix">混合</label></span>';
-									tempHTML += '<span><input name="type" type="radio" value="Series" id="type-Series"><label for="type-Series">系列</label></span>';
 									$.each(dictType[$('input[name=class]:checked').val()], function(key, value){
 										tempHTML += '<span><input name="type" type="radio" value="'+key+'" id="type-'+key+'"><label for="type-'+key+'">'+value+'</label></span>';
 									});

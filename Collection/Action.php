@@ -22,7 +22,7 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 	}
 
 	private $arrayType = array(
-		'Mix', 'Series',
+		'Mix',
 		'Novel', 'Comic', 'Doujinshi', 'Textbook',
 		'TV', 'OVA', 'OAD', 'Movie',
 		'Album', 'Single', 'Maxi', 'EP', 'Selections',
@@ -63,18 +63,6 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 		}
 		else
 			$this->response->throwJson(array('result' => false, 'message' => '存在0条记录'));
-	}
-
-	/**
-	 * 获取系列条目
-	 *
-	 * @return void
-	 */
-	public function getSeries()
-	{
-		$query = $this->_db->select('id', 'name')->from('table.collection')->where("type='Series'")->order('id', Typecho_Db::SORT_DESC);
-		$rows = $this->_db->fetchAll($query);
-		$this->response->throwJson($rows);
 	}
 
 	/**
@@ -182,7 +170,8 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 			'sp_status' => $this->request->sp_status,
 			'rate' => $this->request->rate,
 			'tags' => $this->request->tags,
-			'comment' => $this->request->comment
+			'comment' => $this->request->comment,
+			'note' => $this->request->note
 		);
 		$json = array('result' => true, 'message' => '修改成功');
 		if($this->request->status == 'do' && ($this->request->ep_count > 0 && $this->request->ep_count == $this->request->ep_status) && (is_null($this->request->sp_count) || ($this->request->sp_count > 0 && $this->request->sp_count == $this->request->sp_status)))
@@ -322,8 +311,6 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 													$tags .= $item['name'].' ';
 												$row['tags'] = $tags;
 											}
-											if(isset($response['series']) && isset($response['series']['id']) && $row_temp = $this->_db->fetchRow($this->_db->select()->from('table.collection')->where("source='Douban'")->where('subject_id = ?', $response['series']['id'])))
-												$row['parent'] = $row_temp['id'];
 											break;
 										case '3':
 											$row = array(
@@ -484,7 +471,8 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 						'sp_status' => $sp_status,
 						'rate' => $this->request->rate,
 						'tags' => $this->request->tags,
-						'comment' => $this->request->comment
+						'comment' => $this->request->comment,
+						'note' => $this->request->note
 					)
 				));
 				$this->widget('Widget_Notice')->set('记录添加成功', 'success');
@@ -524,9 +512,12 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 				case 'comment':
 					$args[] = implode(' AND ', array_fill(0, count($keywordsList), 'table.collection.comment LIKE ?'));
 					break;
+				case 'note':
+					$args[] = implode(' AND ', array_fill(0, count($keywordsList), 'table.collection.note LIKE ?'));
+					break;
 				case 'name':
 				default:
-					$args[] = implode(' AND ', array_fill(0, count($keywordsList), 'CONCAT(table.collection.name,table.collection.name_cn) LIKE ?'));
+					$args[] = implode(' AND ', array_fill(0, count($keywordsList), 'CONCAT_WS(" ",table.collection.name,table.collection.name_cn) LIKE ?'));
 					break;
 			}
 			
@@ -707,10 +698,7 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 		$class->addRule('required', '必须选择分类');
 		$form->addInput($class);
 
-		$dictType = array(
-			'Mix' => '混合', 'Series' => '系列',
-			'Novel' => '小说', 'Comic' => '漫画', 'Doujinshi' => '同人志', 'Textbook' => '课本'
-		);
+		$dictType = array('Mix' => '混合', 'Novel' => '小说', 'Comic' => '漫画', 'Doujinshi' => '同人志', 'Textbook' => '课本');
 		$type = new Typecho_Widget_Helper_Form_Element_Radio('type', $dictType, 'Mix', '类型 *');
 		$type->addRule('required', '必须选择类型');
 		$form->addInput($type);
@@ -743,7 +731,8 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 		$progress = new Typecho_Widget_Helper_Form_Element_Checkbox('progress', $arrayProgress, NULL, '进度信息', '选择将要添加的信息，默认为0/0，不选择则认为无进度项');
 		$form->addInput($progress->multiMode());
 
-		$parent = new Typecho_Widget_Helper_Form_Element_Select('parent', array(0=>'无'), 0, '父记录');
+		$parent = new Typecho_Widget_Helper_Form_Element_Text('parent', NULL, NULL, '关联记录');
+		$parent ->input->setAttribute('class', 'text-s w-30');
 		$form->addInput($parent);
 
 		$grade = new Typecho_Widget_Helper_Form_Element_radio('grade', array(0 => '私密', 1 => '公开'), 1, '显示分级');
@@ -769,6 +758,9 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 
 		$comment = new Typecho_Widget_Helper_Form_Element_Textarea('comment', NULL, NULL, '评论');
 		$form->addInput($comment);
+
+		$note = new Typecho_Widget_Helper_Form_Element_Textarea('note', NULL, NULL, '备注');
+		$form->addInput($note);
 
 		$submit = new Typecho_Widget_Helper_Form_Element_Submit('submit', NULL, '添加记录');
 		$submit->input->setAttribute('class', 'btn primary');

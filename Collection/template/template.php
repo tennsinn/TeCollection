@@ -190,6 +190,7 @@ $(document).ready(function(){
 							+ '<div class="Collection-subject-progress"><div class="Collection-subject-progress-inner" style="color:white; width:'+(subject.sp_count!=0 ? subject.sp_status/subject.sp_count*100 : 50)+'%"><small>'+subject.sp_status+' / '+(subject.sp_count!=0 ? subject.sp_count : '??')+'</small></div></div>';
 					}
 					tempHTML += '</div>'
+						+ '<div><i>备注：</i><small>'+(subject.note ? subject.note : '无')+'</small></div>'
 						+ '<div class="Collection-subject-review">'
 							+ '<div><i>评价：</i>'+'<span class="Collection-subject-rate-star Collection-subject-rate-star-rating"></span>'.repeat(subject.rate)+'<span class="Collection-subject-rate-star Collection-subject-rate-star-blank"></span>'.repeat(10-subject.rate)+'</div>'
 							+ '<div><i>标签：</i><span>'+(subject.tags ? subject.tags : '无')+'</span></div>'

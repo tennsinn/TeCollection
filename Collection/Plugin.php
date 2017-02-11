@@ -4,7 +4,7 @@
  * 
  * @package Collection
  * @author 息E-敛
- * @version 1.4.7
+ * @version 1.4.8
  * @link http://tennsinn.com
  */
 class Collection_Plugin implements Typecho_Plugin_Interface
@@ -36,7 +36,8 @@ class Collection_Plugin implements Typecho_Plugin_Interface
 			`sp_status` smallint(3) unsigned default NULL,
 			`rate` tinyint(2) unsigned NOT NULL default 0,
 			`tags` varchar(100) default NULL,
-			`comment` text default NULL
+			`comment` text default NULL,
+			`note` tinytext default NULL
 			) ENGINE=MyISAM DEFAULT CHARSET=". $charset;
 		$db->query($query);
 	}
