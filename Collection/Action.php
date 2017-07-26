@@ -13,7 +13,6 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 	public function action()
 	{
 		$this->on($this->request->is('do=getCollection'))->getCollection();
-		$this->on($this->request->is('do=getSeries'))->getSeries();
 		$this->widget("Widget_User")->pass("administrator");
 		$this->on($this->request->is('do=plusEp'))->plusEp();
 		$this->on($this->request->is('do=editSubject'))->editSubject();
@@ -22,7 +21,6 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 	}
 
 	private $arrayType = array(
-		'Mix',
 		'Novel', 'Comic', 'Doujinshi', 'Textbook',
 		'TV', 'OVA', 'OAD', 'Movie',
 		'Album', 'Single', 'Maxi', 'EP', 'Selections',
@@ -126,7 +124,7 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 		if(!is_numeric($this->request->get('class')) || $this->request->class<=0 || $this->request->class>6)
 			$this->response->throwJson(array('success' => false, 'message' => '种类信息错误'));
 
-		if(!in_array($this->request->get('type'), $this->arrayType))
+		if(!is_null($this->request->get('type')) && !in_array($this->request->get('type'), $this->arrayType))
 			$this->response->throwJson(array('success' => false, 'message' => '类型信息错误'));
 
 		if(!$this->request->get('name'))
@@ -136,10 +134,10 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 			$this->response->throwJson(array('success' => false, 'message' => '图片地址错误'));
 
 		if((!is_null($this->request->get('ep_status')) || !is_null($this->request->get('ep_count'))) && (!is_numeric($this->request->ep_status) || !is_numeric($this->request->ep_count) || $this->request->ep_status<0 || $this->request->ep_count<0 || ($this->request->ep_count>0 && $this->request->ep_status>$this->request->ep_count)))
-			$this->response->throwJson(array('success' => false, 'message' => '请输入正确的本篇进度'));
+			$this->response->throwJson(array('success' => false, 'message' => '请输入正确的主进度'));
 
 		if((!is_null($this->request->get('sp_status')) || !is_null($this->request->get('sp_count'))) && (!is_numeric($this->request->sp_status) || !is_numeric($this->request->sp_count) || $this->request->sp_status<0 || $this->request->sp_count<0 || ($this->request->sp_count>0 && $this->request->sp_status>$this->request->sp_count)))
-			$this->response->throwJson(array('success' => false, 'message' => '请输入正确的特典进度'));
+			$this->response->throwJson(array('success' => false, 'message' => '请输入正确的副进度'));
 
 		if(!in_array($this->request->get('source'), array('Collection', 'Bangumi', 'Douban', 'Steam', 'Wandoujia', 'TapTap')))
 			$this->response->throwJson(array('success' => false, 'message' => '来源信息错误'));
@@ -504,26 +502,32 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 		{
 			$args = array();
 			$keywordsList = explode(' ', $keywords);
-			switch($field)
+			if($field == 'id')
 			{
-				case 'tags':
-					$args[] = implode(' AND ', array_fill(0, count($keywordsList), 'table.collection.tags LIKE ?'));
-					break;
-				case 'comment':
-					$args[] = implode(' AND ', array_fill(0, count($keywordsList), 'table.collection.comment LIKE ?'));
-					break;
-				case 'note':
-					$args[] = implode(' AND ', array_fill(0, count($keywordsList), 'table.collection.note LIKE ?'));
-					break;
-				case 'name':
-				default:
-					$args[] = implode(' AND ', array_fill(0, count($keywordsList), 'CONCAT_WS(" ",table.collection.name,table.collection.name_cn) LIKE ?'));
-					break;
+				$args[] = implode(' OR ', array_fill(0, count($keywordsList), 'table.collection.id = ?'));
+				foreach($keywordsList as $keyword)
+					$args[] = $keyword;
 			}
-			
-			foreach($keywordsList as $keyword)
+			else
 			{
-				$args[] = '%' . $keyword . '%';
+				switch($field)
+				{
+					case 'tags':
+						$args[] = implode(' AND ', array_fill(0, count($keywordsList), 'table.collection.tags LIKE ?'));
+						break;
+					case 'comment':
+						$args[] = implode(' AND ', array_fill(0, count($keywordsList), 'table.collection.comment LIKE ?'));
+						break;
+					case 'note':
+						$args[] = implode(' AND ', array_fill(0, count($keywordsList), 'table.collection.note LIKE ?'));
+						break;
+					case 'name':
+					default:
+						$args[] = implode(' AND ', array_fill(0, count($keywordsList), 'CONCAT_WS(" ",table.collection.name,table.collection.name_cn) LIKE ?'));
+						break;
+				}
+				foreach($keywordsList as $keyword)
+					$args[] = '%' . $keyword . '%';
 			}
 			call_user_func_array(array($query, 'where'), $args);
 		}
@@ -538,6 +542,11 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 				$query->order('time_touch', Typecho_Db::SORT_DESC);
 			$rows = $this->_db->fetchAll($query->page($page, $pageSize));
 			$query = $this->request->makeUriByRequest('page={page}');
+			foreach ($rows as $key => $value)
+			{
+				$rows[$key]['relatedPrev'] = $this->_db->fetchRow($this->_db->select('id', 'name', 'image')->from('table.collection')->where('id = ?', $value['parent']));
+				$rows[$key]['relatedNext'] = $this->_db->fetchRow($this->_db->select('id', 'name', 'image')->from('table.collection')->where('parent = ?', $value['id']));
+			}
 			$nav = new Typecho_Widget_Helper_PageNavigator_Box($num, $page, $pageSize, $query);
 			return array('result' => true, 'list' => $rows, 'nav' => $nav);
 		}
@@ -698,8 +707,8 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 		$class->addRule('required', '必须选择分类');
 		$form->addInput($class);
 
-		$dictType = array('Mix' => '混合', 'Novel' => '小说', 'Comic' => '漫画', 'Doujinshi' => '同人志', 'Textbook' => '课本');
-		$type = new Typecho_Widget_Helper_Form_Element_Radio('type', $dictType, 'Mix', '类型 *');
+		$dictType = array('Novel' => '小说', 'Comic' => '漫画', 'Doujinshi' => '同人志', 'Textbook' => '课本');
+		$type = new Typecho_Widget_Helper_Form_Element_Radio('type', $dictType, NULL, '类型 *');
 		$type->addRule('required', '必须选择类型');
 		$form->addInput($type);
 
@@ -722,17 +731,19 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 		$form->addInput($subject_id);
 
 		$image = new Typecho_Widget_Helper_Form_Element_Text('image', NULL, NULL, '封面地址');
+		$image->addRule('url', '请正确输入图片地址');
 		$form->addInput($image);
 
 		$arrayProgress = array(
-			'ep_progress' => '输入进度一：<input type="text" class="text-s num mono" name="ep_status"> / <input type="text" class="text num text-s" name="ep_count"> ',
-			'sp_progress' => '输入进度二：<input type="text" class="text-s num mono" name="sp_status"> / <input type="text" class="text num text-s" name="sp_count"> '
+			'ep_progress' => '输入主进度：<input type="text" class="text-s num" name="ep_status"> / <input type="text" class="text num text-s" name="ep_count"> ',
+			'sp_progress' => '输入副进度：<input type="text" class="text-s num" name="sp_status"> / <input type="text" class="text num text-s" name="sp_count"> '
 		);
 		$progress = new Typecho_Widget_Helper_Form_Element_Checkbox('progress', $arrayProgress, NULL, '进度信息', '选择将要添加的信息，默认为0/0，不选择则认为无进度项');
 		$form->addInput($progress->multiMode());
 
-		$parent = new Typecho_Widget_Helper_Form_Element_Text('parent', NULL, NULL, '关联记录');
+		$parent = new Typecho_Widget_Helper_Form_Element_Text('parent', NULL, 0, '关联记录', '关联的记录ID，无则为0');
 		$parent ->input->setAttribute('class', 'text-s w-30');
+		$parent->addRule('isInteger', '请正确输入ID');
 		$form->addInput($parent);
 
 		$grade = new Typecho_Widget_Helper_Form_Element_radio('grade', array(0 => '私密', 1 => '公开'), 1, '显示分级');
@@ -746,10 +757,10 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 
 		$rate = new Typecho_Widget_Helper_Form_Element_Text('rate', NULL, 0, '评价', '请使用0-10的数字表示，0为无评价');
 		$rate->input->setAttribute('class', 'text-s');
-		$rate->addRule('isInteger', '请使用0-10的数字表示');
 		$rate->input->setAttribute('type', 'number');
 		$rate->input->setAttribute('min', '0');
 		$rate->input->setAttribute('max', '10');
+		$rate->addRule('isInteger', '请使用0-10的数字表示');
 		$form->addInput($rate);
 
 		$tags = new Typecho_Widget_Helper_Form_Element_Text('tags', NULL, NULL, '标签', '请使用空格分隔');

@@ -1,3 +1,9 @@
+.Collection-opt label
+{
+	font-weight: normal;
+	margin-bottom: 0;
+}
+
 .Collection-list
 {
 	list-style: none;

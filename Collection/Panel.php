@@ -21,7 +21,6 @@ $arrayClassStatus = array(
 $dictClass = array(1 => '书籍', 2 => '动画', 3 => '音乐', 4 => '游戏', 5 => '广播', 6 => '影视');
 
 $dictType = array(
-	'Mix' => '混合', 'Series' => '系列',
 	'Novel' => '小说', 'Comic' => '漫画', 'Doujinshi' => '同人志', 'Textbook' => '教材',
 	'TV' => 'TV', 'OVA' => 'OVA', 'OAD' => 'OAD', 'Movie' => '剧场',
 	'Album' => '专辑', 'Single' => '单曲', 'Maxi' => 'Maxi', 'EP' => '细碟', 'Selections' => '选集',
@@ -44,7 +43,6 @@ $dictSource = array(
 <script type="text/javascript">
 var dictClass = {1:'书籍', 2:'动画', 3:'音乐', 4:'游戏', 5:'广播', 6:'影视'};
 var dictType = {
-	0:{'Mix':'混合', 'Series':'系列'},
 	1:{'Novel':'小说', 'Comic':'漫画', 'Doujinshi':'同人志', 'Textbook':'教材'},
 	2:{'TV':'TV', 'OVA':'OVA', 'OAD':'OAD', 'Movie':'剧场'},
 	3:{'Album':'专辑', 'Single':'单曲', 'Maxi':'Maxi', 'EP':'细碟', 'Selections':'选集'},
@@ -104,6 +102,7 @@ var dictSource = {
 									<input type="text" class="text-s" placeholder="<?php _e('请输入关键字'); ?>" value="<?php echo htmlspecialchars($request->keywords); ?>"<?php if ('' == $request->keywords): ?> onclick="value='';name='keywords';" <?php else: ?> name="keywords"<?php endif; ?>>
 									<select name="field">
 										<option value="name"<?php if($request->get('field') == 'name'): ?> selected="true"<?php endif; ?>>名称</option>
+										<option value="id"<?php if($request->get('field') == 'id'): ?> selected="true"<?php endif; ?>>ID</option>
 										<option value="tags"<?php if($request->get('field') == 'tags'): ?> selected="true"<?php endif; ?>>标签</option>
 										<option value="comment"<?php if($request->get('field') == 'comment'): ?> selected="true"<?php endif; ?>>吐槽</option>
 										<option value="note"<?php if($request->get('field') == 'note'): ?> selected="true"<?php endif; ?>>备注</option>
@@ -132,6 +131,7 @@ var dictSource = {
 										<col width="120px">
 										<col width="200px">
 										<col>
+										<col width="60px">
 									</colgroup>
 									<thead>
 										<tr>
@@ -139,6 +139,7 @@ var dictSource = {
 											<th>封面</th>
 											<th>名称</th>
 											<th>简评</th>
+											<th>关联</th>
 										</tr>
 									</thead>
 									<tbody>
@@ -148,7 +149,7 @@ var dictSource = {
 													<td><input type="checkbox" name="id[]" value="<?php echo $subject['id']; ?>"></td>
 													<td>
 														<div class="Collection-subject-image"><img src="<?php echo $subject['image'] ? $subject['image'] : Typecho_common::url('Collection/template/default_cover.jpg', $options->pluginUrl); ?>" width="100px"></div>
-														<div class="Collection-subject-type"><?php echo $dictClass[$subject['class']].'/'.(isset($dictType[$subject['type']]) ? $dictType[$subject['type']] : 'Unkown'); ?></div>
+														<div class="Collection-subject-type"><?php echo $dictClass[$subject['class']].'/'.($dictType[$subject['type']] ? $dictType[$subject['type']] : '未知'); ?></div>
 													</td>
 													<td class="Collection-subject-meta">
 														<div class="Collection-subject-name">
@@ -167,7 +168,7 @@ var dictSource = {
 															echo '<div id="Collection-subject-'.$subject['id'].'-ep">';
 															if(!is_null($subject['ep_count']) && !is_null($subject['ep_status']))
 															{
-																echo '<label for="Collection-subject-'.$subject['id'].'-progress-ep">'._t('进度一进度').'</label>';
+																echo '<label for="Collection-subject-'.$subject['id'].'-progress-ep">'._t('主进度').'</label>';
 																echo '<div id="Collection-subject-'.$subject['id'].'-progress-ep" class="Collection-subject-progress"><div class="Collection-subject-progress-inner" style="color:white; width:'.($subject['ep_count'] ? $subject['ep_status']/$subject['ep_count']*100 : 50).'%"><small>'.$subject['ep_status'].' / '.($subject['ep_count'] ? $subject['ep_count'] : '??').'</small></div></div>';
 																if(!$subject['ep_count'] || $subject['ep_count']>$subject['ep_status'])
 																{
@@ -180,7 +181,7 @@ var dictSource = {
 															echo '<div id="Collection-subject-'.$subject['id'].'-sp">';
 															if(!is_null($subject['sp_count']) && !is_null($subject['sp_status']))
 															{
-																echo '<label for="Collection-subject-'.$subject['id'].'-progress-sp">'._t('进度二进度').'</label>';
+																echo '<label for="Collection-subject-'.$subject['id'].'-progress-sp">'._t('副进度').'</label>';
 																echo '<div id="Collection-subject-'.$subject['id'].'-progress-sp" class="Collection-subject-progress"><div class="Collection-subject-progress-inner" style="color:white; width:'.($subject['sp_count'] ? $subject['sp_status']/$subject['sp_count']*100 : 50).'%"><small>'.$subject['sp_status'].' / '.($subject['sp_count'] ? $subject['sp_count'] : '??').'</small></div></div>';
 																if(!$subject['sp_count'] || $subject['sp_count']>$subject['sp_status'])
 																{
@@ -199,6 +200,24 @@ var dictSource = {
 														<p class="Collection-subject-comment"><i>吐槽：</i><?php echo $subject['comment'] ? $subject['comment'] : '无'; ?></p>
 														<p class="hidden-by-mouse"><a href="#<?php echo $subject['id']; ?>" rel="<?php $options->index('/action/collection?do=editSubject'); ?>" class="Collection-subject-edit"><?php _e('编辑'); ?></a></p>
 													</td>
+													<td><?php
+														echo '<div>前记录</div>';
+														if($subject['relatedPrev'])
+														{
+															echo '<small>#' . $subject['relatedPrev']['id'] . '</small>';
+															echo '<img src="' . $subject['relatedPrev']['image'] . '" width="50px" alt="' . $subject['relatedPrev']['name'] . '">';
+														}
+														else
+															echo '<p><i>无</i></p>';
+														echo '<div>后记录</div>';
+														if($subject['relatedNext'])
+														{
+															echo '<small>#' . $subject['relatedNext']['id'] . '</small>';
+															echo '<img src="' . $subject['relatedNext']['image'] . '" width="50px" alt="' . $subject['relatedNext']['name'] . '">';
+														}
+														else
+															echo '<p><i>无</i></p>';
+													?></td>
 												</tr>
 											<?php endforeach; ?>
 										<?php else: ?>
@@ -291,8 +310,7 @@ var dictSource = {
 											+ '<option value="6">影视</option>'
 										+ '</select></p>'
 										+ '<p><label for="'+id+'-type"><?php _e('类型'); ?></label><select id="'+id+'-type" name="type" class="w-100">'
-										+ '<option value="Mix">混合</option>'
-										+ '<option value="Series">系列</option>';
+										+ '<option value="">未知</option>';
 								$.each(dictType[subject.class], function(key, value){
 									string += '<option value="'+key+'">'+value+'</option>';
 								});
@@ -311,10 +329,10 @@ var dictSource = {
 									+ '<p><label for="'+id+'-name">原名</label><input class="text-s" type="text" id="'+id+'-name" name="name"></p>'
 									+ '<p><label for="'+id+'-name_cn">译名</label><input class="text-s" type="text" id="'+id+'-name_cn" name="name_cn"></p>'
 									+ '<p><label for="'+id+'-parent">关联记录</label><input class="text-s" type="text" id="'+id+'-parent" name="parent"></p>'
-									+ '<p><label for="'+id+'-ep_status">进度一进度</label><input class="text-s w-100" id="'+id+'-ep_status" name="ep_status" type="number" min="0" max="9999"></p>'
-									+ '<p><label for="'+id+'-ep_count">进度一总数</label><input class="text-s w-100" type="number" name="ep_count" id="'+id+'-ep_count" min="0" max="9999"></p>'
-									+ '<p><label for="'+id+'-sp_status">进度二进度</label><input class="text-s w-100" id="'+id+'-sp_status" name="sp_status" type="number" min="0" max="999"></p>'
-									+ '<p><label for="'+id+'-sp_count">进度二总数</label><input class="text-s w-100" type="number" name="sp_count" id="'+id+'-sp_count" min="0" max="999"></p>'
+									+ '<p><label for="'+id+'-ep_status">主进度</label><input class="text-s w-100" id="'+id+'-ep_status" name="ep_status" type="number" min="0" max="9999"></p>'
+									+ '<p><label for="'+id+'-ep_count">主进度总数</label><input class="text-s w-100" type="number" name="ep_count" id="'+id+'-ep_count" min="0" max="9999"></p>'
+									+ '<p><label for="'+id+'-sp_status">副进度</label><input class="text-s w-100" id="'+id+'-sp_status" name="sp_status" type="number" min="0" max="999"></p>'
+									+ '<p><label for="'+id+'-sp_count">副进度总数</label><input class="text-s w-100" type="number" name="sp_count" id="'+id+'-sp_count" min="0" max="999"></p>'
 									+ '</form></td>'
 									+ '<td id="review-'+id+'"><form method="post" action="'+t.attr('rel')+'" class="Collection-subject-edit-content">'
 									+ '<p><label for="'+id+'-grade">显示分级</label>'
@@ -357,7 +375,7 @@ var dictSource = {
 
 								$('select[name=class]', edit).change(function(){
 									var tempHTML = '';
-									tempHTML = '<option value="Mix">混合</option>';
+									tempHTML = '<option value="">未知</option>';
 									$.each(dictType[$('select[name=class]', edit).val()], function(key, value){
 										tempHTML += '<option value="'+key+'">'+value+'</option>';
 									});
@@ -395,8 +413,8 @@ var dictSource = {
 										if(data.status)
 										{
 											$('.Collection-subject-image', oldTr).html('<img src="'+(subject.image ? subject.image : '<?php $options->pluginUrl('Collection/template/default_cover.jpg'); ?>')+'" width="100px">');
-											$('.Collection-subject-type', oldTr).html(dictClass[subject.class]+'/'+(subject.type=='Mix'||subject.type=='Series' ? dictType[0][subject.type] : dictType[subject.class][subject.type]));
-											var tempHTML = '<i class="Collection-subject-class-ico Collection-subject-class-'+subject.class+'"></i>';
+											$('.Collection-subject-type', oldTr).html(dictClass[subject.class]+'/'+(subject.type ? dictType[subject.class][subject.type] : '未知'));
+											var tempHTML = '<i class="Collection-subject-class-ico Collection-subject-class-'+subject.class+'"></i><small>(#'+subject.id+')</small>';
 											if(dictSource.hasOwnProperty(subject.source))
 												tempHTML += '<a href="' + dictSource[subject.source]['url'] + subject.subject_id + '" target="_blank">' + subject.name + '</a>';
 											else
@@ -407,7 +425,7 @@ var dictSource = {
 												$('#Collection-subject-'+subject.id+'-ep', oldTr).html('');
 											else
 											{
-												stringProgress += '<label for="Collection-subject-'+subject.id+'-progress-ep">进度一进度</label>'
+												stringProgress += '<label for="Collection-subject-'+subject.id+'-progress-ep">主进度</label>'
 													+ '<div id="Collection-subject-'+subject.id+'-progress-ep" class="Collection-subject-progress"><div class="Collection-subject-progress-inner" style="color:white; width:'+(subject.ep_count != 0 ? subject.ep_status/subject.ep_count*100 : 50)+'%"><small>'+subject.ep_status+' / '+(subject.ep_count != 0 ? subject.ep_count : '??')+'</small></div></div>';
 												if(subject.ep_count == '0' || Number(subject.ep_count) > Number(subject.ep_status))
 													stringProgress += '<div class="hidden-by-mouse"><small><a href="#'+subject.id+'" rel="<?php $options->index('/action/collection?do=plusEp&plus=ep'); ?>" class="Collection-subject-progress-plus" id="Collection-subject-'+subject.id+'-progress-ep-plus">ep.'+String(Number(subject.ep_status)+1)+'已'+arrayStatus[String(subject.class-1)]+'</a></small></div>';
@@ -417,7 +435,7 @@ var dictSource = {
 												$('#Collection-subject-'+subject.id+'-sp', oldTr).html('');
 											else
 											{
-												stringProgress = '<label for="Collection-subject-'+subject.id+'-progress-sp">进度二进度</label>'
+												stringProgress = '<label for="Collection-subject-'+subject.id+'-progress-sp">副进度</label>'
 													+ '<div id="Collection-subject-'+subject.id+'-progress-sp" class="Collection-subject-progress"><div class="Collection-subject-progress-inner" style="color:white; width:'+(subject.sp_count != 0 ? subject.sp_status/subject.sp_count*100 : 50)+'%"><small>'+subject.sp_status+' / '+(subject.sp_count != 0 ? subject.sp_count : '??')+'</small></div></div>';
 												if(subject.sp_count == '0' || Number(subject.sp_count) > Number(subject.sp_status))
 													stringProgress += '<div class="hidden-by-mouse"><small><a href="#'+subject.id+'" rel="<?php $options->index('/action/collection?do=plusEp&plus=sp'); ?>" class="Collection-subject-progress-plus" id="Collection-subject-'+subject.id+'-progress-sp-plus">sp.'+String(Number(subject.sp_status)+1)+'已'+arrayStatus[String(subject.class-1)]+'</a></small></div>';
@@ -502,7 +520,7 @@ var dictSource = {
 													<tr>
 														<td><input type="checkbox" name="subject_id[]" value="<?php echo $subject_id; ?>"></td>
 														<td><img src="<?php echo $subject['image']; ?>" width="100px"></td>
-														<td><div>
+														<td class="Collection-box-title"><div>
 															<i class="Collection-subject-class-ico Collection-subject-class-<?php echo $subject['class']; ?>"></i>
 															<?php
 																echo '<a href="';
@@ -520,7 +538,7 @@ var dictSource = {
 																echo $subject['name_cn'] ? '<div><small>'.$subject['name_cn'].'</small></div>' : '';
 															?>
 														</td>
-														<td><?php echo $subject['info']; ?></td>
+														<td class="Collection-box-info"><?php echo $subject['info']; ?></td>
 													</tr>
 												<?php endforeach; ?>
 											<?php else: ?>
@@ -568,7 +586,6 @@ var dictSource = {
 								$('input[name=class]').click(function(){
 									var tempHTML = '';
 									tempHTML = '<li><label class="typecho-label">类型</label>';
-									tempHTML += '<span><input name="type" type="radio" value="Mix" id="type-Mix" checked><label for="type-Mix">混合</label></span>';
 									$.each(dictType[$('input[name=class]:checked').val()], function(key, value){
 										tempHTML += '<span><input name="type" type="radio" value="'+key+'" id="type-'+key+'"><label for="type-'+key+'">'+value+'</label></span>';
 									});

@@ -1,7 +1,6 @@
 <?php
 $dictClass = array(1 => '书籍', 2 => '动画', 3 => '音乐', 4 => '游戏', 5 => '广播', 6 => '影视');
 $dictType = array(
-	0 => array('Mix' => '混合', 'Series' => '系列'),
 	1 => array('Novel' => '小说', 'Comic' => '漫画', 'Doujinshi' => '同人志', 'Textbook' => '课本'),
 	2 => array('TV' => 'TV', 'OVA' => 'OVA', 'OAD' => 'OAD', 'Movie' => '剧场'),
 	3 => array('Album' => '专辑', 'Single' => '单曲', 'Maxi' => 'Maxi', 'EP' => '细碟', 'Selections' => '选集'),
@@ -183,10 +182,10 @@ $(document).ready(function(){
 						+ '<div>'+dictStatusTrans[subject.status][subject.class]+'</div>';
 					if(subject.ep_count != null && subject.ep_status != null)
 					{
-						tempHTML += '<div>进度一：</div>'
+						tempHTML += '<div>主进度：</div>'
 							+ '<div class="Collection-subject-progress"><div class="Collection-subject-progress-inner" style="color:white; width:'+(subject.ep_count!=0 ? subject.ep_status/subject.ep_count*100 : 50)+'%"><small>'+subject.ep_status+' / '+(subject.ep_count!=0 ? subject.ep_count : '??')+'</small></div></div>';
 						if(subject.sp_count != null && subject.sp_status != null)
-							tempHTML += '<div>进度二：</div>'
+							tempHTML += '<div>副进度：</div>'
 							+ '<div class="Collection-subject-progress"><div class="Collection-subject-progress-inner" style="color:white; width:'+(subject.sp_count!=0 ? subject.sp_status/subject.sp_count*100 : 50)+'%"><small>'+subject.sp_status+' / '+(subject.sp_count!=0 ? subject.sp_count : '??')+'</small></div></div>';
 					}
 					tempHTML += '</div>'
