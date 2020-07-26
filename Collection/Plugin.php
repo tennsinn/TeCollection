@@ -4,7 +4,7 @@
  * 
  * @package Collection
  * @author 息E-敛
- * @version 1.7.2
+ * @version 1.7.3
  * @link http://tennsinn.com
  */
 class Collection_Plugin implements Typecho_Plugin_Interface
@@ -12,7 +12,7 @@ class Collection_Plugin implements Typecho_Plugin_Interface
 	public static function activate()
 	{
 		Helper::addAction('collection', 'Collection_Action');
-		Helper::addPanel(3, "Collection/Panel.php", _t("Collection"), _t("Collection"), 'administrator', false, 'extending.php?panel=Collection%2FPanel.php&do=search');
+		Helper::addPanel(3, "Collection/Panel.php", _t("Collection"), _t("Collection"), 'administrator', false, 'extending.php?panel=Collection%2FPanel.php&do=input');
 		$db = Typecho_Db::get();
 		$charset = Helper::options()->charset == 'UTF-8' ? 'utf8' : 'gbk';
 		$query = 'CREATE TABLE IF NOT EXISTS '. $db->getPrefix() . 'collection' ." (
