@@ -1,11 +1,11 @@
-Panel:
-	✔ 删除后台模板关联显示 @started(20-07-26 12:14) @done(20-07-26 12:17) @lasted(3m42s)
+Todo:
 	☐ 后台模板增加grade显示
 	☐ 增加BiliBili链接
-Action:
-	☐ 修改豆瓣搜索api
-Database:
 	☐ 记录增加分类series/subject/volume/episode
+	☐ 删除sp相关字段
+	✔ 设置输入页默认类型 @started(20-07-26 12:50) @done(20-07-26 13:06) @lasted(16m32s)
+	✔ 豆瓣api失效，关闭相关搜索选项 @started(20-07-26 12:24) @done(20-07-26 12:39) @lasted(15m6s)
+	✔ 删除后台模板关联显示 @started(20-07-26 12:14) @done(20-07-26 12:17) @lasted(3m42s)
 
 Todo Backup
 

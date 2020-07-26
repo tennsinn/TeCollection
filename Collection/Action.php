@@ -284,7 +284,7 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 									}
 								}
 								break;
-							case 'Douban':
+							/* case 'Douban':
 								$arrayDoubanClass = array('1' => 'book', '3' => 'music', '6' => 'movie/subject');
 								$class = $this->request->get('class');
 								$response = file_get_contents('https://api.douban.com/v2/'.$arrayDoubanClass[$class].'/'.$subject_id);
@@ -357,7 +357,7 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 											break;
 									}
 									$row['class'] = $class;
-								}
+								} */
 						}
 						if($response)
 						{
@@ -598,7 +598,7 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 					$count = $response['results'];
 				}
 				break;
-			case 'Douban':
+			/* case 'Douban':
 				$arrayDoubanClass = array('1' => 'book', '3' => 'music', '6' => 'movie');
 				$response = @file_get_contents('https://api.douban.com/v2/'.$arrayDoubanClass[$class].'/search?q='.$keywords.'&start='.($page-1)*$pageSize.'&count='.$pageSize);
 				$response = json_decode($response, true);
@@ -682,7 +682,7 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 					}
 					$count = $response['total'];
 				}
-				break;
+				break;*/
 		}
 		$query = $this->request->makeUriByRequest('page={page}');
 		$nav = new Typecho_Widget_Helper_PageNavigator_Box($count, $page, $pageSize, $query);
@@ -708,7 +708,7 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 		$form->addInput($class);
 
 		$dictType = array('Novel' => '小说', 'Comic' => '漫画', 'Doujinshi' => '同人志', 'Textbook' => '课本');
-		$type = new Typecho_Widget_Helper_Form_Element_Radio('type', $dictType, NULL, '类型 *');
+		$type = new Typecho_Widget_Helper_Form_Element_Radio('type', $dictType, 'Novel', '类型 *');
 		$type->addRule('required', '必须选择类型');
 		$form->addInput($type);
 
