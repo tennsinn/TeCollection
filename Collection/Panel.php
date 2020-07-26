@@ -131,7 +131,6 @@ var dictSource = {
 										<col width="120px">
 										<col width="200px">
 										<col>
-										<col width="60px">
 									</colgroup>
 									<thead>
 										<tr>
@@ -139,7 +138,6 @@ var dictSource = {
 											<th>封面</th>
 											<th>名称</th>
 											<th>简评</th>
-											<th>关联</th>
 										</tr>
 									</thead>
 									<tbody>
@@ -200,24 +198,6 @@ var dictSource = {
 														<p class="Collection-subject-comment"><i>吐槽：</i><?php echo $subject['comment'] ? $subject['comment'] : '无'; ?></p>
 														<p class="hidden-by-mouse"><a href="#<?php echo $subject['id']; ?>" rel="<?php $options->index('/action/collection?do=editSubject'); ?>" class="Collection-subject-edit"><?php _e('编辑'); ?></a></p>
 													</td>
-													<td><?php
-														echo '<div>前记录</div>';
-														if($subject['relatedPrev'])
-														{
-															echo '<small>#' . $subject['relatedPrev']['id'] . '</small>';
-															echo '<img src="' . $subject['relatedPrev']['image'] . '" width="50px" alt="' . $subject['relatedPrev']['name'] . '">';
-														}
-														else
-															echo '<p><i>无</i></p>';
-														echo '<div>后记录</div>';
-														if($subject['relatedNext'])
-														{
-															echo '<small>#' . $subject['relatedNext']['id'] . '</small>';
-															echo '<img src="' . $subject['relatedNext']['image'] . '" width="50px" alt="' . $subject['relatedNext']['name'] . '">';
-														}
-														else
-															echo '<p><i>无</i></p>';
-													?></td>
 												</tr>
 											<?php endforeach; ?>
 										<?php else: ?>

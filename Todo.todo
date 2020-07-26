@@ -1,10 +1,9 @@
-Template:
-	☐ 删除后台模板关联显示
+Panel:
+	✔ 删除后台模板关联显示 @started(20-07-26 12:14) @done(20-07-26 12:17) @lasted(3m42s)
 	☐ 后台模板增加grade显示
+	☐ 增加BiliBili链接
 Action:
 	☐ 修改豆瓣搜索api
-Panel:
-	☐ 增加BiliBili链接
 Database:
 	☐ 记录增加分类series/subject/volume/episode
 
