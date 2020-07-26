@@ -139,7 +139,7 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 		if((!is_null($this->request->get('sp_status')) || !is_null($this->request->get('sp_count'))) && (!is_numeric($this->request->sp_status) || !is_numeric($this->request->sp_count) || $this->request->sp_status<0 || $this->request->sp_count<0 || ($this->request->sp_count>0 && $this->request->sp_status>$this->request->sp_count)))
 			$this->response->throwJson(array('success' => false, 'message' => '请输入正确的副进度'));
 
-		if(!in_array($this->request->get('source'), array('Collection', 'Bangumi', 'Douban', 'Steam', 'Wandoujia', 'TapTap')))
+		if(!in_array($this->request->get('source'), array('Collection', 'Bangumi', 'Douban', 'Steam', 'Wandoujia', 'TapTap', 'BiliBili')))
 			$this->response->throwJson(array('success' => false, 'message' => '来源信息错误'));
 
 		if($this->request->get('parent') && !is_numeric($this->request->parent) && $this->_db->fetchRow($this->_db->select()->from('table.collection')->where('id = ?', $this->request->parent)))
@@ -721,7 +721,7 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 		$name_cn->input->setAttribute('class', 'text-s w-40');
 		$form->addInput($name_cn);
 
-		$arraySource = array('Collection' => '无来源', 'Bangumi' => 'Bangumi', 'Douban' => '豆瓣', 'wandoujia' => '豌豆荚', 'Steam' => 'Steam', 'TapTap' => 'TapTap');
+		$arraySource = array('Collection' => '无来源', 'Bangumi' => 'Bangumi', 'Douban' => '豆瓣', 'Wandoujia' => '豌豆荚', 'Steam' => 'Steam', 'TapTap' => 'TapTap', 'BiliBili' => 'BiliBili');
 		$source = new Typecho_Widget_Helper_Form_Element_Select('source', $arraySource, 'Collection', '信息来源');
 		$source->addRule('required', '必须选择来源');
 		$form->addInput($source);

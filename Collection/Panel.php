@@ -34,7 +34,8 @@ $dictSource = array(
 	'Douban' => array('name' => '豆瓣', 'url' => 'https://www.douban.com/subject/'),
 	'Steam' => array('name' => 'Steam', 'url' => 'http://store.steampowered.com/app/'),
 	'Wandoujia' => array('name' => '豌豆荚', 'url' => 'http://www.wandoujia.com/apps/'),
-	'TapTap' => array('name' => 'TapTap', 'url' => 'https://www.taptap.com/app/')
+	'TapTap' => array('name' => 'TapTap', 'url' => 'https://www.taptap.com/app/'),
+	'BiliBili' => array('name' => 'BiliBili', 'url' => 'https://www.bilibili.com/bangumi/media/')
 );
 ?>
 
@@ -55,7 +56,8 @@ var dictSource = {
 	'Douban' : {'name' : '豆瓣', 'url' : 'https://www.douban.com/subject/'},
 	'Steam' : {'name' : 'Steam', 'url' : 'http://store.steampowered.com/app/'},
 	'Wandoujia' : {'name' : '豌豆荚', 'url' : 'http://www.wandoujia.com/apps/'},
-	'TapTap' : {'name' : 'TapTap', 'url' : 'https://www.taptap.com/app/'}
+	'TapTap' : {'name' : 'TapTap', 'url' : 'https://www.taptap.com/app/'},
+	'BiliBili': {'name' : 'BiliBili', 'url' : 'https://www.bilibili.com/bangumi/media/'}
 };
 </script>
 <div class="main">
@@ -302,6 +304,7 @@ var dictSource = {
 										+ '<option value="Steam">Steam</option>'
 										+ '<option value="Wandoujia">豌豆荚</option>'
 										+ '<option value="TapTap">TapTap</option>'
+										+ '<option value="BiliBili">BiliBili</option>'
 									+ '</select></p>'
 									+ '<p><label for="'+id+'-subject_id">来源ID</label><input class="text-s" type="text" id="'+id+'-subject_id" name="subject_id"></p>'
 									+ '</form></td>'
