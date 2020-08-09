@@ -34,3 +34,4 @@
   - 1.7.4 增加BiliBili链接
 - 1.8.0
   - 1.8.0 增加记录分类series/subject/volume/episode
+  - 1.8.1 增加parent_order

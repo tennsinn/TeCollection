@@ -151,8 +151,8 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 		if($this->request->get('parent') && !is_numeric($this->request->parent) && $this->_db->fetchRow($this->_db->select()->from('table.collection')->where('id = ?', $this->request->parent)))
 			$this->response->throwJson(array('success' => false, 'message' => '父记录错误或不存在父记录'));
 
-		//if($this->request->get('parent_order') && !is_numeric($this->request->parent_order))
-		//	$this->response->throwJson(array('success' => false, 'message' => '记录序号错误'));
+		if($this->request->get('parent_order') && !is_numeric($this->request->parent_order))
+			$this->response->throwJson(array('success' => false, 'message' => '记录序号错误'));
 
 		if(!is_numeric($this->request->get('grade')) || $this->request->grade<0 || $this->request->grade>9)
 			$this->response->throwJson(array('success' => false, 'message' => '请用0-9的数字表示级别'));
@@ -172,7 +172,7 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 			'source' => $this->request->source,
 			'subject_id' => $this->request->subject_id,
 			'parent' => $this->request->parent,
-		//	'parent_order' => $this->request->parent_order,
+			'parent_order' => $this->request->parent_order,
 			'grade' => $this->request->grade,
 			'time_touch' => Typecho_Date::gmtTime(),
 			'ep_status' => $this->request->ep_status,
@@ -471,7 +471,7 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 						'source' => $this->request->source,
 						'subject_id' => $this->request->subject_id,
 						'parent' => $this->request->parent,
-					//	'parent_order' => $this->request->parent_order,
+						'parent_order' => $this->request->parent_order,
 						'grade' => $this->request->grade,
 						'status' => $this->request->status,
 						'time_start' => $time_start,
@@ -766,11 +766,11 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 		$parent->addRule('isInteger', '请正确输入ID');
 		$form->addInput($parent);
 
-	/*	$parent_order = new Typecho_Widget_Helper_Form_Element_Text('parent_order', NULL, 0, '关联顺序', '关联的记录排序，无则为0');
+		$parent_order = new Typecho_Widget_Helper_Form_Element_Text('parent_order', NULL, 0, '关联顺序', '关联的记录排序，无则为0');
 		$parent_order ->input->setAttribute('class', 'text-s w-30');
 		$parent_order->addRule('isInteger', '请正确输入ID');
 		$form->addInput($parent_order);
-*/
+
 		$grade = new Typecho_Widget_Helper_Form_Element_radio('grade', array(0 => '私密', 1 => '公开'), 1, '显示分级');
 		$grade->addRule('required', '必须选择显示分级');
 		$form->addInput($grade);

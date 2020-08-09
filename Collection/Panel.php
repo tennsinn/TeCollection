@@ -323,6 +323,7 @@ var dictSource = {
 									+ '<p><label for="'+id+'-name">原名</label><input class="text-s" type="text" id="'+id+'-name" name="name"></p>'
 									+ '<p><label for="'+id+'-name_cn">译名</label><input class="text-s" type="text" id="'+id+'-name_cn" name="name_cn"></p>'
 									+ '<p><label for="'+id+'-parent">关联记录</label><input class="text-s" type="text" id="'+id+'-parent" name="parent"></p>'
+									+ '<p><label for="'+id+'-parent_order">关联顺序</label><input class="text-s w-100" id="'+id+'-parent_order" name="parent_order" type="number" min="0" max="99"></p>'
 									+ '<p><label for="'+id+'-ep_status">主进度</label><input class="text-s w-100" id="'+id+'-ep_status" name="ep_status" type="number" min="0" max="9999"></p>'
 									+ '<p><label for="'+id+'-ep_count">主进度总数</label><input class="text-s w-100" type="number" name="ep_count" id="'+id+'-ep_count" min="0" max="9999"></p>'
 									+ '<p><label for="'+id+'-sp_status">副进度</label><input class="text-s w-100" id="'+id+'-sp_status" name="sp_status" type="number" min="0" max="999"></p>'
@@ -358,6 +359,7 @@ var dictSource = {
 								$('input[name=name]', edit).val(subject.name);
 								$('input[name=name_cn]', edit).val(subject.name_cn);
 								$('input[name=parent]', edit).val(subject.parent);
+								$('input[name=parent_order]', edit).val(subject.parent_order);
 								$('input[name=ep_status]', edit).val(subject.ep_status);
 								$('input[name=ep_count]', edit).val(subject.ep_count);
 								$('input[name=sp_status]', edit).val(subject.sp_status);
