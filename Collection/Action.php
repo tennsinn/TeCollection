@@ -170,7 +170,7 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 			'ep_count' => $this->request->ep_count,
 			'sp_count' => $this->request->sp_count,
 			'source' => $this->request->source,
-			'subject_id' => $this->request->subject_id,
+			'source_id' => $this->request->source_id,
 			'parent' => $this->request->parent,
 			'parent_order' => $this->request->parent_order,
 			'grade' => $this->request->grade,
@@ -240,13 +240,13 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 					}
 				}
 			}
-			elseif(isset($this->request->subject_id) && $subject_ids = $this->request->filter('int')->getArray('subject_id'))
+			elseif(isset($this->request->source_id) && $source_ids = $this->request->filter('int')->getArray('source_id'))
 			{
 				$failure = array();
 				$source = $this->request->get('source');
-				foreach($subject_ids as $subject_id)
+				foreach($source_ids as $source_id)
 				{
-					$row_temp = $this->_db->fetchRow($this->_db->select()->from('table.collection')->where('source = ?', $source)->where('subject_id = ?', $subject_id));
+					$row_temp = $this->_db->fetchRow($this->_db->select()->from('table.collection')->where('source = ?', $source)->where('source_id = ?', $source_id));
 					if($row_temp)
 					{
 						$row = array(
@@ -270,14 +270,14 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 								$row['time_finish'] = Typecho_Date::gmtTime();
 								break;
 						}
-						$this->_db->query($this->_db->update('table.collection')->where('source = ?', $source)->where('subject_id = ?', $subject_id)->rows($row));
+						$this->_db->query($this->_db->update('table.collection')->where('source = ?', $source)->where('source_id = ?', $source_id)->rows($row));
 					}
 					else
 					{
 						switch($source)
 						{
 							case 'Bangumi':
-								$response = @file_get_contents('http://api.bgm.tv/subject/'.$subject_id);
+								$response = @file_get_contents('http://api.bgm.tv/subject/'.$source_id);
 								$response = json_decode($response, true);
 								if($response)
 								{
@@ -297,7 +297,7 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 							/* case 'Douban':
 								$arrayDoubanClass = array('1' => 'book', '3' => 'music', '6' => 'movie/subject');
 								$class = $this->request->get('class');
-								$response = file_get_contents('https://api.douban.com/v2/'.$arrayDoubanClass[$class].'/'.$subject_id);
+								$response = file_get_contents('https://api.douban.com/v2/'.$arrayDoubanClass[$class].'/'.$source_id);
 								$response = json_decode($response, true);
 								if($response)
 								{
@@ -388,17 +388,17 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 							$row['time_touch'] = Typecho_Date::gmtTime();
 							$row['status'] = $status;
 							$row['source'] = $source;
-							$row['subject_id'] = $subject_id;
+							$row['source_id'] = $source_id;
 							$this->_db->query($this->_db->insert('table.collection')->rows($row));
 						}
 						else
-							array_push($failure, $subject_id);
+							array_push($failure, $source_id);
 					}
 				}
 				if($failure)
 					$this->widget('Widget_Notice')->set('以下记录修改失败：'.json_encode($failure), 'notice');
 				else
-					$this->widget('Widget_Notice')->set('已修改'.count($subject_ids).'条收藏记录', 'success');
+					$this->widget('Widget_Notice')->set('已修改'.count($source_ids).'条收藏记录', 'success');
 			}
 			else
 				$this->widget('Widget_Notice')->set('未选中任何项目', 'notice');
@@ -419,7 +419,7 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 		if(!$this->formInput()->validate())
 		{
 			if($this->request->source != 'Collection')
-				$row_temp = $this->_db->fetchRow($this->_db->select()->from('table.collection')->where('source = ?', $this->request->source)->where('subject_id = ?', $subject_id));
+				$row_temp = $this->_db->fetchRow($this->_db->select()->from('table.collection')->where('source = ?', $this->request->source)->where('source_id = ?', $source_id));
 			else
 				$row_temp = $this->_db->fetchRow($this->_db->select()->from('table.collection')->where('name = ?', $this->request->name));
 			if($row_temp)
@@ -469,7 +469,7 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 						'ep_count' => $ep_count,
 						'sp_count' => $sp_count,
 						'source' => $this->request->source,
-						'subject_id' => $this->request->subject_id,
+						'source_id' => $this->request->source_id,
 						'parent' => $this->request->parent,
 						'parent_order' => $this->request->parent_order,
 						'grade' => $this->request->grade,
@@ -746,9 +746,9 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 		$source->addRule('required', '必须选择来源');
 		$form->addInput($source);
 
-		$subject_id = new Typecho_Widget_Helper_Form_Element_Text('subject_id', NULL, NULL, '来源ID');
-		$subject_id->input->setAttribute('class', 'text-s w-30');
-		$form->addInput($subject_id);
+		$source_id = new Typecho_Widget_Helper_Form_Element_Text('source_id', NULL, NULL, '来源ID');
+		$source_id->input->setAttribute('class', 'text-s w-30');
+		$form->addInput($source_id);
 
 		$image = new Typecho_Widget_Helper_Form_Element_Text('image', NULL, NULL, '封面地址');
 		$image->addRule('url', '请正确输入图片地址');

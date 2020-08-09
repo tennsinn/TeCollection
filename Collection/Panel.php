@@ -29,7 +29,7 @@ $dictType = array(
 	'Film' => '电影', 'Teleplay' => '电视剧', 'Documentary' => '纪录片', 'TalkShow' => '脱口秀', 'VarietyShow' => '综艺'
 );
 $dictSource = array(
-	'Bangumi' => array('name' => 'Bangumi', 'url' => 'http://bangumi.tv/subject/'),
+	'Bangumi' => array('name' => 'Bangumi', 'url' => 'http://bgm.tv/subject/'),
 	'Douban' => array('name' => '豆瓣', 'url' => 'https://www.douban.com/subject/'),
 	'Steam' => array('name' => 'Steam', 'url' => 'http://store.steampowered.com/app/'),
 	'Wandoujia' => array('name' => '豌豆荚', 'url' => 'http://www.wandoujia.com/apps/'),
@@ -52,7 +52,7 @@ var dictType = {
 	6:{'Film':'电影', 'Teleplay':'电视剧', 'Documentary':'纪录片', 'TalkShow':'脱口秀', 'VarietyShow':'综艺'}
 };
 var dictSource = {
-	'Bangumi' : {'name' : 'Bangumi', 'url' : 'http://bangumi.tv/subject/'},
+	'Bangumi' : {'name' : 'Bangumi', 'url' : 'http://bgm.tv/subject/'},
 	'Douban' : {'name' : '豆瓣', 'url' : 'https://www.douban.com/subject/'},
 	'Steam' : {'name' : 'Steam', 'url' : 'http://store.steampowered.com/app/'},
 	'Wandoujia' : {'name' : '豌豆荚', 'url' : 'http://www.wandoujia.com/apps/'},
@@ -161,7 +161,7 @@ var dictSource = {
 															<i class="Collection-subject-class-ico Collection-subject-class-<?php echo $subject['class']; ?>"></i><small>(#<?php echo $subject['id']; ?>)</small>
 															<?php
 																if(array_key_exists($subject['source'], $dictSource))
-																	echo '<a href="'.$dictSource[$subject['source']]['url'].$subject['subject_id'].'" target="_blank">'.$subject['name'].'</a>';
+																	echo '<a href="'.$dictSource[$subject['source']]['url'].$subject['source_id'].'" target="_blank">'.$subject['name'].'</a>';
 																else
 																	echo $subject['name'];
 															?>
@@ -317,7 +317,7 @@ var dictSource = {
 										+ '<option value="TapTap">TapTap</option>'
 										+ '<option value="BiliBili">BiliBili</option>'
 									+ '</select></p>'
-									+ '<p><label for="'+id+'-subject_id">来源ID</label><input class="text-s" type="text" id="'+id+'-subject_id" name="subject_id"></p>'
+									+ '<p><label for="'+id+'-source_id">来源ID</label><input class="text-s" type="text" id="'+id+'-source_id" name="source_id"></p>'
 									+ '</form></td>'
 									+ '<td><form method="post" action="'+t.attr('rel')+'" class="Collection-subject-edit-info">'
 									+ '<p><label for="'+id+'-name">原名</label><input class="text-s" type="text" id="'+id+'-name" name="name"></p>'
@@ -355,7 +355,7 @@ var dictSource = {
 								$('select[name=class]', edit).val(subject.class);
 								$('select[name=type]', edit).val(subject.type);
 								$('select[name=source]', edit).val(subject.source);
-								$('input[name=subject_id]', edit).val(subject.subject_id);
+								$('input[name=source_id]', edit).val(subject.source_id);
 								$('input[name=name]', edit).val(subject.name);
 								$('input[name=name_cn]', edit).val(subject.name_cn);
 								$('input[name=parent]', edit).val(subject.parent);
@@ -417,7 +417,7 @@ var dictSource = {
 												$('.Collection-subject-type', oldTr).html('');
 											var tempHTML = '<i class="Collection-subject-class-ico Collection-subject-class-'+subject.class+'"></i><small>(#'+subject.id+')</small>';
 											if(dictSource.hasOwnProperty(subject.source))
-												tempHTML += '<a href="' + dictSource[subject.source]['url'] + subject.subject_id + '" target="_blank">' + subject.name + '</a>';
+												tempHTML += '<a href="' + dictSource[subject.source]['url'] + subject.source_id + '" target="_blank">' + subject.name + '</a>';
 											else
 												tempHTML += subject.name;
 											$('.Collection-subject-name', oldTr).html(tempHTML);
@@ -517,9 +517,9 @@ var dictSource = {
 										</thead>
 										<tbody>
 											<?php if($response['result']): ?>
-												<?php foreach($response['list'] as $subject_id => $subject): ?>
+												<?php foreach($response['list'] as $source_id => $subject): ?>
 													<tr>
-														<td><input type="checkbox" name="subject_id[]" value="<?php echo $subject_id; ?>"></td>
+														<td><input type="checkbox" name="source_id[]" value="<?php echo $source_id; ?>"></td>
 														<td><img src="<?php echo $subject['image']; ?>" width="100px"></td>
 														<td class="Collection-box-title"><div>
 															<i class="Collection-subject-class-ico Collection-subject-class-<?php echo $subject['class']; ?>"></i>
@@ -528,14 +528,14 @@ var dictSource = {
 																switch($request->get('source'))
 																{
 																	case 'Bangumi':
-																		echo 'http://bangumi.tv/subject/';
+																		echo 'http://bgm.tv/subject/';
 																		break;
 																	case 'Douban':
 																		$arrayDoubanClass = array('1' => 'book', '3' => 'music', '6' => 'movie');
 																		echo 'http://'.$arrayDoubanClass[$subject['class']].'.douban.com/subject/';
 																		break;
 																}
-																echo $subject_id.'">'.$subject['name'].'</a></div>';
+																echo $source_id.'">'.$subject['name'].'</a></div>';
 																echo $subject['name_cn'] ? '<div><small>'.$subject['name_cn'].'</small></div>' : '';
 															?>
 														</td>

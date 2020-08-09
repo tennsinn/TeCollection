@@ -4,7 +4,7 @@
  * 
  * @package Collection
  * @author 息E-敛
- * @version 1.8.1
+ * @version 1.8.3
  * @link http://tennsinn.com
  */
 class Collection_Plugin implements Typecho_Plugin_Interface
@@ -25,7 +25,7 @@ class Collection_Plugin implements Typecho_Plugin_Interface
 			`image` varchar(200) default NULL,
 			`ep_count` smallint(4) unsigned default NULL,
 			`source` varchar(10) NOT NULL default 'Collection',
-			`subject_id` varchar(50) default NULL,
+			`source_id` varchar(50) default NULL,
 			`parent` int unsigned NOT NULL default 0,
 			`parent_order` int unsigned NOT NULL default 0,
 			`grade` tinyint(1) unsigned NOT NULL default 1,
