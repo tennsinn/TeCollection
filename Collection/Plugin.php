@@ -4,7 +4,7 @@
  * 
  * @package Collection
  * @author 息E-敛
- * @version 1.7.4
+ * @version 1.8.0
  * @link http://tennsinn.com
  */
 class Collection_Plugin implements Typecho_Plugin_Interface
@@ -17,27 +17,29 @@ class Collection_Plugin implements Typecho_Plugin_Interface
 		$charset = Helper::options()->charset == 'UTF-8' ? 'utf8' : 'gbk';
 		$query = 'CREATE TABLE IF NOT EXISTS '. $db->getPrefix() . 'collection' ." (
 			`id` int unsigned NOT NULL auto_increment PRIMARY KEY,
+			`category` varchar(20) default 'subject',
 			`class` tinyint(1) unsigned NOT NULL,
 			`type` varchar(20) default NULL,
 			`name` varchar(50) NOT NULL,
 			`name_cn` varchar(50) default NULL,
 			`image` varchar(200) default NULL,
 			`ep_count` smallint(4) unsigned default NULL,
-			`sp_count` smallint(3) unsigned default NULL,
 			`source` varchar(10) NOT NULL default 'Collection',
 			`subject_id` varchar(50) default NULL,
 			`parent` int unsigned NOT NULL default 0,
+			`parent_order` int unsigned NOT NULL default 0,
 			`grade` tinyint(1) unsigned NOT NULL default 1,
 			`status` char(7) NOT NULL default 'wish',
 			`time_start` int(10) unsigned default NULL,
 			`time_finish` int(10) unsigned default NULL,
 			`time_touch` int(10) unsigned NOT NULL,
 			`ep_status` smallint(4) unsigned default NULL,
-			`sp_status` smallint(3) unsigned default NULL,
 			`rate` tinyint(2) unsigned NOT NULL default 0,
 			`tags` varchar(100) default NULL,
 			`comment` text default NULL,
-			`note` tinytext default NULL
+			`note` tinytext default NULL,
+			`sp_count` smallint(3) unsigned default NULL,
+			`sp_status` smallint(3) unsigned default NULL
 			) ENGINE=MyISAM DEFAULT CHARSET=". $charset;
 		$db->query($query);
 	}

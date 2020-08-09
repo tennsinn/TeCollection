@@ -18,8 +18,8 @@ $arrayClassStatus = array(
 	'dropped' => array('抛弃', '抛弃', '抛弃', '抛弃', '抛弃', '抛弃', '抛弃')
 );
 
+$dictCategory = array('series' => '系列', 'subject' => '记录', 'volume' => '分卷', 'episode' => '章节');
 $dictClass = array(1 => '书籍', 2 => '动画', 3 => '音乐', 4 => '游戏', 5 => '广播', 6 => '影视');
-
 $dictType = array(
 	'Novel' => '小说', 'Comic' => '漫画', 'Doujinshi' => '同人志', 'Textbook' => '教材',
 	'TV' => 'TV', 'OVA' => 'OVA', 'OAD' => 'OAD', 'Movie' => '剧场',
@@ -28,7 +28,6 @@ $dictType = array(
 	'RadioDrama' => '广播剧', 'Drama' => '歌剧',
 	'Film' => '电影', 'Teleplay' => '电视剧', 'Documentary' => '纪录片', 'TalkShow' => '脱口秀', 'VarietyShow' => '综艺'
 );
-
 $dictSource = array(
 	'Bangumi' => array('name' => 'Bangumi', 'url' => 'http://bangumi.tv/subject/'),
 	'Douban' => array('name' => '豆瓣', 'url' => 'https://www.douban.com/subject/'),
@@ -42,6 +41,7 @@ $dictSource = array(
 <link rel="stylesheet" type="text/css" href="<?php $options->pluginUrl('Collection/template/stylesheet-common.css'); ?>">
 <link rel="stylesheet" type="text/css" href="<?php $options->pluginUrl('Collection/template/stylesheet-panel.css'); ?>">
 <script type="text/javascript">
+var dictCategory = {'series' : '系列', 'subject' : '记录', 'volume' : '分卷', 'episode' : '章节'};
 var dictClass = {1:'书籍', 2:'动画', 3:'音乐', 4:'游戏', 5:'广播', 6:'影视'};
 var dictType = {
 	1:{'Novel':'小说', 'Comic':'漫画', 'Doujinshi':'同人志', 'Textbook':'教材'},
@@ -98,9 +98,9 @@ var dictSource = {
 									<input type="hidden" value="<?php echo $class; ?>" name="class">
 									<input type="hidden" value="<?php echo $status; ?>" name="status">
 									<?php if ('' != $request->keywords || '' != $request->field): ?>
-                            			<a href="<?php $options->adminUrl('extending.php?panel=Collection%2FPanel.php' . (isset($request->class) ? '&class=' . htmlspecialchars($request->get('class')) : '') . (isset($request->status) ? '&status=' . htmlspecialchars($request->get('status')) : '')); ?>"><?php _e('&laquo; 取消筛选'); ?></a>
-                            		<?php endif; ?>
-                            		<label>搜索</label>
+										<a href="<?php $options->adminUrl('extending.php?panel=Collection%2FPanel.php' . (isset($request->class) ? '&class=' . htmlspecialchars($request->get('class')) : '') . (isset($request->status) ? '&status=' . htmlspecialchars($request->get('status')) : '')); ?>"><?php _e('&laquo; 取消筛选'); ?></a>
+									<?php endif; ?>
+									<label>搜索</label>
 									<input type="text" class="text-s" placeholder="<?php _e('请输入关键字'); ?>" value="<?php echo htmlspecialchars($request->keywords); ?>"<?php if ('' == $request->keywords): ?> onclick="value='';name='keywords';" <?php else: ?> name="keywords"<?php endif; ?>>
 									<select name="field">
 										<option value="name"<?php if($request->get('field') == 'name'): ?> selected="true"<?php endif; ?>>名称</option>
@@ -148,8 +148,13 @@ var dictSource = {
 												<tr id="Collection-subject-<?php echo $subject['id']; ?>" data-subject="<?php echo htmlspecialchars(json_encode($subject)); ?>">
 													<td><input type="checkbox" name="id[]" value="<?php echo $subject['id']; ?>"></td>
 													<td>
+														<div class="Collection-subject-category"><?php echo $dictCategory[$subject['category']]; ?></div>
 														<div class="Collection-subject-image"><img src="<?php echo $subject['image'] ? $subject['image'] : Typecho_common::url('Collection/template/default_cover.jpg', $options->pluginUrl); ?>" width="100px"></div>
-														<div class="Collection-subject-type"><?php echo $dictClass[$subject['class']].'/'.($dictType[$subject['type']] ? $dictType[$subject['type']] : '未知'); ?></div>
+														<div class="Collection-subject-type">
+															<?php if('subject' == $subject['category'])
+																echo $dictClass[$subject['class']].'/'.($dictType[$subject['type']] ? $dictType[$subject['type']] : '未知');
+															?>
+														</div>
 													</td>
 													<td class="Collection-subject-meta">
 														<div class="Collection-subject-name">
@@ -281,6 +286,12 @@ var dictSource = {
 								var string = '<tr class="Collection-subject-edit">'
 									+ '<td> </td>'
 									+ '<td><form method="post" action="'+t.attr('rel')+'" class="Collection-subject-edit-content">'
+										+ '<p><label for="'+id+'-category"><?php _e('大类'); ?></label><select id="'+id+'-category" name="category" class="w-100">'
+											+ '<option value="series">系列</option>'
+											+ '<option value="subject">记录</option>'
+											+ '<option value="volume">分卷</option>'
+											+ '<option value="episode">章节</option>'
+										+ '</select></p>'
 										+ '<p><label for="'+id+'-image"><?php _e('封面'); ?></label>'
 										+ '<textarea name="image" id="'+id+'-image" rows="3" class="w-100 mono"></textarea></p>'
 										+ '<p><label for="'+id+'-class"><?php _e('种类'); ?></label><select id="'+id+'-class" name="class" class="w-100">'
@@ -338,6 +349,7 @@ var dictSource = {
 									+ '</tr>';
 								var edit = $(string).data('id', id).data('subject', subject).insertAfter(tr);
 								
+								$('select[name=category]', edit).val(subject.category);
 								$('textarea[name=image]', edit).val(subject.image);
 								$('select[name=class]', edit).val(subject.class);
 								$('select[name=type]', edit).val(subject.type);
@@ -395,8 +407,12 @@ var dictSource = {
 										var stringProgress = '';
 										if(data.status)
 										{
+											$('.Collection-subject-category', oldTr).html(dictCategory[subject.category]);
 											$('.Collection-subject-image', oldTr).html('<img src="'+(subject.image ? subject.image : '<?php $options->pluginUrl('Collection/template/default_cover.jpg'); ?>')+'" width="100px">');
-											$('.Collection-subject-type', oldTr).html(dictClass[subject.class]+'/'+(subject.type ? dictType[subject.class][subject.type] : '未知'));
+											if('subject' == subject.category)
+												$('.Collection-subject-type', oldTr).html(dictClass[subject.class]+'/'+(subject.type ? dictType[subject.class][subject.type] : '未知'));
+											else
+												$('.Collection-subject-type', oldTr).html('');
 											var tempHTML = '<i class="Collection-subject-class-ico Collection-subject-class-'+subject.class+'"></i><small>(#'+subject.id+')</small>';
 											if(dictSource.hasOwnProperty(subject.source))
 												tempHTML += '<a href="' + dictSource[subject.source]['url'] + subject.subject_id + '" target="_blank">' + subject.name + '</a>';

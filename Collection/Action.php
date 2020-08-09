@@ -28,6 +28,7 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 		'RadioDrama', 'Drama',
 		'Film', 'Teleplay', 'Documentary', 'TalkShow', 'VarietyShow'
 	);
+	private $arrayCategory = array('series', 'subject', 'volume', 'episode');
 
 	/**
 	 * 对外展示收藏内容
@@ -36,6 +37,7 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 	 */
 	public function getCollection()
 	{
+		$interCategory = array_intersect($this->request->getArray('category'), $this->arrayCategory);
 		$interClass = array_intersect($this->request->filter('int')->getArray('class'), array(1, 2, 3, 4, 5, 6));
 		$interType = array_intersect($this->request->getArray('type'), $this->arrayType);
 		$interStatus = array_intersect($this->request->getArray('status'), array('do', 'wish', 'collect', 'on_hold', 'dropped'));
@@ -44,6 +46,7 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 		$maxRate = ($rate[0]<=$rate[1] && $rate[1]<=10) ? $rate[1] : '10';
 
 		$query = $this->_db->select()->from('table.collection')->where('grade = ?', 1);
+		$query->where("category='".implode("' OR type='", $interCategory)."'");
 		$query->where('class='.implode(' OR class=', $interClass));
 		$query->where("type='".implode("' OR type='", $interType)."'");
 		$query->where("status='".implode("' OR status='", $interStatus)."'");
@@ -121,6 +124,9 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 		if(!$this->request->get('id'))
 			$this->response->throwJson(array('success' => false, 'message' => '缺少ID信息'));
 
+		if(!is_null($this->request->get('category')) && !in_array($this->request->get('category'), $this->arrayCategory))
+			$this->response->throwJson(array('success' => false, 'message' => '大类信息错误'));
+
 		if(!is_numeric($this->request->get('class')) || $this->request->class<=0 || $this->request->class>6)
 			$this->response->throwJson(array('success' => false, 'message' => '种类信息错误'));
 
@@ -145,6 +151,9 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 		if($this->request->get('parent') && !is_numeric($this->request->parent) && $this->_db->fetchRow($this->_db->select()->from('table.collection')->where('id = ?', $this->request->parent)))
 			$this->response->throwJson(array('success' => false, 'message' => '父记录错误或不存在父记录'));
 
+		//if($this->request->get('parent_order') && !is_numeric($this->request->parent_order))
+		//	$this->response->throwJson(array('success' => false, 'message' => '记录序号错误'));
+
 		if(!is_numeric($this->request->get('grade')) || $this->request->grade<0 || $this->request->grade>9)
 			$this->response->throwJson(array('success' => false, 'message' => '请用0-9的数字表示级别'));
 
@@ -152,6 +161,7 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 			$this->response->throwJson(array('success' => false, 'message' => '评价请使用0-10的数字表示'));
 
 		$row = array(
+			'category' => $this->request->category,
 			'class' => $this->request->class,
 			'type' => $this->request->type,
 			'name' => $this->request->name, 
@@ -162,6 +172,7 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 			'source' => $this->request->source,
 			'subject_id' => $this->request->subject_id,
 			'parent' => $this->request->parent,
+		//	'parent_order' => $this->request->parent_order,
 			'grade' => $this->request->grade,
 			'time_touch' => Typecho_Date::gmtTime(),
 			'ep_status' => $this->request->ep_status,
@@ -231,7 +242,6 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 			}
 			elseif(isset($this->request->subject_id) && $subject_ids = $this->request->filter('int')->getArray('subject_id'))
 			{
-				//尝试通过JS传入数据
 				$failure = array();
 				$source = $this->request->get('source');
 				foreach($subject_ids as $subject_id)
@@ -450,6 +460,7 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 						$time_finish = Typecho_Date::gmtTime();
 				$this->_db->query($this->_db->insert('table.collection')->rows(
 					array(
+						'category' => $this->request->category,
 						'class' => $this->request->class,
 						'type' => $this->request->type,
 						'name' => $this->request->name,
@@ -460,6 +471,7 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 						'source' => $this->request->source,
 						'subject_id' => $this->request->subject_id,
 						'parent' => $this->request->parent,
+					//	'parent_order' => $this->request->parent_order,
 						'grade' => $this->request->grade,
 						'status' => $this->request->status,
 						'time_start' => $time_start,
@@ -488,12 +500,15 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 	public function showCollection($pageSize=20)
 	{
 		$status = isset($this->request->status) ? $this->request->get('status') : 'do';
+		$category = isset($this->request->category) ? $this->request->get('category') : 'all';
 		$class = isset($this->request->class) ? $this->request->get('class') : 0;
 		$type = isset($this->request->type) ? $this->request->get('type') : 'all';
 		$field = isset($this->request->field) ? $this->request->get('field') : 'name';
 		$query = $this->_db->select()->from('table.collection');
 		if($status != 'all')
 			$query->where('status = ?', $status);
+		if($category != 'all')
+			$query->where('type = ?', $category);
 		if($class != 0)
 			$query->where('class = ?', $class);
 		if($type != 'all')
@@ -542,11 +557,11 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 				$query->order('time_touch', Typecho_Db::SORT_DESC);
 			$rows = $this->_db->fetchAll($query->page($page, $pageSize));
 			$query = $this->request->makeUriByRequest('page={page}');
-			foreach ($rows as $key => $value)
+			/*foreach ($rows as $key => $value)
 			{
 				$rows[$key]['relatedPrev'] = $this->_db->fetchRow($this->_db->select('id', 'name', 'image')->from('table.collection')->where('id = ?', $value['parent']));
 				$rows[$key]['relatedNext'] = $this->_db->fetchRow($this->_db->select('id', 'name', 'image')->from('table.collection')->where('parent = ?', $value['id']));
-			}
+			}*/
 			$nav = new Typecho_Widget_Helper_PageNavigator_Box($num, $page, $pageSize, $query);
 			return array('result' => true, 'list' => $rows, 'nav' => $nav);
 		}
@@ -702,6 +717,11 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 		$form->addInput($do);
 		$do->value('addSubject');
 
+		$dictCategory = array('series' => '系列', 'subject' => '记录', 'volume' => '分卷', 'episode' => '章节');
+		$category = new Typecho_Widget_Helper_Form_Element_Radio('category', $dictCategory, 'subject', '大类 *');
+		$category->addRule('required', '必须选择大类');
+		$form->addInput($category);
+
 		$dictClass = array(1 => '书籍', 2 => '动画', 3 => '音乐', 4 => '游戏', 5 => '广播', 6 => '影视');
 		$class = new Typecho_Widget_Helper_Form_Element_Radio('class', $dictClass, 1, '分类 *');
 		$class->addRule('required', '必须选择分类');
@@ -746,6 +766,11 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 		$parent->addRule('isInteger', '请正确输入ID');
 		$form->addInput($parent);
 
+	/*	$parent_order = new Typecho_Widget_Helper_Form_Element_Text('parent_order', NULL, 0, '关联顺序', '关联的记录排序，无则为0');
+		$parent_order ->input->setAttribute('class', 'text-s w-30');
+		$parent_order->addRule('isInteger', '请正确输入ID');
+		$form->addInput($parent_order);
+*/
 		$grade = new Typecho_Widget_Helper_Form_Element_radio('grade', array(0 => '私密', 1 => '公开'), 1, '显示分级');
 		$grade->addRule('required', '必须选择显示分级');
 		$form->addInput($grade);
