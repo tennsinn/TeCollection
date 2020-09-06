@@ -4,7 +4,7 @@
  * 
  * @package Collection
  * @author 息E-敛
- * @version 1.8.5
+ * @version 1.8.6
  * @link http://tennsinn.com
  */
 class Collection_Plugin implements Typecho_Plugin_Interface
@@ -28,7 +28,7 @@ class Collection_Plugin implements Typecho_Plugin_Interface
 			`source_id` varchar(50) default NULL,
 			`parent` int unsigned NOT NULL default 0,
 			`parent_order` int unsigned NOT NULL default 0,
-			`grade` tinyint(1) unsigned NOT NULL default 1,
+			`grade` tinyint(1) unsigned NOT NULL default 0,
 			`status` char(7) NOT NULL default 'wish',
 			`time_start` int(10) unsigned default NULL,
 			`time_finish` int(10) unsigned default NULL,

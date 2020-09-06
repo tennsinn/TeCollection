@@ -45,7 +45,7 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 		$minRate = ($rate[0]<=$rate[1] && $rate[0]>=0) ? $rate[0] : '0';
 		$maxRate = ($rate[0]<=$rate[1] && $rate[1]<=10) ? $rate[1] : '10';
 
-		$query = $this->_db->select()->from('table.collection')->where('grade = ?', 1);
+		$query = $this->_db->select()->from('table.collection')->where('grade = ?', 0);
 		$query->where("category='".implode("' OR type='", $interCategory)."'");
 		$query->where('class='.implode(' OR class=', $interClass));
 		$query->where("type='".implode("' OR type='", $interType)."'");
@@ -771,7 +771,7 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 		$parent_order->addRule('isInteger', '请正确输入ID');
 		$form->addInput($parent_order);
 
-		$grade = new Typecho_Widget_Helper_Form_Element_radio('grade', array(0 => '私密', 1 => '公开'), 1, '显示分级');
+		$grade = new Typecho_Widget_Helper_Form_Element_radio('grade', array(0 => '公开', 1 => '私密1', 2 => '私密2', 3 => '私密3', 4 => '私密4', 5 => '私密5', 6 => '私密6', 7 => '私密7', 8 => '私密8', 9 => '私密9'), 0, '显示分级');
 		$grade->addRule('required', '必须选择显示分级');
 		$form->addInput($grade);
 

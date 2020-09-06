@@ -36,6 +36,7 @@ $dictSource = array(
 	'TapTap' => array('name' => 'TapTap', 'url' => 'https://www.taptap.com/app/'),
 	'BiliBili' => array('name' => 'BiliBili', 'url' => 'https://www.bilibili.com/bangumi/media/')
 );
+$dictGrade = array(0 => '公开', 1 => '私密1', 2 => '私密2', 3 => '私密3', 4 => '私密4', 5 => '私密5', 6 => '私密6', 7 => '私密7', 8 => '私密8', 9 => '私密9');
 ?>
 
 <link rel="stylesheet" type="text/css" href="<?php $options->pluginUrl('Collection/template/stylesheet-common.css'); ?>">
@@ -53,7 +54,7 @@ echo "};\n";
 echo "var dictType = {";
 	foreach ($dictType as $subkey => $subvalue)
 	{
-		echo "'$subkey' : {";
+		echo "$subkey : {";
 		foreach ($subvalue as $key => $value)
 			echo "'$key' : '$value', ";
 		echo "},";
@@ -67,6 +68,10 @@ foreach ($dictSource as $subkey => $subvalue)
 		echo "'$key' : '$value', ";
 	echo "},";
 }
+echo "};\n";
+echo "var dictGrade = {";
+foreach ($dictGrade as $key => $value)
+	echo "$key : '$value', ";
 echo "};\n";
 ?>
 </script>
@@ -158,9 +163,9 @@ echo "};\n";
 												<tr id="Collection-subject-<?php echo $subject['id']; ?>" data-subject="<?php echo htmlspecialchars(json_encode($subject)); ?>">
 													<td><input type="checkbox" name="id[]" value="<?php echo $subject['id']; ?>"></td>
 													<td>
-														<div class="Collection-subject-category"><?php echo $dictCategory[$subject['category']]; ?></div>
+														<div class="Collection-subject-category"><?php echo $dictCategory[$subject['category']].' / '.$dictGrade[$subject['grade']]; ?></div>
 														<div class="Collection-subject-image"><img src="<?php echo $subject['image'] ? $subject['image'] : Typecho_common::url('Collection/template/default_cover.jpg', $options->pluginUrl); ?>" width="100px"></div>
-														<div class="Collection-subject-type"><?php echo $dictClass[$subject['class']].'/'.($dictType[$subject['class']][$subject['type']] ? $dictType[$subject['class']][$subject['type']] : '未知'); ?></div>
+														<div class="Collection-subject-type"><?php echo $dictClass[$subject['class']].' / '.($dictType[$subject['class']][$subject['type']] ? $dictType[$subject['class']][$subject['type']] : '未知'); ?></div>
 													</td>
 													<td class="Collection-subject-meta">
 														<div class="Collection-subject-name">
@@ -329,9 +334,11 @@ echo "};\n";
 									+ '<p><label for="'+id+'-sp_count">副进度总数</label><input class="text-s w-100" type="number" name="sp_count" id="'+id+'-sp_count" min="0" max="999"></p>'
 									+ '</form></td>'
 									+ '<td id="review-'+id+'"><form method="post" action="'+t.attr('rel')+'" class="Collection-subject-edit-content">'
-									+ '<p><label for="'+id+'-grade">显示分级</label>'
-									+ '<input type="radio" id="Collection-subject-'+id+'-edit-grade-0" name="grade" value="0" class="Collection-subject-edit-grade"><label for="Collection-subject-'+id+'-edit-grade-0">私密</label>'
-									+ '<input type="radio" id="Collection-subject-'+id+'-edit-grade-1" name="grade" value="1" class="Collection-subject-edit-grade"><label for="Collection-subject-'+id+'-edit-grade-1">公开</label></p>'
+									+ '<p><label for="'+id+'-grade">显示分级</label><select id="'+id+'-grade" name="grade" class="w-100">'
+								$.each(dictGrade, function(key, value){
+									string += '<option value="'+key+'">'+value+'</option>';
+								});
+								string += '</select></p>'
 									+ '<p><label for="'+id+'-note">备注</label>'
 									+ '<textarea name="note" id="'+id+'-note" rows="2" class="w-100 mono"></textarea></p>'
 									//+ '<p><label for="'+id+'-rate">评价：'
@@ -363,7 +370,7 @@ echo "};\n";
 								$('input[name=ep_count]', edit).val(subject.ep_count);
 								$('input[name=sp_status]', edit).val(subject.sp_status);
 								$('input[name=sp_count]', edit).val(subject.sp_count);
-								$('input[name=grade][value="'+subject.grade+'"]', edit).attr("checked", true);
+								$('select[name=grade]', edit).val(subject.grade);
 								$('textarea[name=note]', edit).val(subject.note);
 								$('input[name=rate]', edit).val(subject.rate);
 								$('input[name=tags]', edit).val(subject.tags);
@@ -408,9 +415,9 @@ echo "};\n";
 										var stringProgress = '';
 										if(data.status)
 										{
-											$('.Collection-subject-category', oldTr).html(dictCategory[subject.category]);
+											$('.Collection-subject-category', oldTr).html(dictCategory[subject.category]+' / '+dictGrade[subject.grade]);
 											$('.Collection-subject-image', oldTr).html('<img src="'+(subject.image ? subject.image : '<?php $options->pluginUrl('Collection/template/default_cover.jpg'); ?>')+'" width="100px">');
-											$('.Collection-subject-type', oldTr).html(dictClass[subject.class]+'/'+(subject.type ? dictType[subject.class][subject.type] : '未知'));
+											$('.Collection-subject-type', oldTr).html(dictClass[subject.class]+' / '+(subject.type ? dictType[subject.class][subject.type] : '未知'));
 											var tempHTML = '<i class="Collection-subject-class-ico Collection-subject-class-'+subject.class+'"></i><small>(#'+subject.id+')</small>';
 											if(dictSource.hasOwnProperty(subject.source))
 												tempHTML += '<a href="' + dictSource[subject.source]['url'] + subject.source_id + '" target="_blank">' + subject.name + '</a>';
