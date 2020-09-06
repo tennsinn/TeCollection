@@ -21,12 +21,12 @@ $arrayClassStatus = array(
 $dictCategory = array('series' => '系列', 'subject' => '记录', 'volume' => '分卷', 'episode' => '章节');
 $dictClass = array(1 => '书籍', 2 => '动画', 3 => '音乐', 4 => '游戏', 5 => '广播', 6 => '影视');
 $dictType = array(
-	'Novel' => '小说', 'Comic' => '漫画', 'Doujinshi' => '同人志', 'Textbook' => '教材',
-	'TV' => 'TV', 'OVA' => 'OVA', 'OAD' => 'OAD', 'Movie' => '剧场',
-	'Album' => '专辑', 'Single' => '单曲', 'Maxi' => 'Maxi', 'EP' => '细碟', 'Selections' => '选集',
-	'iOS' => 'iOS', 'Android' => 'Android', 'PSP' => 'PSP', 'PSV' => 'PSV', 'PS4' => 'PS4', 'NDS' => 'NDS', '3DS' => '3DS', 'NSwitch' => 'NSwitch', 'XBox' => 'XBox', 'Windows' => 'Windows', 'Online' => '网游', 'Table' => '桌游', 
-	'RadioDrama' => '广播剧', 'Drama' => '歌剧',
-	'Film' => '电影', 'Teleplay' => '电视剧', 'Documentary' => '纪录片', 'TalkShow' => '脱口秀', 'VarietyShow' => '综艺'
+	1 => array('Novel' => '小说', 'Comic' => '漫画', 'Doujinshi' => '同人志', 'Textbook' => '教材'),
+	2 => array('TV' => 'TV', 'OVA' => 'OVA', 'OAD' => 'OAD', 'Movie' => '剧场'),
+	3 => array('Album' => '专辑', 'Single' => '单曲', 'Maxi' => 'Maxi', 'EP' => '细碟', 'Selections' => '选集'),
+	4 => array('iOS' => 'iOS', 'Android' => 'Android', 'PSP' => 'PSP', 'PSV' => 'PSV', 'PS4' => 'PS4', 'NDS' => 'NDS', '3DS' => '3DS', 'NSwitch' => 'NSwitch', 'XBox' => 'XBox', 'Windows' => 'Windows', 'Online' => '网游', 'Table' => '桌游'),
+	5 => array('RadioDrama' => '广播剧', 'Drama' => '歌剧'),
+	6 => array('Film' => '电影', 'Teleplay' => '电视剧', 'Documentary' => '纪录片', 'TalkShow' => '脱口秀', 'VarietyShow' => '综艺')
 );
 $dictSource = array(
 	'Bangumi' => array('name' => 'Bangumi', 'url' => 'http://bgm.tv/subject/'),
@@ -41,24 +41,34 @@ $dictSource = array(
 <link rel="stylesheet" type="text/css" href="<?php $options->pluginUrl('Collection/template/stylesheet-common.css'); ?>">
 <link rel="stylesheet" type="text/css" href="<?php $options->pluginUrl('Collection/template/stylesheet-panel.css'); ?>">
 <script type="text/javascript">
-var dictCategory = {'series' : '系列', 'subject' : '记录', 'volume' : '分卷', 'episode' : '章节'};
-var dictClass = {1:'书籍', 2:'动画', 3:'音乐', 4:'游戏', 5:'广播', 6:'影视'};
-var dictType = {
-	1:{'Novel':'小说', 'Comic':'漫画', 'Doujinshi':'同人志', 'Textbook':'教材'},
-	2:{'TV':'TV', 'OVA':'OVA', 'OAD':'OAD', 'Movie':'剧场'},
-	3:{'Album':'专辑', 'Single':'单曲', 'Maxi':'Maxi', 'EP':'细碟', 'Selections':'选集'},
-	4:{'iOS':'iOS', 'Android':'Android', 'PSP':'PSP', 'PSV':'PSV', 'PS4':'PS4', 'NDS':'NDS', '3DS':'3DS', 'NSwitch':'NSwitch', 'XBox':'XBox', 'Windows':'Windows', 'Online':'网游', 'Table':'桌游'}, 
-	5:{'RadioDrama':'广播剧', 'Drama':'歌剧'},
-	6:{'Film':'电影', 'Teleplay':'电视剧', 'Documentary':'纪录片', 'TalkShow':'脱口秀', 'VarietyShow':'综艺'}
-};
-var dictSource = {
-	'Bangumi' : {'name' : 'Bangumi', 'url' : 'http://bgm.tv/subject/'},
-	'Douban' : {'name' : '豆瓣', 'url' : 'https://www.douban.com/subject/'},
-	'Steam' : {'name' : 'Steam', 'url' : 'http://store.steampowered.com/app/'},
-	'Wandoujia' : {'name' : '豌豆荚', 'url' : 'http://www.wandoujia.com/apps/'},
-	'TapTap' : {'name' : 'TapTap', 'url' : 'https://www.taptap.com/app/'},
-	'BiliBili': {'name' : 'BiliBili', 'url' : 'https://www.bilibili.com/bangumi/media/'}
-};
+<?php
+echo "var dictCategory = {";
+foreach ($dictCategory as $key => $value)
+	echo "'$key' : '$value', ";
+echo "};\n";
+echo "var dictClass = {";
+foreach ($dictClass as $key => $value)
+	echo "'$key' : '$value', ";
+echo "};\n";
+echo "var dictType = {";
+	foreach ($dictType as $subkey => $subvalue)
+	{
+		echo "'$subkey' : {";
+		foreach ($subvalue as $key => $value)
+			echo "'$key' : '$value', ";
+		echo "},";
+	}
+	echo "};\n";
+echo "var dictSource = {";
+foreach ($dictSource as $subkey => $subvalue)
+{
+	echo "'$subkey' : {";
+	foreach ($subvalue as $key => $value)
+		echo "'$key' : '$value', ";
+	echo "},";
+}
+echo "};\n";
+?>
 </script>
 <div class="main">
 	<div class="body container">
@@ -150,11 +160,7 @@ var dictSource = {
 													<td>
 														<div class="Collection-subject-category"><?php echo $dictCategory[$subject['category']]; ?></div>
 														<div class="Collection-subject-image"><img src="<?php echo $subject['image'] ? $subject['image'] : Typecho_common::url('Collection/template/default_cover.jpg', $options->pluginUrl); ?>" width="100px"></div>
-														<div class="Collection-subject-type">
-															<?php if('subject' == $subject['category'])
-																echo $dictClass[$subject['class']].'/'.($dictType[$subject['type']] ? $dictType[$subject['type']] : '未知');
-															?>
-														</div>
+														<div class="Collection-subject-type"><?php echo $dictClass[$subject['class']].'/'.($dictType[$subject['class']][$subject['type']] ? $dictType[$subject['class']][$subject['type']] : '未知'); ?></div>
 													</td>
 													<td class="Collection-subject-meta">
 														<div class="Collection-subject-name">
@@ -286,22 +292,18 @@ var dictSource = {
 								var string = '<tr class="Collection-subject-edit">'
 									+ '<td> </td>'
 									+ '<td><form method="post" action="'+t.attr('rel')+'" class="Collection-subject-edit-content">'
-										+ '<p><label for="'+id+'-category"><?php _e('大类'); ?></label><select id="'+id+'-category" name="category" class="w-100">'
-											+ '<option value="series">系列</option>'
-											+ '<option value="subject">记录</option>'
-											+ '<option value="volume">分卷</option>'
-											+ '<option value="episode">章节</option>'
-										+ '</select></p>'
+										+ '<p><label for="'+id+'-category"><?php _e('大类'); ?></label><select id="'+id+'-category" name="category" class="w-100">';
+								$.each(dictCategory, function(key, value){
+									string += '<option value="'+key+'">'+value+'</option>';
+								});
+								string += '</select></p>'
 										+ '<p><label for="'+id+'-image"><?php _e('封面'); ?></label>'
 										+ '<textarea name="image" id="'+id+'-image" rows="3" class="w-100 mono"></textarea></p>'
-										+ '<p><label for="'+id+'-class"><?php _e('种类'); ?></label><select id="'+id+'-class" name="class" class="w-100">'
-											+ '<option value="1">书籍</option>'
-											+ '<option value="2">动画</option>'
-											+ '<option value="3">音乐</option>'
-											+ '<option value="4">游戏</option>'
-											+ '<option value="5">广播</option>'
-											+ '<option value="6">影视</option>'
-										+ '</select></p>'
+										+ '<p><label for="'+id+'-class"><?php _e('种类'); ?></label><select id="'+id+'-class" name="class" class="w-100">';
+								$.each(dictClass, function(key, value){
+									string += '<option value="'+key+'">'+value+'</option>';
+								});
+								string += '</select></p>'
 										+ '<p><label for="'+id+'-type"><?php _e('类型'); ?></label><select id="'+id+'-type" name="type" class="w-100">'
 										+ '<option value="">未知</option>';
 								$.each(dictType[subject.class], function(key, value){
@@ -309,14 +311,11 @@ var dictSource = {
 								});
 								string += '</select></p>'
 									+ '<p><label for="'+id+'-source"><?php _e('信息来源'); ?></label><select id="'+id+'-source" name="source" class="w-100">'
-										+ '<option value="Collection">收藏</option>'
-										+ '<option value="Bangumi">Bangumi</option>'
-										+ '<option value="Douban">豆瓣</option>'
-										+ '<option value="Steam">Steam</option>'
-										+ '<option value="Wandoujia">豌豆荚</option>'
-										+ '<option value="TapTap">TapTap</option>'
-										+ '<option value="BiliBili">BiliBili</option>'
-									+ '</select></p>'
+										+ '<option value="Collection">收藏</option>';
+								$.each(dictSource, function(key, value){
+									string += '<option value="'+key+'">'+value['name']+'</option>';
+								});
+								string += '</select></p>'
 									+ '<p><label for="'+id+'-source_id">来源ID</label><input class="text-s" type="text" id="'+id+'-source_id" name="source_id"></p>'
 									+ '</form></td>'
 									+ '<td><form method="post" action="'+t.attr('rel')+'" class="Collection-subject-edit-info">'
@@ -411,10 +410,7 @@ var dictSource = {
 										{
 											$('.Collection-subject-category', oldTr).html(dictCategory[subject.category]);
 											$('.Collection-subject-image', oldTr).html('<img src="'+(subject.image ? subject.image : '<?php $options->pluginUrl('Collection/template/default_cover.jpg'); ?>')+'" width="100px">');
-											if('subject' == subject.category)
-												$('.Collection-subject-type', oldTr).html(dictClass[subject.class]+'/'+(subject.type ? dictType[subject.class][subject.type] : '未知'));
-											else
-												$('.Collection-subject-type', oldTr).html('');
+											$('.Collection-subject-type', oldTr).html(dictClass[subject.class]+'/'+(subject.type ? dictType[subject.class][subject.type] : '未知'));
 											var tempHTML = '<i class="Collection-subject-class-ico Collection-subject-class-'+subject.class+'"></i><small>(#'+subject.id+')</small>';
 											if(dictSource.hasOwnProperty(subject.source))
 												tempHTML += '<a href="' + dictSource[subject.source]['url'] + subject.source_id + '" target="_blank">' + subject.name + '</a>';
