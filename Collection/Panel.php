@@ -591,8 +591,8 @@ var dictSource = {
 										tempHTML += '<span><input name="type" type="radio" value="'+key+'" id="type-'+key+'"><label for="type-'+key+'">'+value+'</label></span>';
 									});
 									tempHTML += '</li>';
-									$('#typecho-option-item-type-2').html(tempHTML);
-									$('#typecho-option-item-type-2 input').first().attr('checked','true');
+									$('#typecho-option-item-type-3').html(tempHTML);
+									$('#typecho-option-item-type-3 input').first().attr('checked','true');
 								});
 							});
 						</script>

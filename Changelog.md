@@ -2,6 +2,7 @@
 
 ## v1.8.0
 
+- 1.8.4 修正新增-输入中类型切换问题
 - 1.8.3 修改Bangumi链接
 - 1.8.2 修改subject_id为source_id
 - 1.8.1 增加parent_order
