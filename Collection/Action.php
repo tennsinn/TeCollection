@@ -22,13 +22,20 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 
 	private $arrayType = array(
 		'Novel', 'Comic', 'Doujinshi', 'Textbook',
-		'TV', 'OVA', 'OAD', 'Movie',
+		'TV', 'Movie', 'OVA', 'OAD', 'SP',
 		'Album', 'Single', 'Maxi', 'EP', 'Selections',
 		'iOS', 'Android', 'PSP', 'PSV', 'PS4', 'NDS', '3DS', 'NSwitch', 'XBox', 'Windows', 'Online', 'Table', 
 		'RadioDrama', 'Drama',
 		'Film', 'Teleplay', 'Documentary', 'TalkShow', 'VarietyShow'
 	);
 	private $arrayCategory = array('series', 'subject', 'volume', 'episode');
+
+	private $dictCategory = array('series' => '系列', 'subject' => '记录', 'volume' => '分卷', 'episode' => '章节');
+	private $dictClass = array(1 => '书籍', 2 => '动画', 3 => '音乐', 4 => '游戏', 5 => '广播', 6 => '影视');
+	private $dictType = array('Novel' => '小说', 'Comic' => '漫画', 'Doujinshi' => '同人志', 'Textbook' => '课本');
+	private $dictSource = array('Collection' => '无来源', 'Bangumi' => 'Bangumi', 'Douban' => '豆瓣', 'Wandoujia' => '豌豆荚', 'Steam' => 'Steam', 'TapTap' => 'TapTap', 'BiliBili' => 'BiliBili');
+	private $dictGrade = array(0 => '公开', 1 => '私密1', 2 => '私密2', 3 => '私密3', 4 => '私密4', 5 => '私密5', 6 => '私密6', 7 => '私密7', 8 => '私密8', 9 => '私密9');
+	private $dictStatus = array('do' => '进行', 'collect' => '完成', 'wish' => '计划', 'on_hold' => '搁置', 'dropped' => '抛弃');
 
 	/**
 	 * 对外展示收藏内容
@@ -416,12 +423,15 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 	 */
 	public function addSubject()
 	{
-		if(!$this->formInput()->validate())
+		$message = $this->formInput()->validate();
+		if($message)
+			$this->widget('Widget_Notice')->set($message, 'notice');
+		else
 		{
 			if($this->request->source != 'Collection')
 				$row_temp = $this->_db->fetchRow($this->_db->select()->from('table.collection')->where('source = ?', $this->request->source)->where('source_id = ?', $source_id));
 			else
-				$row_temp = $this->_db->fetchRow($this->_db->select()->from('table.collection')->where('name = ?', $this->request->name));
+				$row_temp = $this->_db->fetchRow($this->_db->select()->from('table.collection')->where('name = ?', $this->request->name)->where('category = ?', $this->request->category));
 			if($row_temp)
 				$this->widget('Widget_Notice')->set('当前记录已存在', 'notice');
 			else
@@ -486,7 +496,7 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 					)
 				));
 				$this->widget('Widget_Notice')->set('记录添加成功', 'success');
-			}	
+			}
 		}
 		$this->response->goBack();
 	}
@@ -717,18 +727,15 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 		$form->addInput($do);
 		$do->value('addSubject');
 
-		$dictCategory = array('series' => '系列', 'subject' => '记录', 'volume' => '分卷', 'episode' => '章节');
-		$category = new Typecho_Widget_Helper_Form_Element_Radio('category', $dictCategory, 'subject', '大类 *');
+		$category = new Typecho_Widget_Helper_Form_Element_Radio('category', $this->dictCategory, 'subject', '大类 *');
 		$category->addRule('required', '必须选择大类');
 		$form->addInput($category);
 
-		$dictClass = array(1 => '书籍', 2 => '动画', 3 => '音乐', 4 => '游戏', 5 => '广播', 6 => '影视');
-		$class = new Typecho_Widget_Helper_Form_Element_Radio('class', $dictClass, 1, '分类 *');
+		$class = new Typecho_Widget_Helper_Form_Element_Radio('class', $this->dictClass, 1, '分类 *');
 		$class->addRule('required', '必须选择分类');
 		$form->addInput($class);
 
-		$dictType = array('Novel' => '小说', 'Comic' => '漫画', 'Doujinshi' => '同人志', 'Textbook' => '课本');
-		$type = new Typecho_Widget_Helper_Form_Element_Radio('type', $dictType, 'Novel', '类型 *');
+		$type = new Typecho_Widget_Helper_Form_Element_Radio('type', $this->dictType, 'Novel', '类型 *');
 		$type->addRule('required', '必须选择类型');
 		$form->addInput($type);
 
@@ -741,8 +748,7 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 		$name_cn->input->setAttribute('class', 'text-s w-40');
 		$form->addInput($name_cn);
 
-		$arraySource = array('Collection' => '无来源', 'Bangumi' => 'Bangumi', 'Douban' => '豆瓣', 'Wandoujia' => '豌豆荚', 'Steam' => 'Steam', 'TapTap' => 'TapTap', 'BiliBili' => 'BiliBili');
-		$source = new Typecho_Widget_Helper_Form_Element_Select('source', $arraySource, 'Collection', '信息来源');
+		$source = new Typecho_Widget_Helper_Form_Element_Select('source', $this->dictSource, 'Collection', '信息来源 *');
 		$source->addRule('required', '必须选择来源');
 		$form->addInput($source);
 
@@ -754,11 +760,11 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 		$image->addRule('url', '请正确输入图片地址');
 		$form->addInput($image);
 
-		$arrayProgress = array(
+		$editProgress = array(
 			'ep_progress' => '输入主进度：<input type="text" class="text-s num" name="ep_status"> / <input type="text" class="text num text-s" name="ep_count"> ',
 			'sp_progress' => '输入副进度：<input type="text" class="text-s num" name="sp_status"> / <input type="text" class="text num text-s" name="sp_count"> '
 		);
-		$progress = new Typecho_Widget_Helper_Form_Element_Checkbox('progress', $arrayProgress, NULL, '进度信息', '选择将要添加的信息，默认为0/0，不选择则认为无进度项');
+		$progress = new Typecho_Widget_Helper_Form_Element_Checkbox('progress', $editProgress, NULL, '进度信息', '选择将要添加的信息，默认为0/0，不选择则认为无进度项');
 		$form->addInput($progress->multiMode());
 
 		$parent = new Typecho_Widget_Helper_Form_Element_Text('parent', NULL, 0, '关联记录', '关联的记录ID，无则为0');
@@ -771,12 +777,10 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 		$parent_order->addRule('isInteger', '请正确输入ID');
 		$form->addInput($parent_order);
 
-		$grade = new Typecho_Widget_Helper_Form_Element_radio('grade', array(0 => '公开', 1 => '私密1', 2 => '私密2', 3 => '私密3', 4 => '私密4', 5 => '私密5', 6 => '私密6', 7 => '私密7', 8 => '私密8', 9 => '私密9'), 0, '显示分级');
-		$grade->addRule('required', '必须选择显示分级');
+		$grade = new Typecho_Widget_Helper_Form_Element_radio('grade', $this->dictGrade, 0, '显示分级');
 		$form->addInput($grade);
 
-		$arrayStatus = array('do' => '进行', 'collect' => '完成', 'wish' => '计划', 'on_hold' => '搁置', 'dropped' => '抛弃');
-		$status = new Typecho_Widget_Helper_Form_Element_Radio('status', $arrayStatus, 'wish', '记录当前状态');
+		$status = new Typecho_Widget_Helper_Form_Element_Radio('status', $this->dictStatus, 'wish', '记录当前状态 *');
 		$status->addRule('required', '必须选择记录状态');
 		$form->addInput($status);
 
