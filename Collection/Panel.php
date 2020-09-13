@@ -165,7 +165,20 @@ echo "};\n";
 													<td>
 														<div class="Collection-subject-category"><?php echo $dictCategory[$subject['category']].' / '.$dictGrade[$subject['grade']]; ?></div>
 														<div class="Collection-subject-image"><img src="<?php echo $subject['image'] ? $subject['image'] : Typecho_common::url('Collection/template/default_cover.jpg', $options->pluginUrl); ?>" width="100px"></div>
-														<div class="Collection-subject-type"><?php echo $dictClass[$subject['class']].' / '.($dictType[$subject['class']][$subject['type']] ? $dictType[$subject['class']][$subject['type']] : '未知'); ?></div>
+														<div class="Collection-subject-type">
+															<?php if('series' != $subject['category'] && !is_null($subject['class']))
+																if($subject['class'] > 0 && $subject['class'] <= 6)
+																{
+																	echo $dictClass[$subject['class']].' / ';
+																	if(!is_null($subject['type']) && isset($dictType[$subject['class']][$subject['type']]))
+																		echo $dictType[$subject['class']][$subject['type']];
+																	else
+																		echo '未知';
+																}
+																else
+																	echo '未知 / 未知';
+															?>
+														</div>
 													</td>
 													<td class="Collection-subject-meta">
 														<div class="Collection-subject-name">
@@ -309,11 +322,11 @@ echo "};\n";
 									string += '<option value="'+key+'">'+value+'</option>';
 								});
 								string += '</select></p>'
-										+ '<p><label for="'+id+'-type"><?php _e('类型'); ?></label><select id="'+id+'-type" name="type" class="w-100">'
-										+ '<option value="">未知</option>';
-								$.each(dictType[subject.class], function(key, value){
-									string += '<option value="'+key+'">'+value+'</option>';
-								});
+										+ '<p><label for="'+id+'-type"><?php _e('类型'); ?></label><select id="'+id+'-type" name="type" class="w-100">';
+								if(subject.class && subject.class > 0 && subject.class <=6)
+									$.each(dictType[subject.class], function(key, value){
+										string += '<option value="'+key+'">'+value+'</option>';
+									});
 								string += '</select></p>'
 									+ '<p><label for="'+id+'-source"><?php _e('信息来源'); ?></label><select id="'+id+'-source" name="source" class="w-100">'
 										+ '<option value="Collection">收藏</option>';
@@ -333,7 +346,7 @@ echo "};\n";
 									+ '<p><label for="'+id+'-sp_status">副进度</label><input class="text-s w-100" id="'+id+'-sp_status" name="sp_status" type="number" min="0" max="999"></p>'
 									+ '<p><label for="'+id+'-sp_count">副进度总数</label><input class="text-s w-100" type="number" name="sp_count" id="'+id+'-sp_count" min="0" max="999"></p>'
 									+ '</form></td>'
-									+ '<td id="review-'+id+'"><form method="post" action="'+t.attr('rel')+'" class="Collection-subject-edit-content">'
+									+ '<td><form method="post" action="'+t.attr('rel')+'" class="Collection-subject-edit-content">'
 									+ '<p><label for="'+id+'-grade">显示分级</label><select id="'+id+'-grade" name="grade" class="w-100">'
 								$.each(dictGrade, function(key, value){
 									string += '<option value="'+key+'">'+value+'</option>';
@@ -376,12 +389,25 @@ echo "};\n";
 								$('input[name=tags]', edit).val(subject.tags);
 								$('textarea[name=comment]', edit).val(subject.comment).focus();
 
+								var reactCategory = function(){
+									var flag = 'series' == $('select[name=category]', edit).val();
+									$('select[name=class]', edit).attr('disabled',flag);
+									$('select[name=type]', edit).attr('disabled',flag);
+									$('input[name^=parent]', edit).attr('disabled',flag);
+									$('input[name$=status]', edit).attr('disabled',flag);
+									$('input[name$=count]', edit).attr('disabled',flag);
+								}
+								reactCategory();
+
+								$('select[name=category]', edit).change(reactCategory);
+
 								$('select[name=class]', edit).change(function(){
 									var tempHTML = '';
-									tempHTML = '<option value="">未知</option>';
-									$.each(dictType[$('select[name=class]', edit).val()], function(key, value){
-										tempHTML += '<option value="'+key+'">'+value+'</option>';
-									});
+									var valClass = $('select[name=class]', edit).val();
+									if(valClass && valClass > 0 && valClass <= 6)
+										$.each(dictType[valClass], function(key, value){
+											tempHTML += '<option value="'+key+'">'+value+'</option>';
+										});
 									$('select[name=type]', edit).html(tempHTML);
 								});
 
@@ -408,24 +434,48 @@ echo "};\n";
 											subject[item.name] = item.value;
 										}
 									});
+									if('series' == subject['category'])
+									{
+										subject['class'] = null;
+										subject['type'] = null;
+										subject['parent'] = 0;
+										subject['parent_order'] = 0;
+										subject['ep_count'] = null;
+										subject['sp_count'] = null;
+										subject['ep_status'] = null;
+										subject['sp_status'] = null;
+									}
 
 									oldTr.data('subject', subject);
 
 									$.post(t.attr('action'), subject, function (data) {
 										var stringProgress = '';
-										if(data.status)
+										if(data.result)
 										{
 											$('.Collection-subject-category', oldTr).html(dictCategory[subject.category]+' / '+dictGrade[subject.grade]);
 											$('.Collection-subject-image', oldTr).html('<img src="'+(subject.image ? subject.image : '<?php $options->pluginUrl('Collection/template/default_cover.jpg'); ?>')+'" width="100px">');
-											$('.Collection-subject-type', oldTr).html(dictClass[subject.class]+' / '+(subject.type ? dictType[subject.class][subject.type] : '未知'));
-											var tempHTML = '<i class="Collection-subject-class-ico Collection-subject-class-'+subject.class+'"></i><small>(#'+subject.id+')</small>';
+											var tempHTML = ''
+											if('series' != subject.category && subject.class)
+												if(subject.class > 0 && subject.class <= 6)
+												{
+													tempHTML += dictClass[subject.class]+' / ';
+													if(subject.type && $.inArray(subject.type,dictClass[subject.class]))
+														tempHTML += dictType[subject.class][subject.type];
+													else
+														tempHTML += '未知';
+												}
+												else
+													tempHTML = '未知 / 未知';
+											$('.Collection-subject-type', oldTr).html(tempHTML);
+
+											tempHTML = '<i class="Collection-subject-class-ico Collection-subject-class-'+subject.class+'"></i><small>(#'+subject.id+')</small>';
 											if(dictSource.hasOwnProperty(subject.source))
 												tempHTML += '<a href="' + dictSource[subject.source]['url'] + subject.source_id + '" target="_blank">' + subject.name + '</a>';
 											else
 												tempHTML += subject.name;
 											$('.Collection-subject-name', oldTr).html(tempHTML);
 											$('.Collection-subject-name_cn', oldTr).html(subject.name_cn);
-											if(subject.ep_count == '' && subject.ep_status == '')
+											if((subject.ep_count == '' && subject.ep_status == '') || (subject.ep_count == null && subject.ep_status == null))
 												$('#Collection-subject-'+subject.id+'-ep', oldTr).html('');
 											else
 											{
@@ -435,7 +485,7 @@ echo "};\n";
 													stringProgress += '<div class="hidden-by-mouse"><small><a href="#'+subject.id+'" rel="<?php $options->index('/action/collection?do=plusEp&plus=ep'); ?>" class="Collection-subject-progress-plus" id="Collection-subject-'+subject.id+'-progress-ep-plus">ep.'+String(Number(subject.ep_status)+1)+'已'+arrayStatus[String(subject.class-1)]+'</a></small></div>';
 												$('#Collection-subject-'+subject.id+'-ep', oldTr).html(stringProgress);
 											}
-											if(subject.sp_count == '' && subject.sp_status == '')
+											if((subject.sp_count == '' && subject.sp_status == '') || (subject.sp_count == null && subject.sp_status == null))
 												$('#Collection-subject-'+subject.id+'-sp', oldTr).html('');
 											else
 											{
@@ -594,8 +644,15 @@ echo "};\n";
 										tempHTML += '<span><input name="type" type="radio" value="'+key+'" id="type-'+key+'"><label for="type-'+key+'">'+value+'</label></span>';
 									});
 									tempHTML += '</li>';
-									$('#typecho-option-item-type-3').html(tempHTML);
-									$('#typecho-option-item-type-3 input').first().attr('checked','true');
+									$('[id^=typecho-option-item-type]').html(tempHTML);
+									$('[id^=typecho-option-item-type] input').first().attr('checked','true');
+								});
+								$('input[name=category]').click(function(){
+									var flag = 'series' == $('input[name=category]:checked').val();
+									$('[id^=typecho-option-item-class] input').attr("disabled",flag);
+									$('[id^=typecho-option-item-type] input').attr("disabled",flag);
+									$('[id^=typecho-option-item-progress] input').attr("disabled",flag);
+									$('[id^=typecho-option-item-parent] input').attr("disabled",flag);
 								});
 							});
 						</script>

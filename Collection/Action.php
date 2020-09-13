@@ -129,67 +129,101 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 	private function editSubject()
 	{
 		if(!$this->request->get('id'))
-			$this->response->throwJson(array('success' => false, 'message' => '缺少ID信息'));
+			$this->response->throwJson(array('result' => false, 'message' => '缺少ID信息'));
 
 		if(!is_null($this->request->get('category')) && !in_array($this->request->get('category'), $this->arrayCategory))
-			$this->response->throwJson(array('success' => false, 'message' => '大类信息错误'));
+			$this->response->throwJson(array('result' => false, 'message' => '大类信息错误'));
 
-		if(!is_numeric($this->request->get('class')) || $this->request->class<=0 || $this->request->class>6)
-			$this->response->throwJson(array('success' => false, 'message' => '种类信息错误'));
+		$category = $this->request->get('category');
+		if('series' != $category)
+		{
+			if(!is_numeric($this->request->get('class')) || $this->request->class<=0 || $this->request->class>6)
+				$this->response->throwJson(array('result' => false, 'message' => '种类信息错误'));
 
-		if(!is_null($this->request->get('type')) && !in_array($this->request->get('type'), $this->arrayType))
-			$this->response->throwJson(array('success' => false, 'message' => '类型信息错误'));
+			if(!is_null($this->request->get('type')) && !in_array($this->request->get('type'), $this->arrayType))
+				$this->response->throwJson(array('result' => false, 'message' => '类型信息错误'));
+		}
 
 		if(!$this->request->get('name'))
-			$this->response->throwJson(array('success' => false, 'message' => '必须输入名称'));
+			$this->response->throwJson(array('result' => false, 'message' => '必须输入名称'));
 
 		if(!filter_var($this->request->get('image'), FILTER_VALIDATE_URL) && !is_null($this->request->get('image')))
-			$this->response->throwJson(array('success' => false, 'message' => '图片地址错误'));
+			$this->response->throwJson(array('result' => false, 'message' => '图片地址错误'));
 
-		if((!is_null($this->request->get('ep_status')) || !is_null($this->request->get('ep_count'))) && (!is_numeric($this->request->ep_status) || !is_numeric($this->request->ep_count) || $this->request->ep_status<0 || $this->request->ep_count<0 || ($this->request->ep_count>0 && $this->request->ep_status>$this->request->ep_count)))
-			$this->response->throwJson(array('success' => false, 'message' => '请输入正确的主进度'));
+		if('series' != $category)
+		{
+			if((!is_null($this->request->get('ep_status')) || !is_null($this->request->get('ep_count'))) && (!is_numeric($this->request->ep_status) || !is_numeric($this->request->ep_count) || $this->request->ep_status<0 || $this->request->ep_count<0 || ($this->request->ep_count>0 && $this->request->ep_status>$this->request->ep_count)))
+				$this->response->throwJson(array('result' => false, 'message' => '请输入正确的主进度'));
 
-		if((!is_null($this->request->get('sp_status')) || !is_null($this->request->get('sp_count'))) && (!is_numeric($this->request->sp_status) || !is_numeric($this->request->sp_count) || $this->request->sp_status<0 || $this->request->sp_count<0 || ($this->request->sp_count>0 && $this->request->sp_status>$this->request->sp_count)))
-			$this->response->throwJson(array('success' => false, 'message' => '请输入正确的副进度'));
+			if((!is_null($this->request->get('sp_status')) || !is_null($this->request->get('sp_count'))) && (!is_numeric($this->request->sp_status) || !is_numeric($this->request->sp_count) || $this->request->sp_status<0 || $this->request->sp_count<0 || ($this->request->sp_count>0 && $this->request->sp_status>$this->request->sp_count)))
+				$this->response->throwJson(array('result' => false, 'message' => '请输入正确的副进度'));
+		}
 
 		if(!in_array($this->request->get('source'), array('Collection', 'Bangumi', 'Douban', 'Steam', 'Wandoujia', 'TapTap', 'BiliBili')))
-			$this->response->throwJson(array('success' => false, 'message' => '来源信息错误'));
+			$this->response->throwJson(array('result' => false, 'message' => '来源信息错误'));
 
-		if($this->request->get('parent') && !is_numeric($this->request->parent) && $this->_db->fetchRow($this->_db->select()->from('table.collection')->where('id = ?', $this->request->parent)))
-			$this->response->throwJson(array('success' => false, 'message' => '父记录错误或不存在父记录'));
+		if('series' != $category)
+		{
+			if($this->request->get('parent') && !is_numeric($this->request->parent) && $this->_db->fetchRow($this->_db->select()->from('table.collection')->where('id = ?', $this->request->parent)))
+				$this->response->throwJson(array('result' => false, 'message' => '父记录错误或不存在父记录'));
 
-		if($this->request->get('parent_order') && !is_numeric($this->request->parent_order))
-			$this->response->throwJson(array('success' => false, 'message' => '记录序号错误'));
+			if($this->request->get('parent_order') && !is_numeric($this->request->parent_order))
+				$this->response->throwJson(array('result' => false, 'message' => '记录序号错误'));
+		}
 
 		if(!is_numeric($this->request->get('grade')) || $this->request->grade<0 || $this->request->grade>9)
-			$this->response->throwJson(array('success' => false, 'message' => '请用0-9的数字表示级别'));
+			$this->response->throwJson(array('result' => false, 'message' => '请用0-9的数字表示级别'));
 
 		if($this->request->get('rate') && (!is_numeric($this->request->get('rate')) || $this->request->rate>10 || $this->request->rate<0))
-			$this->response->throwJson(array('success' => false, 'message' => '评价请使用0-10的数字表示'));
+			$this->response->throwJson(array('result' => false, 'message' => '评价请使用0-10的数字表示'));
 
-		$row = array(
-			'category' => $this->request->category,
-			'class' => $this->request->class,
-			'type' => $this->request->type,
-			'name' => $this->request->name, 
-			'name_cn' => $this->request->name_cn,
-			'image' => $this->request->image,
-			'ep_count' => $this->request->ep_count,
-			'sp_count' => $this->request->sp_count,
-			'source' => $this->request->source,
-			'source_id' => $this->request->source_id,
-			'parent' => $this->request->parent,
-			'parent_order' => $this->request->parent_order,
-			'grade' => $this->request->grade,
-			'time_touch' => Typecho_Date::gmtTime(),
-			'ep_status' => $this->request->ep_status,
-			'sp_status' => $this->request->sp_status,
-			'rate' => $this->request->rate,
-			'tags' => $this->request->tags,
-			'comment' => $this->request->comment,
-			'note' => $this->request->note
-		);
-		$json = array('result' => true, 'message' => '修改成功');
+		if('series' == $category)
+			$row = array(
+				'category' => 'series',
+				'class' => NULL,
+				'type' => NULL,
+				'name' => $this->request->name,
+				'name_cn' => $this->request->name_cn,
+				'image' => $this->request->image,
+				'ep_count' => NULL,
+				'sp_count' => NULL,
+				'source' => $this->request->source,
+				'source_id' => $this->request->source_id,
+				'parent' => 0,
+				'parent_order' => 0,
+				'grade' => $this->request->grade,
+				'time_touch' => Typecho_Date::gmtTime(),
+				'ep_status' => NULL,
+				'sp_status' => NULL,
+				'rate' => $this->request->rate,
+				'tags' => $this->request->tags,
+				'comment' => $this->request->comment,
+				'note' => $this->request->note
+			);
+		else
+			$row = array(
+				'category' => $this->request->category,
+				'class' => $this->request->class,
+				'type' => $this->request->type,
+				'name' => $this->request->name,
+				'name_cn' => $this->request->name_cn,
+				'image' => $this->request->image,
+				'ep_count' => $this->request->ep_count,
+				'sp_count' => $this->request->sp_count,
+				'source' => $this->request->source,
+				'source_id' => $this->request->source_id,
+				'parent' => $this->request->parent,
+				'parent_order' => $this->request->parent_order,
+				'grade' => $this->request->grade,
+				'time_touch' => Typecho_Date::gmtTime(),
+				'ep_status' => $this->request->ep_status,
+				'sp_status' => $this->request->sp_status,
+				'rate' => $this->request->rate,
+				'tags' => $this->request->tags,
+				'comment' => $this->request->comment,
+				'note' => $this->request->note
+			);
+
 		if($this->request->status == 'do' && ($this->request->ep_count > 0 && $this->request->ep_count == $this->request->ep_status) && (is_null($this->request->sp_count) || ($this->request->sp_count > 0 && $this->request->sp_count == $this->request->sp_status)))
 		{
 			$row['status'] = 'collect';
@@ -198,8 +232,12 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 		}
 		else
 			$json['status'] = $this->request->status;
-		$this->_db->query($this->_db->update('table.collection')->where('id = ?', $this->request->id)->rows($row));
-		$this->response->throwJson($json);	
+		$update = $this->_db->query($this->_db->update('table.collection')->where('id = ?', $this->request->id)->rows($row));
+		if($update > 0)
+			$json = array('result' => true, 'message' => '已修改'.$update.'项');
+		else
+			$json = array('result' => false, 'message' => '数据库更新失败');
+		$this->response->throwJson($json);
 	}
 
 	/**
@@ -468,33 +506,54 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 				else
 					if($this->request->status == 'collect')
 						$time_finish = Typecho_Date::gmtTime();
-				$this->_db->query($this->_db->insert('table.collection')->rows(
-					array(
-						'category' => $this->request->category,
-						'class' => $this->request->class,
-						'type' => $this->request->type,
-						'name' => $this->request->name,
-						'name_cn' => $this->request->name_cn,
-						'image' => $this->request->image,
-						'ep_count' => $ep_count,
-						'sp_count' => $sp_count,
-						'source' => $this->request->source,
-						'source_id' => $this->request->source_id,
-						'parent' => $this->request->parent,
-						'parent_order' => $this->request->parent_order,
-						'grade' => $this->request->grade,
-						'status' => $this->request->status,
-						'time_start' => $time_start,
-						'time_finish' => $time_finish,
-						'time_touch' => Typecho_Date::gmtTime(),
-						'ep_status' => $ep_status,
-						'sp_status' => $sp_status,
-						'rate' => $this->request->rate,
-						'tags' => $this->request->tags,
-						'comment' => $this->request->comment,
-						'note' => $this->request->note
-					)
-				));
+				if('series' == $this->request->category)
+					$this->_db->query($this->_db->insert('table.collection')->rows(
+						array(
+							'category' => 'series',
+							'name' => $this->request->name,
+							'name_cn' => $this->request->name_cn,
+							'image' => $this->request->image,
+							'source' => $this->request->source,
+							'source_id' => $this->request->source_id,
+							'grade' => $this->request->grade,
+							'status' => $this->request->status,
+							'time_start' => $time_start,
+							'time_finish' => $time_finish,
+							'time_touch' => Typecho_Date::gmtTime(),
+							'rate' => $this->request->rate,
+							'tags' => $this->request->tags,
+							'comment' => $this->request->comment,
+							'note' => $this->request->note
+						)
+					));
+				else
+					$this->_db->query($this->_db->insert('table.collection')->rows(
+						array(
+							'category' => $this->request->category,
+							'class' => $this->request->class,
+							'type' => $this->request->type,
+							'name' => $this->request->name,
+							'name_cn' => $this->request->name_cn,
+							'image' => $this->request->image,
+							'ep_count' => $ep_count,
+							'sp_count' => $sp_count,
+							'source' => $this->request->source,
+							'source_id' => $this->request->source_id,
+							'parent' => $this->request->parent,
+							'parent_order' => $this->request->parent_order,
+							'grade' => $this->request->grade,
+							'status' => $this->request->status,
+							'time_start' => $time_start,
+							'time_finish' => $time_finish,
+							'time_touch' => Typecho_Date::gmtTime(),
+							'ep_status' => $ep_status,
+							'sp_status' => $sp_status,
+							'rate' => $this->request->rate,
+							'tags' => $this->request->tags,
+							'comment' => $this->request->comment,
+							'note' => $this->request->note
+						)
+					));
 				$this->widget('Widget_Notice')->set('记录添加成功', 'success');
 			}
 		}
