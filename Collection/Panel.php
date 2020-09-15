@@ -6,6 +6,7 @@ include 'common-js.php';
 include 'table-js.php';
 
 $do = isset($request->do) ? $request->get('do') : 'manage';
+$category = isset($request->category) ? $request->get('category') : 'subject';
 $class = isset($request->class) ? $request->get('class') : '0';
 $status = isset($request->status) ? $request->get('status') : 'do';
 
@@ -81,14 +82,23 @@ echo "};\n";
 		<div class="colgroup typecho-page-main" role="main">
 			<div class="col-mb-12">
 				<?php if($do == 'manage'): ?>
-					<ul class="typecho-option-tabs right">
-						<?php foreach($arrayClassStatus as $key => $value): ?>
-							<li<?php if($status == $key): ?> class="current"<?php endif; ?>><a href="<?php $options->adminUrl('extending.php?panel=Collection%2FPanel.php&class='.$class.'&status='.$key); ?>"><?php _e($arrayClassStatus[$key][$class]); ?></a></li>
+					<ul class="typecho-option-tabs clearfix">
+						<?php foreach($dictCategory as $key => $value): ?>
+							<li<?php if($category == $key): ?> class="current"<?php endif; ?>><a href="<?php 'series' == $key ? $options->adminUrl('extending.php?panel=Collection%2FPanel.php&category=series&status='.$status) : $options->adminUrl('extending.php?panel=Collection%2FPanel.php&category='.$key.'&class='.$class.'&status='.$status); ?>"><?php _e($value); ?></a></li>
 						<?php endforeach; ?>
 					</ul>
 					<ul class="typecho-option-tabs clearfix">
-						<?php foreach($arrayClassStatus['all'] as $key => $value): ?>
-							<li<?php if($class == $key): ?> class="current"<?php endif; ?>><a href="<?php $options->adminUrl('extending.php?panel=Collection%2FPanel.php&class='.$key.'&status='.$status); ?>"><?php _e($value); ?></a></li>
+						<?php if('series' != $category) : ?>
+							<?php foreach($arrayClassStatus['all'] as $key => $value): ?>
+								<li<?php if($class == $key): ?> class="current"<?php endif; ?>><a href="<?php $options->adminUrl('extending.php?panel=Collection%2FPanel.php&category='.$category.'&class='.$key.'&status='.$status); ?>"><?php _e($value); ?></a></li>
+							<?php endforeach; ?>
+						<?php else: ?>
+							<li class="current"><a href="<?php $options->adminUrl('extending.php?panel=Collection%2FPanel.php&class='.$key.'&status='.$status); ?>"><?php echo $arrayClassStatus['all'][0] ?></a></li>
+						<?php endif; ?>
+					</ul>
+					<ul class="typecho-option-tabs clearfix">
+						<?php foreach($arrayClassStatus as $key => $value): ?>
+							<li<?php if($status == $key): ?> class="current"<?php endif; ?>><a href="<?php $options->adminUrl('extending.php?panel=Collection%2FPanel.php&category='.$category.'&class='.$class.'&status='.$key); ?>"><?php _e($arrayClassStatus[$key][$class]); ?></a></li>
 						<?php endforeach; ?>
 					</ul>
 					<div class="col-mb-12 typecho-list" role="main">

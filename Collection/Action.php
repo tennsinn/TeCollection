@@ -569,15 +569,14 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 	public function showCollection($pageSize=20)
 	{
 		$status = isset($this->request->status) ? $this->request->get('status') : 'do';
-		$category = isset($this->request->category) ? $this->request->get('category') : 'all';
+		$category = isset($this->request->category) ? $this->request->get('category') : 'subject';
 		$class = isset($this->request->class) ? $this->request->get('class') : 0;
 		$type = isset($this->request->type) ? $this->request->get('type') : 'all';
 		$field = isset($this->request->field) ? $this->request->get('field') : 'name';
 		$query = $this->_db->select()->from('table.collection');
 		if($status != 'all')
 			$query->where('status = ?', $status);
-		if($category != 'all')
-			$query->where('type = ?', $category);
+		$query->where('category = ?', $category);
 		if($class != 0)
 			$query->where('class = ?', $class);
 		if($type != 'all')
