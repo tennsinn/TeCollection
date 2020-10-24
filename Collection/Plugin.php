@@ -4,7 +4,7 @@
  * 
  * @package Collection
  * @author 息E-敛
- * @version 1.10.0
+ * @version 1.10.1
  * @link http://tennsinn.com
  */
 class Collection_Plugin implements Typecho_Plugin_Interface
@@ -13,6 +13,7 @@ class Collection_Plugin implements Typecho_Plugin_Interface
 	{
 		Helper::addAction('collection', 'Collection_Action');
 		Helper::addPanel(3, "Collection/Panel.php", _t("Collection"), _t("Collection"), 'administrator', false, 'extending.php?panel=Collection%2FPanel.php&do=input');
+		Collection_Plugin::_checkVersion();
 		$db = Typecho_Db::get();
 		$charset = Helper::options()->charset == 'UTF-8' ? 'utf8' : 'gbk';
 		$query = 'CREATE TABLE IF NOT EXISTS '. $db->getPrefix() . 'collection' ." (
@@ -55,6 +56,7 @@ class Collection_Plugin implements Typecho_Plugin_Interface
 		{
 			$db = Typecho_Db::get();
 			$db->query('DROP TABLE IF EXISTS '.$db->getPrefix().'collection');
+			$db->query($db->delete('table.options')->where('name = ?', 'Collection:version'));
 			return('插件已经禁用, 插件数据已经删除');
 		}
 		else
@@ -72,6 +74,22 @@ class Collection_Plugin implements Typecho_Plugin_Interface
 	}
 	
 	public static function personalConfig(Typecho_Widget_Helper_Form $form){}
+
+	/**
+	 * 版本检查
+	 *
+	 * @access public
+	 * @return void
+	 */
+	private function _checkVersion()
+	{
+		$db = Typecho_Db::get();
+		$info = Typecho_Plugin::parseInfo(__FILE__);
+		if($db->fetchRow($db->select()->from('table.options')->where('name = ?', 'Collection:version')))
+			$db->query($db->update('table.options')->where('name = ?', 'Collection:version')->rows(array('value' => $info['version'])));
+		else
+			$db->query($db->insert('table.options')->rows(array('name' => 'Collection:version', 'user' => 0, 'value' => $info['version'])));
+	}
 
 	public static function render()
 	{
