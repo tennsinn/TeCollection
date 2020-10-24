@@ -170,6 +170,7 @@ echo "};\n";
 									<tbody>
 										<?php if($response['result']): ?>
 											<?php foreach($response['list'] as $subject): ?>
+												<?php $subject['published'] = date('Y-m-d m:s' ,$subject['published']); ?>
 												<tr id="Collection-subject-<?php echo $subject['id']; ?>" data-subject="<?php echo htmlspecialchars(json_encode($subject)); ?>">
 													<td><input type="checkbox" name="id[]" value="<?php echo $subject['id']; ?>"></td>
 													<td>
@@ -338,6 +339,8 @@ echo "};\n";
 										string += '<option value="'+key+'">'+value+'</option>';
 									});
 								string += '</select></p>'
+									+ '<p><label for="'+id+'-publisher"><?=_t('出版商')?></label><input class="text-s w-100" type="text" id="'+id+'-publisher" name="publisher"></p>'
+									+ '<p><label for="'+id+'-published"><?=_t('出版时间')?></label><input class="text-s w-100" type="text" id="'+id+'-published" name="published"></p>'
 									+ '<p><label for="'+id+'-source"><?php _e('信息来源'); ?></label><select id="'+id+'-source" name="source" class="w-100">'
 										+ '<option value="Collection">收藏</option>';
 								$.each(dictSource, function(key, value){
@@ -351,6 +354,7 @@ echo "};\n";
 									+ '<p><label for="'+id+'-name_cn">译名</label><input class="text-s" type="text" id="'+id+'-name_cn" name="name_cn"></p>'
 									+ '<p><label for="'+id+'-parent">关联记录</label><input class="text-s" type="text" id="'+id+'-parent" name="parent"></p>'
 									+ '<p><label for="'+id+'-parent_order">关联顺序</label><input class="text-s w-100" id="'+id+'-parent_order" name="parent_order" type="number" min="0" max="99"></p>'
+									+ '<p><label for="'+id+'-parent_label"><?=_t('关联标签')?></label><input class="text-s w-100" type="text" id="'+id+'-parent_label" name="parent_label"></p>'
 									+ '<p><label for="'+id+'-ep_status">主进度</label><input class="text-s w-100" id="'+id+'-ep_status" name="ep_status" type="number" min="0" max="9999"></p>'
 									+ '<p><label for="'+id+'-ep_count">主进度总数</label><input class="text-s w-100" type="number" name="ep_count" id="'+id+'-ep_count" min="0" max="9999"></p>'
 									+ '<p><label for="'+id+'-sp_status">副进度</label><input class="text-s w-100" id="'+id+'-sp_status" name="sp_status" type="number" min="0" max="999"></p>'
@@ -384,11 +388,14 @@ echo "};\n";
 								$('select[name=class]', edit).val(subject.class);
 								$('select[name=type]', edit).val(subject.type);
 								$('select[name=source]', edit).val(subject.source);
+								$('input[name=publisher]', edit).val(subject.publisher);
+								$('input[name=published]', edit).val(subject.published);
 								$('input[name=source_id]', edit).val(subject.source_id);
 								$('input[name=name]', edit).val(subject.name);
 								$('input[name=name_cn]', edit).val(subject.name_cn);
 								$('input[name=parent]', edit).val(subject.parent);
 								$('input[name=parent_order]', edit).val(subject.parent_order);
+								$('input[name=parent_label]', edit).val(subject.parent_label);
 								$('input[name=ep_status]', edit).val(subject.ep_status);
 								$('input[name=ep_count]', edit).val(subject.ep_count);
 								$('input[name=sp_status]', edit).val(subject.sp_status);
@@ -421,6 +428,17 @@ echo "};\n";
 									$('select[name=type]', edit).html(tempHTML);
 								});
 
+								$('input[name=published]').mask('9999-99-99').datepicker({
+									prevText        :   '<?php _e('上一月'); ?>',
+									nextText        :   '<?php _e('下一月'); ?>',
+									monthNames      :   ['<?php _e('一月'); ?>', '<?php _e('二月'); ?>', '<?php _e('三月'); ?>', '<?php _e('四月'); ?>', '<?php _e('五月'); ?>', '<?php _e('六月'); ?>', '<?php _e('七月'); ?>', '<?php _e('八月'); ?>', '<?php _e('九月'); ?>', '<?php _e('十月'); ?>', '<?php _e('十一月'); ?>', '<?php _e('十二月'); ?>'],
+									dayNames        :   ['<?php _e('星期日'); ?>', '<?php _e('星期一'); ?>', '<?php _e('星期二'); ?>', '<?php _e('星期三'); ?>', '<?php _e('星期四'); ?>', '<?php _e('星期五'); ?>', '<?php _e('星期六'); ?>'],
+									dayNamesShort   :   ['<?php _e('周日'); ?>', '<?php _e('周一'); ?>', '<?php _e('周二'); ?>', '<?php _e('周三'); ?>', '<?php _e('周四'); ?>', '<?php _e('周五'); ?>', '<?php _e('周六'); ?>'],
+									dayNamesMin     :   ['<?php _e('日'); ?>', '<?php _e('一'); ?>', '<?php _e('二'); ?>', '<?php _e('三'); ?>', '<?php _e('四'); ?>', '<?php _e('五'); ?>', '<?php _e('六'); ?>'],
+									dateFormat      :   'yy-mm-dd',
+									timezone        :   <?php $options->timezone(); ?> / 60,
+								});
+
 								$('input[name=rate]', edit).change(function(){
 									$('label[for="'+id+'-rate"]', edit).html('评价：'+'<span class="Collection-subject-rate-star Collection-subject-rate-star-rating"></span>'.repeat($('input[name=rate]', edit).val())+'<span class="Collection-subject-rate-star Collection-subject-rate-star-blank"></span>'.repeat(10-$('input[name=rate]', edit).val()));
 								});
@@ -448,8 +466,12 @@ echo "};\n";
 									{
 										subject['class'] = null;
 										subject['type'] = null;
+										subject['publisher'] = null;
+										subject['published'] = null;
+										subject['type'] = null;
 										subject['parent'] = 0;
 										subject['parent_order'] = 0;
+										subject['parent_label'] = null;
 										subject['ep_count'] = null;
 										subject['sp_count'] = null;
 										subject['ep_status'] = null;
@@ -664,6 +686,16 @@ echo "};\n";
 									$('[id^=typecho-option-item-progress] input').attr("disabled",flag);
 									$('[id^=typecho-option-item-parent] input').attr("disabled",flag);
 								});
+								$('input[name=published]').mask('9999-99-99').datepicker({
+									prevText        :   '<?php _e('上一月'); ?>',
+									nextText        :   '<?php _e('下一月'); ?>',
+									monthNames      :   ['<?php _e('一月'); ?>', '<?php _e('二月'); ?>', '<?php _e('三月'); ?>', '<?php _e('四月'); ?>', '<?php _e('五月'); ?>', '<?php _e('六月'); ?>', '<?php _e('七月'); ?>', '<?php _e('八月'); ?>', '<?php _e('九月'); ?>', '<?php _e('十月'); ?>', '<?php _e('十一月'); ?>', '<?php _e('十二月'); ?>'],
+									dayNames        :   ['<?php _e('星期日'); ?>', '<?php _e('星期一'); ?>', '<?php _e('星期二'); ?>', '<?php _e('星期三'); ?>', '<?php _e('星期四'); ?>', '<?php _e('星期五'); ?>', '<?php _e('星期六'); ?>'],
+									dayNamesShort   :   ['<?php _e('周日'); ?>', '<?php _e('周一'); ?>', '<?php _e('周二'); ?>', '<?php _e('周三'); ?>', '<?php _e('周四'); ?>', '<?php _e('周五'); ?>', '<?php _e('周六'); ?>'],
+									dayNamesMin     :   ['<?php _e('日'); ?>', '<?php _e('一'); ?>', '<?php _e('二'); ?>', '<?php _e('三'); ?>', '<?php _e('四'); ?>', '<?php _e('五'); ?>', '<?php _e('六'); ?>'],
+									dateFormat      :   'yy-mm-dd',
+									timezone        :   <?php $options->timezone(); ?> / 60,
+								});
 							});
 						</script>
 					<?php endif; ?>
@@ -672,9 +704,9 @@ echo "};\n";
 		</div>
 	</div>
 </div>
+<script src="<?php $options->adminStaticUrl('js', 'timepicker.js?v=' . $suffixVersion); ?>"></script>
 
 <?php
 include 'copyright.php';
 include 'footer.php';
 ?>
-

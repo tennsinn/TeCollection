@@ -177,6 +177,10 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 		if($this->request->get('rate') && (!is_numeric($this->request->get('rate')) || $this->request->rate>10 || $this->request->rate<0))
 			$this->response->throwJson(array('result' => false, 'message' => '评价请使用0-10的数字表示'));
 
+		$published = NULL;
+		if($this->request->get('published'))
+			$published = strtotime($this->request->published) - $this->_options->timezone + $this->_options->serverTimezone;
+
 		if('series' == $category)
 			$row = array(
 				'category' => 'series',
@@ -185,12 +189,15 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 				'name' => $this->request->name,
 				'name_cn' => $this->request->name_cn,
 				'image' => $this->request->image,
+				'publisher' => NULL,
+				'published' => NULL,
 				'ep_count' => NULL,
 				'sp_count' => NULL,
 				'source' => $this->request->source,
 				'source_id' => $this->request->source_id,
 				'parent' => 0,
 				'parent_order' => 0,
+				'parent_label' => NULL,
 				'grade' => $this->request->grade,
 				'time_touch' => Typecho_Date::gmtTime(),
 				'ep_status' => NULL,
@@ -208,12 +215,15 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 				'name' => $this->request->name,
 				'name_cn' => $this->request->name_cn,
 				'image' => $this->request->image,
+				'publisher' => $this->request->get('publisher'),
+				'published' => $published,
 				'ep_count' => $this->request->ep_count,
 				'sp_count' => $this->request->sp_count,
 				'source' => $this->request->source,
 				'source_id' => $this->request->source_id,
 				'parent' => $this->request->parent,
 				'parent_order' => $this->request->parent_order,
+				'parent_label' => $this->request->get('parent_label'),
 				'grade' => $this->request->grade,
 				'time_touch' => Typecho_Date::gmtTime(),
 				'ep_status' => $this->request->ep_status,
@@ -506,6 +516,10 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 				else
 					if($this->request->status == 'collect')
 						$time_finish = Typecho_Date::gmtTime();
+				$published = NULL;
+				if($this->request->get('published'))
+					$published = strtotime($this->request->published) - $this->_options->timezone + $this->_options->serverTimezone;
+
 				if('series' == $this->request->category)
 					$this->_db->query($this->_db->insert('table.collection')->rows(
 						array(
@@ -535,12 +549,15 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 							'name' => $this->request->name,
 							'name_cn' => $this->request->name_cn,
 							'image' => $this->request->image,
+							'publisher' => $this->request->get('publisher'),
+							'published' => $published,
 							'ep_count' => $ep_count,
 							'sp_count' => $sp_count,
 							'source' => $this->request->source,
 							'source_id' => $this->request->source_id,
 							'parent' => $this->request->parent,
 							'parent_order' => $this->request->parent_order,
+							'parent_label' => $this->request->get('parent_label'),
 							'grade' => $this->request->grade,
 							'status' => $this->request->status,
 							'time_start' => $time_start,
@@ -806,6 +823,14 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 		$name_cn->input->setAttribute('class', 'text-s w-40');
 		$form->addInput($name_cn);
 
+		$publisher = new Typecho_Widget_Helper_Form_Element_Text('publisher', NULL, NULL, '出版商');
+		$publisher->input->setAttribute('class', 'w-40');
+		$form->addInput($publisher);
+
+		$published = new Typecho_Widget_Helper_Form_Element_Text('published', NULL, NULL, '出版时间');
+		$published->input->setAttribute('class', 'w-40');
+		$form->addInput($published);
+
 		$source = new Typecho_Widget_Helper_Form_Element_Select('source', $this->dictSource, 'Collection', '信息来源 *');
 		$source->addRule('required', '必须选择来源');
 		$form->addInput($source);
@@ -867,5 +892,4 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 		return $form;
 	}
 }
-
 ?>
