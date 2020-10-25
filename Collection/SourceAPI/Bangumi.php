@@ -7,7 +7,7 @@ if (!defined('__TYPECHO_ROOT_DIR__')) exit;
  * @author 两仪天心
  * @copyright Copyright (c) 2020 Tennsinn
  * @license GNU General Public License v3.0
- * @version 1.0.0
+ * @version 1.0.1
  */
 class Collection_SourceAPI_Bangumi
 {
@@ -62,7 +62,7 @@ class Collection_SourceAPI_Bangumi
 	/**
 	 * 根据已解析数据获取所需内容
 	 *
-	 * @access public
+	 * @access private
 	 * @param array $value 解析后的数组
 	 * @return array
 	 */
