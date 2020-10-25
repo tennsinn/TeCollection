@@ -535,7 +535,6 @@ echo "};\n";
 										<input type="text" class="text-s" placeholder="<?php _e('请输入关键字'); ?>" value="<?php echo htmlspecialchars($request->keywords); ?>"<?php if ('' == $request->keywords): ?> onclick="value='';name='keywords';" <?php else: ?> name="keywords"<?php endif; ?>>
 										<select name="source">
 											<option value="Bangumi"<?php if($request->get('source') == 'Bangumi'): ?> selected="ture"<?php endif;?>>Bangumi</option>
-											<?php /* <option value="Douban"<?php if($request->get('source') == 'Douban'): ?> selected="ture"<?php endif;?>>豆瓣</option> */ ?>
 										</select>
 										<select name="class">
 										</select>
@@ -606,7 +605,6 @@ echo "};\n";
 							$(document).ready(function(){
 								var dictClass = {
 									'Bangumi':{0:'全部', 1:'书籍', 2:'动画', 3:'音乐', 4:'游戏', 5:'广播', 6:'影视'}
-									// 'Douban':{1:'图书',3:'音乐',6:'电影'}
 								};
 								var objectSource = $('select[name=source]');
 								var changeSource = function(){
