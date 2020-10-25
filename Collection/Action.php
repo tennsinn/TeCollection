@@ -1,4 +1,5 @@
 <?php
+if (!defined('__TYPECHO_ROOT_DIR__')) exit;
 
 class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 {
@@ -6,6 +7,7 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 	{
 		parent::__construct($request, $response, $params);
 		$this->_options = Helper::options();
+		$this->_security = Helper::security();
 		$this->_settings = Helper::options()->plugin('Collection');
 		$this->_db = Typecho_Db::get();
 	}
@@ -13,6 +15,7 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 	public function action()
 	{
 		$this->on($this->request->is('do=getCollection'))->getCollection();
+		$this->_security->protect();
 		$this->widget("Widget_User")->pass("administrator");
 		$this->on($this->request->is('do=plusEp'))->plusEp();
 		$this->on($this->request->is('do=editSubject'))->editSubject();
@@ -796,7 +799,7 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 	 */
 	public function formInput()
 	{
-		$form = new Typecho_Widget_Helper_Form(Typecho_Common::url('/action/collection', $this->_options->index), Typecho_Widget_Helper_Form::POST_METHOD);
+		$form = new Typecho_Widget_Helper_Form($this->_security->getIndex('/action/collection'), Typecho_Widget_Helper_Form::POST_METHOD);
 		
 		$do = new Typecho_Widget_Helper_Form_Element_Hidden('do');
 		$form->addInput($do);

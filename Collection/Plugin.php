@@ -1,10 +1,12 @@
 <?php
+if (!defined('__TYPECHO_ROOT_DIR__')) exit;
+
 /**
  * 一个本地收藏整理展示插件
  * 
  * @package Collection
  * @author 息E-敛
- * @version 1.10.1
+ * @version 1.10.2
  * @link http://tennsinn.com
  */
 class Collection_Plugin implements Typecho_Plugin_Interface
