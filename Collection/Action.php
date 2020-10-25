@@ -3,6 +3,8 @@ if (!defined('__TYPECHO_ROOT_DIR__')) exit;
 
 class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 {
+	private $_dictGrade;
+
 	public function __construct($request, $response, $params = NULL)
 	{
 		parent::__construct($request, $response, $params);
@@ -10,6 +12,7 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 		$this->_security = Helper::security();
 		$this->_settings = Helper::options()->plugin('Collection');
 		$this->_db = Typecho_Db::get();
+		$this->_dictGrade = Collection_Config::getGrade();
 	}
 
 	public function action()
@@ -37,7 +40,6 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 	private $dictClass = array(1 => '书籍', 2 => '动画', 3 => '音乐', 4 => '游戏', 5 => '广播', 6 => '影视');
 	private $dictType = array('Novel' => '小说', 'Comic' => '漫画', 'Doujinshi' => '同人志', 'Textbook' => '课本');
 	private $dictSource = array('Collection' => '无来源', 'Bangumi' => 'Bangumi', 'Douban' => '豆瓣', 'Wandoujia' => '豌豆荚', 'Steam' => 'Steam', 'TapTap' => 'TapTap', 'BiliBili' => 'BiliBili');
-	private $dictGrade = array(0 => '公开', 1 => '私密1', 2 => '私密2', 3 => '私密3', 4 => '私密4', 5 => '私密5', 6 => '私密6', 7 => '私密7', 8 => '私密8', 9 => '私密9');
 	private $dictStatus = array('do' => '进行', 'collect' => '完成', 'wish' => '计划', 'on_hold' => '搁置', 'dropped' => '抛弃');
 
 	/**
@@ -651,7 +653,7 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 		$parent_order->addRule('isInteger', '请正确输入ID');
 		$form->addInput($parent_order);
 
-		$grade = new Typecho_Widget_Helper_Form_Element_radio('grade', $this->dictGrade, 0, '显示分级');
+		$grade = new Typecho_Widget_Helper_Form_Element_radio('grade', $this->_dictGrade, 0, '显示分级');
 		$form->addInput($grade);
 
 		$status = new Typecho_Widget_Helper_Form_Element_Radio('status', $this->dictStatus, 'wish', '记录当前状态 *');

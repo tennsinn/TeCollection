@@ -39,7 +39,7 @@ $dictSource = array(
 	'TapTap' => array('name' => 'TapTap', 'url' => 'https://www.taptap.com/app/'),
 	'BiliBili' => array('name' => 'BiliBili', 'url' => 'https://www.bilibili.com/bangumi/media/')
 );
-$dictGrade = array(0 => '公开', 1 => '私密1', 2 => '私密2', 3 => '私密3', 4 => '私密4', 5 => '私密5', 6 => '私密6', 7 => '私密7', 8 => '私密8', 9 => '私密9');
+$dictGrade = Collection_Config::getGrade();
 ?>
 
 <link rel="stylesheet" type="text/css" href="<?php $options->pluginUrl('Collection/template/stylesheet-common.css'); ?>">

@@ -6,7 +6,7 @@ if (!defined('__TYPECHO_ROOT_DIR__')) exit;
  * 
  * @package Collection
  * @author 息E-敛
- * @version 1.11.2
+ * @version 1.12.0
  * @link http://tennsinn.com
  */
 class Collection_Plugin implements Typecho_Plugin_Interface
@@ -65,6 +65,10 @@ class Collection_Plugin implements Typecho_Plugin_Interface
 	
 	public static function config(Typecho_Widget_Helper_Form $form)
 	{
+		$grade = new Typecho_Widget_Helper_Form_Element_Text('grade', NULL, '公开,私密1,私密2,私密3,私密4,私密5,私密6,私密7,私密8,私密9', _t('分级标签'), _t('依次写入至多10个分级标签名称，以逗号分隔，不允许空标签。'));
+		$grade->addRule(array('Collection_Config', 'checkGrade'), _t('请以逗号分隔填入至多10个非空有效标签'));
+		$form->addInput($grade);
+
 		$arrayAnimation = array('fadeIn'=>'fadeIn', 'fadeInUp' => 'fadeInUp', 'fadeInDown' => 'fadeInDown', 'fadeInLeft' => 'fadeInLeft', 'fadeInRight' => 'fadeInRight', 'fadeInUpBig' => 'fadeInUpBig', 'fadeInDownBig' => 'fadeInDownBig', 'fadeInLeftBig' => 'fadeInLeftBig', 'fadeInRightBig' => 'fadeInRightBig', 'flipInX' => 'flipInX', 'bounceIn' => 'bounceIn', 'bounceInDown' => 'bounceInDown', 'bounceInUp' => 'bounceInUp', 'bounceInLeft' => 'bounceInLeft', 'bounceInRight' => 'bounceInRight', 'rotateIn' => 'rotateIn', 'rotateInDownLeft' => 'rotateInDownLeft', 'rotateInDownRight' => 'rotateInDownRight', 'rotateInUpLeft' => 'rotateInUpLeft', 'rotateInUpRight' => 'rotateInUpRight', 'rollIn' => 'rollIn');
 		$animation = new Typecho_Widget_Helper_Form_Element_Radio('animation', $arrayAnimation, 'fadeInUp', _t('展示模板列表显示动画'), _t('选择在展示模板显示列表时的动画效果'));
 		$form->addInput($animation->multiMode());
