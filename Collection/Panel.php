@@ -215,21 +215,8 @@ echo "};\n";
 																if(!$subject['ep_count'] || $subject['ep_count']>$subject['ep_status'])
 																{
 																	echo '<div class="hidden-by-mouse"><small><a href="#'.$subject['id'].'" rel="';
-																	$security->index('/action/collection?do=plusEp&plus=ep');
+																	$security->index('/action/collection?do=plusEp');
 																	echo '" class="Collection-subject-progress-plus" id="Collection-subject-'.$subject['id'].'-progress-ep-plus">ep.'.($subject['ep_status']+1).'已'.$arrayClassStatus['collect'][$subject['class']].'</a></small></div>';
-																}
-															}
-															echo '</div>';
-															echo '<div id="Collection-subject-'.$subject['id'].'-sp">';
-															if(!is_null($subject['sp_count']) && !is_null($subject['sp_status']))
-															{
-																echo '<label for="Collection-subject-'.$subject['id'].'-progress-sp">'._t('副进度').'</label>';
-																echo '<div id="Collection-subject-'.$subject['id'].'-progress-sp" class="Collection-subject-progress"><div class="Collection-subject-progress-inner" style="color:white; width:'.($subject['sp_count'] ? $subject['sp_status']/$subject['sp_count']*100 : 50).'%"><small>'.$subject['sp_status'].' / '.($subject['sp_count'] ? $subject['sp_count'] : '??').'</small></div></div>';
-																if(!$subject['sp_count'] || $subject['sp_count']>$subject['sp_status'])
-																{
-																	echo '<div class="hidden-by-mouse"><small><a href="#'.$subject['id'].'" rel="';
-																	$security->index('/action/collection?do=plusEp&plus=sp');
-																	echo '" class="Collection-subject-progress-plus" id="Collection-subject-'.$subject['id'].'-progress-sp-plus">sp.'.($subject['sp_status']+1).'已'.$arrayClassStatus['collect'][$subject['class']].'</a></small></div>';
 																}
 															}
 															echo '</div>';
@@ -284,31 +271,16 @@ echo "};\n";
 								$.post(t.attr('rel'), {"id": subject.id}, function (data) {
 									if(data.result)
 									{
-										if(data.plus == 'ep')
-										{
-											subject.ep_status = data.ep_status;
-											if(data.status == 'collect')
-												subject.status = 'collect';
-											else
-												t.html('ep.'+(Number(data.ep_status)+1)+'已看过');
-											tr.data('subject', subject);
-											t.parent().parent().prev().html('<div class="Collection-subject-progress-inner" style="color:white; width:'+(subject.ep_count != 0 ? subject.ep_status/subject.ep_count*100 : 50)+'%"><small>'+subject.ep_status+' / '+(subject.ep_count != 0 ? subject.ep_count : '??')+'</small></div>');
-											if(subject.ep_count != 0 && subject.ep_status == subject.ep_count)
-												t.parent().parent().remove();
-										}
+										subject.ep_status = data.ep_status;
+										if(data.status == 'collect')
+											subject.status = 'collect';
 										else
-										{
-											subject.sp_status = data.sp_status;
-											if(data.status == 'collect')
-												subject.status = 'collect';
-											else
-												t.html('sp.'+(Number(data.sp_status)+1)+'已看过');
-											tr.data('subject', subject);
-											t.parent().parent().prev().html('<div class="Collection-subject-progress-inner" style="color:white; width:'+(subject.sp_count != 0 ? subject.sp_status/subject.sp_count*100 : 50)+'%"><small>'+subject.sp_status+' / '+(subject.sp_count != 0 ? subject.sp_count : '??')+'</small></div>');
-											if(subject.sp_count != 0 && subject.sp_status == subject.sp_count)
-												t.parent().parent().remove();
-										}
-									} 
+											t.html('ep.'+(Number(data.ep_status)+1)+'已看过');
+										tr.data('subject', subject);
+										t.parent().parent().prev().html('<div class="Collection-subject-progress-inner" style="color:white; width:'+(subject.ep_count != 0 ? subject.ep_status/subject.ep_count*100 : 50)+'%"><small>'+subject.ep_status+' / '+(subject.ep_count != 0 ? subject.ep_count : '??')+'</small></div>');
+										if(subject.ep_count != 0 && subject.ep_status == subject.ep_count)
+											t.parent().parent().remove();
+									}
 									else
 										alert(data.message);
 								});
@@ -359,8 +331,6 @@ echo "};\n";
 									+ '<p><label for="'+id+'-parent_label"><?=_t('关联标签')?></label><input class="text-s w-100" type="text" id="'+id+'-parent_label" name="parent_label"></p>'
 									+ '<p><label for="'+id+'-ep_status">主进度</label><input class="text-s w-100" id="'+id+'-ep_status" name="ep_status" type="number" min="0" max="9999"></p>'
 									+ '<p><label for="'+id+'-ep_count">主进度总数</label><input class="text-s w-100" type="number" name="ep_count" id="'+id+'-ep_count" min="0" max="9999"></p>'
-									+ '<p><label for="'+id+'-sp_status">副进度</label><input class="text-s w-100" id="'+id+'-sp_status" name="sp_status" type="number" min="0" max="999"></p>'
-									+ '<p><label for="'+id+'-sp_count">副进度总数</label><input class="text-s w-100" type="number" name="sp_count" id="'+id+'-sp_count" min="0" max="999"></p>'
 									+ '</form></td>'
 									+ '<td><form method="post" action="'+t.attr('rel')+'" class="Collection-subject-edit-content">'
 									+ '<p><label for="'+id+'-grade">显示分级</label><select id="'+id+'-grade" name="grade" class="w-100">'
@@ -400,8 +370,6 @@ echo "};\n";
 								$('input[name=parent_label]', edit).val(subject.parent_label);
 								$('input[name=ep_status]', edit).val(subject.ep_status);
 								$('input[name=ep_count]', edit).val(subject.ep_count);
-								$('input[name=sp_status]', edit).val(subject.sp_status);
-								$('input[name=sp_count]', edit).val(subject.sp_count);
 								$('select[name=grade]', edit).val(subject.grade);
 								$('textarea[name=note]', edit).val(subject.note);
 								$('input[name=rate]', edit).val(subject.rate);
@@ -475,9 +443,7 @@ echo "};\n";
 										subject['parent_order'] = 0;
 										subject['parent_label'] = null;
 										subject['ep_count'] = null;
-										subject['sp_count'] = null;
 										subject['ep_status'] = null;
-										subject['sp_status'] = null;
 									}
 
 									oldTr.data('subject', subject);
@@ -516,18 +482,8 @@ echo "};\n";
 												stringProgress += '<label for="Collection-subject-'+subject.id+'-progress-ep">主进度</label>'
 													+ '<div id="Collection-subject-'+subject.id+'-progress-ep" class="Collection-subject-progress"><div class="Collection-subject-progress-inner" style="color:white; width:'+(subject.ep_count != 0 ? subject.ep_status/subject.ep_count*100 : 50)+'%"><small>'+subject.ep_status+' / '+(subject.ep_count != 0 ? subject.ep_count : '??')+'</small></div></div>';
 												if(subject.ep_count == '0' || Number(subject.ep_count) > Number(subject.ep_status))
-													stringProgress += '<div class="hidden-by-mouse"><small><a href="#'+subject.id+'" rel="<?php $security->index('/action/collection?do=plusEp&plus=ep'); ?>" class="Collection-subject-progress-plus" id="Collection-subject-'+subject.id+'-progress-ep-plus">ep.'+String(Number(subject.ep_status)+1)+'已'+arrayStatus[String(subject.class-1)]+'</a></small></div>';
+													stringProgress += '<div class="hidden-by-mouse"><small><a href="#'+subject.id+'" rel="<?php $security->index('/action/collection?do=plusEp'); ?>" class="Collection-subject-progress-plus" id="Collection-subject-'+subject.id+'-progress-ep-plus">ep.'+String(Number(subject.ep_status)+1)+'已'+arrayStatus[String(subject.class-1)]+'</a></small></div>';
 												$('#Collection-subject-'+subject.id+'-ep', oldTr).html(stringProgress);
-											}
-											if((subject.sp_count == '' && subject.sp_status == '') || (subject.sp_count == null && subject.sp_status == null))
-												$('#Collection-subject-'+subject.id+'-sp', oldTr).html('');
-											else
-											{
-												stringProgress = '<label for="Collection-subject-'+subject.id+'-progress-sp">副进度</label>'
-													+ '<div id="Collection-subject-'+subject.id+'-progress-sp" class="Collection-subject-progress"><div class="Collection-subject-progress-inner" style="color:white; width:'+(subject.sp_count != 0 ? subject.sp_status/subject.sp_count*100 : 50)+'%"><small>'+subject.sp_status+' / '+(subject.sp_count != 0 ? subject.sp_count : '??')+'</small></div></div>';
-												if(subject.sp_count == '0' || Number(subject.sp_count) > Number(subject.sp_status))
-													stringProgress += '<div class="hidden-by-mouse"><small><a href="#'+subject.id+'" rel="<?php $security->index('/action/collection?do=plusEp&plus=sp'); ?>" class="Collection-subject-progress-plus" id="Collection-subject-'+subject.id+'-progress-sp-plus">sp.'+String(Number(subject.sp_status)+1)+'已'+arrayStatus[String(subject.class-1)]+'</a></small></div>';
-												$('#Collection-subject-'+subject.id+'-sp', oldTr).html(stringProgress);
 											}
 											$('.Collection-subject-note', oldTr).html('<i>备注：</i>'+(subject.note ? subject.note : '无'));
 											$('.Collection-subject-rate', oldTr).html('<i>评价：</i>'+ '<span class="Collection-subject-rate-star Collection-subject-rate-star-rating"></span>'.repeat(subject.rate)+'<span class="Collection-subject-rate-star Collection-subject-rate-star-blank"></span>'.repeat(10-subject.rate));

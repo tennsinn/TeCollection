@@ -83,45 +83,20 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 	 */
 	private function plusEp()
 	{
-		if(!$this->request->get('id') || ($this->request->get('plus') != 'ep' && $this->request->get('plus') != 'sp'))
+		if(!$this->request->get('id'))
 			$this->response->throwJson(array('result' => false, 'message' => '缺少必要信息'));
 		$row = $this->_db->fetchRow($this->_db->select()->from('table.collection')->where('id = ?', $this->request->id));
-		if($this->request->plus == 'ep')
+		if(($row['ep_status']+1) < $row['ep_count'] || $row['ep_count'] == 0)
 		{
-			if(($row['ep_status']+1) < $row['ep_count'] || $row['ep_count'] == 0)
-			{
-				$this->_db->query($this->_db->update('table.collection')->rows(array('ep_status' => ($row['ep_status']+1), 'time_touch' => Typecho_Date::gmtTime()))->where('id = ?', $this->request->id));
-				$this->response->throwJson(array('result' => true, 'status' => 'do', 'plus' => 'ep', 'ep_status' => ($row['ep_status']+1)));
-			}
-			elseif($row['sp_status'] != $row['sp_count'])
-			{
-				$this->_db->query($this->_db->update('table.collection')->rows(array('ep_status' => $row['ep_count'], 'time_touch' => Typecho_Date::gmtTime()))->where('id = ?', $this->request->id));
-				$this->response->throwJson(array('result' => true, 'status' => 'do', 'plus' => 'ep', 'ep_status' => $row['ep_count']));
-			}
-			else
-			{
-				$this->_db->query($this->_db->update('table.collection')->rows(array('status' => 'collect', 'ep_status' => $row['ep_count'], 'time_finish' => Typecho_Date::gmtTime(), 'time_touch' => Typecho_Date::gmtTime()))->where('id = ?', $this->request->id));
-				$this->response->throwJson(array('result' => true, 'status' => 'collect', 'plus' => 'ep', 'ep_status' => $row['ep_count']));
-			}
+			$this->_db->query($this->_db->update('table.collection')->rows(array('ep_status' => ($row['ep_status']+1), 'time_touch' => Typecho_Date::gmtTime()))->where('id = ?', $this->request->id));
+			$this->response->throwJson(array('result' => true, 'status' => 'do', 'ep_status' => ($row['ep_status']+1)));
 		}
-		else
+		elseif(($row['ep_status']+1) == $row['ep_count'])
 		{
-			if(($row['sp_status']+1) < $row['sp_count'] || $row['sp_count'] == 0)
-			{
-				$this->_db->query($this->_db->update('table.collection')->rows(array('sp_status' => ($row['sp_status']+1), 'time_touch' => Typecho_Date::gmtTime()))->where('id = ?', $this->request->id));
-				$this->response->throwJson(array('result' => true, 'status' => 'do', 'plus' => 'sp', 'sp_status' => ($row['sp_status']+1)));
-			}
-			elseif($row['ep_status'] != $row['ep_count'])
-			{
-				$this->_db->query($this->_db->update('table.collection')->rows(array('sp_status' => $row['sp_count'], 'time_touch' => Typecho_Date::gmtTime()))->where('id = ?', $this->request->id));
-				$this->response->throwJson(array('result' => true, 'status' => 'do', 'plus' => 'sp', 'sp_status' => $row['sp_count']));
-			}
-			else
-			{
-				$this->_db->query($this->_db->update('table.collection')->rows(array('status' => 'collect', 'sp_status' => $row['sp_count'], 'time_finish' => Typecho_Date::gmtTime(), 'time_touch' => Typecho_Date::gmtTime()))->where('id = ?', $this->request->id));
-				$this->response->throwJson(array('result' => true, 'status' => 'collect', 'plus' => 'sp', 'sp_status' => $row['sp_count']));
-			}
+			$this->_db->query($this->_db->update('table.collection')->rows(array('status' => 'collect', 'ep_status' => $row['ep_count'], 'time_finish' => Typecho_Date::gmtTime(), 'time_touch' => Typecho_Date::gmtTime()))->where('id = ?', $this->request->id));
+			$this->response->throwJson(array('result' => true, 'status' => 'collect', 'ep_status' => $row['ep_count']));
 		}
+		$this->response->throwJson(array('result' => false, 'message' => '没有可以增加的进度'));
 	}
 
 	/**
@@ -157,9 +132,6 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 		{
 			if((!is_null($this->request->get('ep_status')) || !is_null($this->request->get('ep_count'))) && (!is_numeric($this->request->ep_status) || !is_numeric($this->request->ep_count) || $this->request->ep_status<0 || $this->request->ep_count<0 || ($this->request->ep_count>0 && $this->request->ep_status>$this->request->ep_count)))
 				$this->response->throwJson(array('result' => false, 'message' => '请输入正确的主进度'));
-
-			if((!is_null($this->request->get('sp_status')) || !is_null($this->request->get('sp_count'))) && (!is_numeric($this->request->sp_status) || !is_numeric($this->request->sp_count) || $this->request->sp_status<0 || $this->request->sp_count<0 || ($this->request->sp_count>0 && $this->request->sp_status>$this->request->sp_count)))
-				$this->response->throwJson(array('result' => false, 'message' => '请输入正确的副进度'));
 		}
 
 		if(!in_array($this->request->get('source'), array('Collection', 'Bangumi', 'Douban', 'Steam', 'Wandoujia', 'TapTap', 'BiliBili')))
@@ -195,7 +167,6 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 				'publisher' => NULL,
 				'published' => NULL,
 				'ep_count' => NULL,
-				'sp_count' => NULL,
 				'source' => $this->request->source,
 				'source_id' => $this->request->source_id,
 				'parent' => 0,
@@ -204,7 +175,6 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 				'grade' => $this->request->grade,
 				'time_touch' => Typecho_Date::gmtTime(),
 				'ep_status' => NULL,
-				'sp_status' => NULL,
 				'rate' => $this->request->rate,
 				'tags' => $this->request->tags,
 				'comment' => $this->request->comment,
@@ -221,7 +191,6 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 				'publisher' => $this->request->get('publisher'),
 				'published' => $published,
 				'ep_count' => $this->request->ep_count,
-				'sp_count' => $this->request->sp_count,
 				'source' => $this->request->source,
 				'source_id' => $this->request->source_id,
 				'parent' => $this->request->parent,
@@ -230,14 +199,13 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 				'grade' => $this->request->grade,
 				'time_touch' => Typecho_Date::gmtTime(),
 				'ep_status' => $this->request->ep_status,
-				'sp_status' => $this->request->sp_status,
 				'rate' => $this->request->rate,
 				'tags' => $this->request->tags,
 				'comment' => $this->request->comment,
 				'note' => $this->request->note
 			);
 
-		if($this->request->status == 'do' && ($this->request->ep_count > 0 && $this->request->ep_count == $this->request->ep_status) && (is_null($this->request->sp_count) || ($this->request->sp_count > 0 && $this->request->sp_count == $this->request->sp_status)))
+		if($this->request->status == 'do' && ($this->request->ep_count > 0 && $this->request->ep_count == $this->request->ep_status))
 		{
 			$row['status'] = 'collect';
 			$row['time_finish'] = Typecho_Date::gmtTime();
@@ -288,8 +256,6 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 							case 'collect':
 								if($row_temp['ep_count'])
 									$row['ep_status'] = $row_temp['ep_count'];
-								if($row_temp['sp_count'])
-									$row['sp_status'] = $row_temp['sp_count'];
 							case 'dropped':
 								$row['time_finish'] = Typecho_Date::gmtTime();
 								break;
@@ -322,8 +288,6 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 							case 'collect':
 								if($row_temp['ep_count'])
 									$row['ep_status'] = $row_temp['ep_count'];
-								if($row_temp['sp_count'])
-									$row['sp_status'] = $row_temp['sp_count'];
 							case 'dropped':
 								$row['time_finish'] = Typecho_Date::gmtTime();
 								break;
@@ -437,8 +401,6 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 								case 'collect':
 									if(isset($row['ep_count']) && $row['ep_count'])
 										$row['ep_status'] = $row['ep_count'];
-									if(isset($row['sp_count']) && $row['sp_count'])
-										$row['sp_status'] = $row['sp_count'];
 								case 'dropped':
 									$row['time_finish'] = Typecho_Date::gmtTime();
 									break;
@@ -500,18 +462,6 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 					$ep_count = NULL;
 					$ep_status = NULL;
 				}
-				if(in_array('sp_progress', $progress))
-				{
-					if(!is_null($this->request->sp_count))
-						$sp_count = min(999, max(0, intval($this->request->sp_count)));
-					if(!is_null($this->request->sp_status))
-						$sp_status = min($sp_count, max(0, intval($this->request->sp_status)));
-				}
-				else
-				{
-					$sp_count = NULL;
-					$sp_status = NULL;
-				}
 				$time_start = NULL;
 				$time_finish = NULL;
 				if($this->request->status == 'do')
@@ -555,7 +505,6 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 							'publisher' => $this->request->get('publisher'),
 							'published' => $published,
 							'ep_count' => $ep_count,
-							'sp_count' => $sp_count,
 							'source' => $this->request->source,
 							'source_id' => $this->request->source_id,
 							'parent' => $this->request->parent,
@@ -567,7 +516,6 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 							'time_finish' => $time_finish,
 							'time_touch' => Typecho_Date::gmtTime(),
 							'ep_status' => $ep_status,
-							'sp_status' => $sp_status,
 							'rate' => $this->request->rate,
 							'tags' => $this->request->tags,
 							'comment' => $this->request->comment,
@@ -848,7 +796,6 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 
 		$editProgress = array(
 			'ep_progress' => '输入主进度：<input type="text" class="text-s num" name="ep_status"> / <input type="text" class="text num text-s" name="ep_count"> ',
-			'sp_progress' => '输入副进度：<input type="text" class="text-s num" name="sp_status"> / <input type="text" class="text num text-s" name="sp_count"> '
 		);
 		$progress = new Typecho_Widget_Helper_Form_Element_Checkbox('progress', $editProgress, NULL, '进度信息', '选择将要添加的信息，默认为0/0，不选择则认为无进度项');
 		$form->addInput($progress->multiMode());

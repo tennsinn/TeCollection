@@ -6,7 +6,7 @@ if (!defined('__TYPECHO_ROOT_DIR__')) exit;
  * 
  * @package Collection
  * @author 息E-敛
- * @version 1.10.2
+ * @version 1.11.0
  * @link http://tennsinn.com
  */
 class Collection_Plugin implements Typecho_Plugin_Interface
@@ -43,9 +43,7 @@ class Collection_Plugin implements Typecho_Plugin_Interface
 			`rate` tinyint(2) unsigned NOT NULL default 0,
 			`tags` varchar(100) default NULL,
 			`comment` text default NULL,
-			`note` tinytext default NULL,
-			`sp_count` smallint(3) unsigned default NULL,
-			`sp_status` smallint(3) unsigned default NULL
+			`note` tinytext default NULL
 			) ENGINE=MyISAM DEFAULT CHARSET=". $charset;
 		$db->query($query);
 	}
