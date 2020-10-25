@@ -7,7 +7,7 @@ if (!defined('__TYPECHO_ROOT_DIR__')) exit;
  * @package Collection
  * @author 两仪天心
  * @license GNU General Public License v3.0
- * @version 1.13.1
+ * @version 1.13.2
  * @link http://tennsinn.com
  */
 class Collection_Plugin implements Typecho_Plugin_Interface
@@ -16,7 +16,7 @@ class Collection_Plugin implements Typecho_Plugin_Interface
 	{
 		Helper::addAction('collection', 'Collection_Action');
 		Helper::addPanel(3, "Collection/Panel.php", _t("Collection"), _t("Collection"), 'administrator', false, 'extending.php?panel=Collection%2FPanel.php&do=input');
-		Collection_Plugin::_checkVersion();
+		self::_checkVersion();
 		$db = Typecho_Db::get();
 		$charset = Helper::options()->charset == 'UTF-8' ? 'utf8' : 'gbk';
 		$query = 'CREATE TABLE IF NOT EXISTS '. $db->getPrefix() . 'collection' ." (
@@ -47,6 +47,7 @@ class Collection_Plugin implements Typecho_Plugin_Interface
 			`note` tinytext default NULL
 			) ENGINE=MyISAM DEFAULT CHARSET=". $charset;
 		$db->query($query);
+		return(_t('插件已启用'));
 	}
 	
 	public static function deactivate()
@@ -58,15 +59,16 @@ class Collection_Plugin implements Typecho_Plugin_Interface
 			$db = Typecho_Db::get();
 			$db->query('DROP TABLE IF EXISTS '.$db->getPrefix().'collection');
 			$db->query($db->delete('table.options')->where('name = ?', 'Collection:version'));
-			return('插件已经禁用, 插件数据已经删除');
+			return(_t('插件已经禁用, 插件数据已经删除'));
 		}
 		else
-			return('插件已经禁用, 插件数据保留');
+			return(_t('插件已经禁用, 插件数据保留'));
 	}
 	
 	public static function config(Typecho_Widget_Helper_Form $form)
 	{
-		$grade = new Typecho_Widget_Helper_Form_Element_Text('grade', NULL, '公开,私密1,私密2,私密3,私密4,私密5,私密6,私密7,私密8,私密9', _t('分级标签'), _t('依次写入至多10个分级标签名称，以逗号分隔，不允许空标签。'));
+		$arrayGrade = array(_t('公开'), _t('私密1'), _t('私密2'), _t('私密3'), _t('私密4'), _t('私密5'), _t('私密6'), _t('私密7'), _t('私密8'), _t('私密9'));
+		$grade = new Typecho_Widget_Helper_Form_Element_Text('grade', NULL, implode(',', $arrayGrade), _t('分级标签'), _t('依次写入至多10个分级标签名称，以逗号分隔，不允许空标签。'));
 		$grade->addRule(array('Collection_Config', 'checkGrade'), _t('请以逗号分隔填入至多10个非空有效标签'));
 		$form->addInput($grade);
 
