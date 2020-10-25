@@ -263,7 +263,7 @@ echo "};\n";
 					<script type="text/javascript">
 						$(document).ready(function () {
 							var arrayStatus = ['读过', '看过', '听过', '玩过', '听过', '看过'];
-							$('.Collection-subject-progress-plus').click(function(){
+							var clickPlusEp = function(){
 								var tr = $(this).parents('tr');
 								var t = $(this);
 								var id = tr.attr('id');
@@ -284,7 +284,8 @@ echo "};\n";
 									else
 										alert(data.message);
 								});
-							});
+							}
+							$('.Collection-subject-progress-plus').click(clickPlusEp);
 
 							$('.Collection-subject-edit').click(function () {
 								var tr = $(this).parents('tr');
@@ -484,6 +485,7 @@ echo "};\n";
 												if(subject.ep_count == '0' || Number(subject.ep_count) > Number(subject.ep_status))
 													stringProgress += '<div class="hidden-by-mouse"><small><a href="#'+subject.id+'" rel="<?php $security->index('/action/collection?do=plusEp'); ?>" class="Collection-subject-progress-plus" id="Collection-subject-'+subject.id+'-progress-ep-plus">ep.'+String(Number(subject.ep_status)+1)+'已'+arrayStatus[String(subject.class-1)]+'</a></small></div>';
 												$('#Collection-subject-'+subject.id+'-ep', oldTr).html(stringProgress);
+												$('.Collection-subject-progress-plus', oldTr).click(clickPlusEp);
 											}
 											$('.Collection-subject-note', oldTr).html('<i>备注：</i>'+(subject.note ? subject.note : '无'));
 											$('.Collection-subject-rate', oldTr).html('<i>评价：</i>'+ '<span class="Collection-subject-rate-star Collection-subject-rate-star-rating"></span>'.repeat(subject.rate)+'<span class="Collection-subject-rate-star Collection-subject-rate-star-blank"></span>'.repeat(10-subject.rate));

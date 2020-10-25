@@ -6,7 +6,7 @@ if (!defined('__TYPECHO_ROOT_DIR__')) exit;
  * 
  * @package Collection
  * @author 息E-敛
- * @version 1.11.0
+ * @version 1.11.1
  * @link http://tennsinn.com
  */
 class Collection_Plugin implements Typecho_Plugin_Interface
