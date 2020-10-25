@@ -296,62 +296,56 @@ echo "};\n";
 								var string = '<tr class="Collection-subject-edit">'
 									+ '<td> </td>'
 									+ '<td><form method="post" action="'+t.attr('rel')+'" class="Collection-subject-edit-content">'
-										+ '<p><label for="'+id+'-category"><?php _e('大类'); ?></label><select id="'+id+'-category" name="category" class="w-100">';
+										+ '<p><label for="'+id+'-category"><?=_t('大类')?></label><select id="'+id+'-category" name="category" class="w-100">';
 								$.each(dictCategory, function(key, value){
 									string += '<option value="'+key+'">'+value+'</option>';
 								});
 								string += '</select></p>'
-										+ '<p><label for="'+id+'-image"><?php _e('封面'); ?></label>'
+										+ '<p><label for="'+id+'-image"><?=_t('封面')?></label>'
 										+ '<textarea name="image" id="'+id+'-image" rows="3" class="w-100 mono"></textarea></p>'
-										+ '<p><label for="'+id+'-class"><?php _e('种类'); ?></label><select id="'+id+'-class" name="class" class="w-100">';
+										+ '<p><label for="'+id+'-class"><?=_t('种类')?></label><select id="'+id+'-class" name="class" class="w-100">';
 								$.each(dictClass, function(key, value){
 									string += '<option value="'+key+'">'+value+'</option>';
 								});
 								string += '</select></p>'
-										+ '<p><label for="'+id+'-type"><?php _e('类型'); ?></label><select id="'+id+'-type" name="type" class="w-100">';
+										+ '<p><label for="'+id+'-type"><?=_t('类型')?></label><select id="'+id+'-type" name="type" class="w-100">';
 								if(subject.class && subject.class > 0 && subject.class <=6)
 									$.each(dictType[subject.class], function(key, value){
 										string += '<option value="'+key+'">'+value+'</option>';
 									});
 								string += '</select></p>'
-									+ '<p><label for="'+id+'-publisher"><?=_t('出版商')?></label><input class="text-s w-100" type="text" id="'+id+'-publisher" name="publisher"></p>'
-									+ '<p><label for="'+id+'-published"><?=_t('出版时间')?></label><input class="text-s w-100" type="text" id="'+id+'-published" name="published"></p>'
-									+ '<p><label for="'+id+'-source"><?php _e('信息来源'); ?></label><select id="'+id+'-source" name="source" class="w-100">'
-										+ '<option value="Collection">收藏</option>';
+									+ '<p><label for="'+id+'-publisher"><?=_t('出版商')?></label><input type="text" id="'+id+'-publisher" name="publisher" class="text-s"></p>'
+									+ '<p><label for="'+id+'-published"><?=_t('出版时间')?></label><input type="text" id="'+id+'-published" name="published" class="text-s"></p>'
+									+ '<p><label for="'+id+'-source"><?=_t('信息来源')?></label><select id="'+id+'-source" name="source" class="w-100">'
+										+ '<option value="Collection"><?=_t('收藏')?></option>';
 								$.each(dictSource, function(key, value){
 									string += '<option value="'+key+'">'+value['name']+'</option>';
 								});
 								string += '</select></p>'
-									+ '<p><label for="'+id+'-source_id">来源ID</label><input class="text-s" type="text" id="'+id+'-source_id" name="source_id"></p>'
+									+ '<p><label for="'+id+'-source_id"><?=_t('来源ID')?></label><input type="text" id="'+id+'-source_id" name="source_id" class="text-s"></p>'
 									+ '</form></td>'
 									+ '<td><form method="post" action="'+t.attr('rel')+'" class="Collection-subject-edit-info">'
-									+ '<p><label for="'+id+'-name">原名</label><input class="text-s" type="text" id="'+id+'-name" name="name"></p>'
-									+ '<p><label for="'+id+'-name_cn">译名</label><input class="text-s" type="text" id="'+id+'-name_cn" name="name_cn"></p>'
-									+ '<p><label for="'+id+'-parent">关联记录</label><input class="text-s" type="text" id="'+id+'-parent" name="parent"></p>'
-									+ '<p><label for="'+id+'-parent_order">关联顺序</label><input class="text-s w-100" id="'+id+'-parent_order" name="parent_order" type="number" min="0" max="99"></p>'
-									+ '<p><label for="'+id+'-parent_label"><?=_t('关联标签')?></label><input class="text-s w-100" type="text" id="'+id+'-parent_label" name="parent_label"></p>'
-									+ '<p><label for="'+id+'-ep_status">主进度</label><input class="text-s w-100" id="'+id+'-ep_status" name="ep_status" type="number" min="0" max="9999"></p>'
-									+ '<p><label for="'+id+'-ep_count">主进度总数</label><input class="text-s w-100" type="number" name="ep_count" id="'+id+'-ep_count" min="0" max="9999"></p>'
+									+ '<p><label for="'+id+'-name"><?=_t('原名')?></label><input type="text" id="'+id+'-name" name="name" class="text-s"></p>'
+									+ '<p><label for="'+id+'-name_cn"><?=_t('译名')?></label><input type="text" id="'+id+'-name_cn" name="name_cn" class="text-s"></p>'
+									+ '<p><label for="'+id+'-parent"><?=_t('关联记录')?></label><input type="text" id="'+id+'-parent" name="parent" class="text-s"></p>'
+									+ '<p><label for="'+id+'-parent_order"><?=_t('关联顺序')?></label><input type="text" id="'+id+'-parent_order" name="parent_order" class="text-s"></p>'
+									+ '<p><label for="'+id+'-parent_label"><?=_t('关联标签')?></label><input type="text" id="'+id+'-parent_label" name="parent_label" class="text-s"></p>'
+									+ '<p><label for="'+id+'-ep_status"><?=_t('主进度')?></label><input type="text" id="'+id+'-ep_status" name="ep_status" class="text-s"></p>'
+									+ '<p><label for="'+id+'-ep_count"><?=_t('主进度总数')?></label><input type="text" name="ep_count" id="'+id+'-ep_count" class="text-s"></p>'
 									+ '</form></td>'
 									+ '<td><form method="post" action="'+t.attr('rel')+'" class="Collection-subject-edit-content">'
-									+ '<p><label for="'+id+'-grade">显示分级</label><select id="'+id+'-grade" name="grade" class="w-100">'
+									+ '<p><label for="'+id+'-grade"><?=_t('显示分级')?></label><select id="'+id+'-grade" name="grade" class="w-100">'
 								$.each(dictGrade, function(key, value){
 									string += '<option value="'+key+'">'+value+'</option>';
 								});
 								string += '</select></p>'
-									+ '<p><label for="'+id+'-note">备注</label>'
-									+ '<textarea name="note" id="'+id+'-note" rows="2" class="w-100 mono"></textarea></p>'
-									//+ '<p><label for="'+id+'-rate">评价：'
-										//+'<span class="Collection-subject-rate-star Collection-subject-rate-star-rating"></span>'.repeat(subject.rate)
-										//+'<span class="Collection-subject-rate-star Collection-subject-rate-star-blank"></span>'.repeat(10-subject.rate)
-									//+'</label><input class="text-s w-100" type="range" name="rate" id="'+id+'-rate" min="0" max="10"></p>'
-									+ '<p><label for="'+id+'-rate">评价：</label><input class="text-s w-100" type="number" name="rate" id="'+id+'-rate" min="0" max="10"></p>'
-									+ '<p><label for="'+id+'-tags">标签</label>'
-									+ '<input class="text-s w-100" type="text" name="tags" id="'+id+'-tags"></p>'
-									+ '<p><label for="'+id+'-comment">吐槽</label>'
-									+ '<textarea name="comment" id="'+id+'-comment" rows="6" class="w-100 mono"></textarea></p>'
-									+ '<p><button type="submit" class="btn btn-s primary">提交</button>'
-									+ '<button type="button" class="btn btn-s cancel">取消</button></p>'
+									+ '<p><label for="'+id+'-note"><?=_t('备注')?></label>'
+									+ '<textarea id="'+id+'-note" name="note" rows="2" class="w-100 mono"></textarea></p>'
+									+ '<p><label for="'+id+'-rate"><?=_t('评价')?></label><input type="text" name="rate" id="'+id+'-rate" class="text-s w-100"></p>'
+									+ '<p><label for="'+id+'-tags"><?=_t('标签')?></label><input type="text" name="tags" id="'+id+'-tags" class="text-s w-100"></p>'
+									+ '<p><label for="'+id+'-comment"><?=_t('吐槽')?></label><textarea id="'+id+'-comment" name="comment" rows="6" class="w-100 mono"></textarea></p>'
+									+ '<p><button type="submit" class="btn btn-s primary"><?=_t('提交')?></button>'
+									+ '<button type="button" class="btn btn-s cancel"><?=_t('取消')?></button></p>'
 									+ '</form></td>'
 									+ '</tr>';
 								var edit = $(string).data('id', id).data('subject', subject).insertAfter(tr);
