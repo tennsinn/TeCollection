@@ -5,8 +5,9 @@ if (!defined('__TYPECHO_ROOT_DIR__')) exit;
  * 一个本地收藏整理展示插件
  * 
  * @package Collection
- * @author 息E-敛
- * @version 1.12.0
+ * @author 两仪天心
+ * @license GNU General Public License v3.0
+ * @version 1.13.0
  * @link http://tennsinn.com
  */
 class Collection_Plugin implements Typecho_Plugin_Interface

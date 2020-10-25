@@ -269,7 +269,7 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 			elseif(isset($this->request->source_id) && $source_ids = $this->request->filter('int')->getArray('source_id'))
 			{
 				$failure = array();
-				$source = $this->request->get('source');
+				$source = $this->request->get('source', 'Bangumi');
 				foreach($source_ids as $source_id)
 				{
 					$row_temp = $this->_db->fetchRow($this->_db->select()->from('table.collection')->where('source = ?', $source)->where('source_id = ?', $source_id));
@@ -301,25 +301,11 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 						switch($source)
 						{
 							case 'Bangumi':
-								$response = @file_get_contents('http://api.bgm.tv/subject/'.$source_id);
-								$response = json_decode($response, true);
-								if($response)
-								{
-									$row = array(
-										'class' => $response['type'],
-										'name' => $response['name'],
-										'name_cn' => $response['name_cn'],
-										'image' => $response['images']['common']
-									);
-									if($response['eps'])
-									{
-										$row['ep_count'] = $response['eps'];
-										$row['ep_status'] = 0;
-									}
-								}
+							default:
+								$row = Collection_SourceAPI_Bangumi::getSubject($source_id);
 								break;
 						}
-						if($response)
+						if($row)
 						{
 							switch($status)
 							{
@@ -543,44 +529,21 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 	{
 		if(!isset($this->request->keywords))
 			return array('result' => false, 'message' => '请输入关键字');
-		$page = isset($this->request->page) ? $this->request->get('page') : 1;
-		$class = isset($this->request->class) ? $this->request->get('class') : '0';
-		$keywords = $this->request->get('keywords');
-		$source = isset($this->request->source) ? $this->request->get('source') : 'Bangumi';
+		$page = $this->request->get('page', 1);
+		$source = $this->request->get('source', 'Bangumi');
 		$list = array();
 		switch($source)
 		{
 			case 'Bangumi':
-				$response = @file_get_contents('http://api.bgm.tv/search/subject/'.$keywords.'?responseGroup=large&max_results='.$pageSize.'&start='.($page-1)*$pageSize.'&type='.$class);
-				$response = json_decode($response, true);
-				if(!$response || (isset($response['results']) && !$response['results']))
-					return array('result' => false, 'message' => '搜索到0个结果');
-				elseif(!isset($response['results']) && isset($response['error']))
-					return array('result' => false, 'message' => '关键字：'.$keywords.' 搜索出现错误 '.$response['code'].':'.$response['error']);
-				else
-				{
-					foreach($response['list'] as $key => $value)
-					{
-						$info = '';
-						if($value['eps'])
-							$info .= '<div>总集数：'.$value['eps'].'</div>';
-						if($value['summary'])
-							$info .= '<div>简介：'.$value['summary'].'</div>';
-						$list[$value['id']] = array(
-							'class' => $value['type'],
-							'name' => $value['name'],
-							'name_cn' => $value['name_cn'],
-							'image' => $value['images']['medium'],
-							'info' => $info
-						);
-					}
-					$count = $response['results'];
-				}
+			default:
+				$results = Collection_SourceAPI_Bangumi::searchSubject($this->request->get('keywords'), $this->request->get('class', 0), $pageSize, $page);
 				break;
 		}
-		$query = $this->request->makeUriByRequest('page={page}');
-		$nav = new Typecho_Widget_Helper_PageNavigator_Box($count, $page, $pageSize, $query);
-		return array('result' => true, 'list' => $list, 'nav' => $nav);
+		if($results['result'])
+			$query = $this->request->makeUriByRequest('page={page}');
+			$nav = new Typecho_Widget_Helper_PageNavigator_Box($results['count'], $page, $pageSize, $query);
+			$results['nav'] = $nav;
+		return $results;
 	}
 
 	/**
