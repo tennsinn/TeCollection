@@ -7,7 +7,6 @@ if (!defined('__TYPECHO_ROOT_DIR__')) exit;
  * @author 两仪天心
  * @copyright Copyright (c) 2020 Tennsinn
  * @license GNU General Public License v3.0
- * @version 1.0.1
  */
 class Collection_SourceAPI_Bangumi
 {
@@ -72,6 +71,7 @@ class Collection_SourceAPI_Bangumi
 			'class' => isset($value['type']) ? $value['type'] : 1,
 			'name' => isset($value['name']) ? $value['name'] : 'Unknown Subject',
 			'name_cn' => isset($value['name_cn']) ? $value['name_cn'] : NULL,
+			'published' => (isset($value['air_date']) && $value['air_date'] && ('0000-00-00' != $value['air_date'])) ? $value['air_date'] : NULL,
 			'image' => isset($value['images']['common']) ? $value['images']['common'] : NULL,
 			'ep_count' => isset($value['eps']) ? $value['eps'] : NULL,
 			'ep_status' => isset($value['eps']) ? 0 : NULL,
