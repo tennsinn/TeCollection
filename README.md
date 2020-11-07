@@ -1,8 +1,10 @@
 # Collection
 
-**一个不明意义的Typecho插件**
+## Feature
 
-一个用于记录条目，管理进度的Typecho插件，数据存储于博客的数据库中
+- 建立自己内容记录数据库
+- 管理个人收藏进度
+- 个人收藏内容及评论展示
 
 ## Instructions
 
