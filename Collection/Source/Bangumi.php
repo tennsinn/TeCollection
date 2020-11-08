@@ -8,7 +8,7 @@ if (!defined('__TYPECHO_ROOT_DIR__')) exit;
  * @copyright Copyright (c) 2020 Tennsinn
  * @license GNU General Public License v3.0
  */
-class Collection_SourceAPI_Bangumi
+class Collection_Source_Bangumi
 {
 	/**
 	 * 获取单一条目信息

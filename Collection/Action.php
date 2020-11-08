@@ -302,7 +302,7 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 						{
 							case 'Bangumi':
 							default:
-								$row = Collection_SourceAPI_Bangumi::getSubject($source_id);
+								$row = Collection_Source_Bangumi::getSubject($source_id);
 								break;
 						}
 						if($row)
@@ -535,7 +535,7 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 		{
 			case 'Bangumi':
 			default:
-				$results = Collection_SourceAPI_Bangumi::searchSubject($this->request->get('keywords'), $this->request->get('class', 0), $pageSize, $page);
+				$results = Collection_Source_Bangumi::searchSubject($this->request->get('keywords'), $this->request->get('class', 0), $pageSize, $page);
 				break;
 		}
 		if($results['result'])
