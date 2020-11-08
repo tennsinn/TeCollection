@@ -2,6 +2,7 @@
 
 ## v1.13
 
+- v1.13.5 fix the redirection of action editStatus
 - v1.13.4 use air_date as field published for source Bangumi
 - v1.13.3 fix access description
 - v1.13.2 optimize part of CN string with _t func
