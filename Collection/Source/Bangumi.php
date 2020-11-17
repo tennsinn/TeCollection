@@ -10,6 +10,8 @@ if (!defined('__TYPECHO_ROOT_DIR__')) exit;
  */
 class Collection_Source_Bangumi
 {
+	const SERVER = 'https://api.bgm.tv';
+
 	/**
 	 * 获取单一条目信息
 	 *
@@ -19,7 +21,7 @@ class Collection_Source_Bangumi
 	 */
 	public static function getSubject($source_id)
 	{
-		$response = @file_get_contents('http://api.bgm.tv/subject/'.$source_id);
+		$response = @file_get_contents(self::SERVER.'/subject/'.$source_id);
 		$response = json_decode($response, true);
 		if(!$response)
 			return false;
@@ -39,7 +41,7 @@ class Collection_Source_Bangumi
 	 */
 	public static function searchSubject($keywords, $class=0, $pageSize=20, $page=1)
 	{
-		$response = @file_get_contents('http://api.bgm.tv/search/subject/'.$keywords.'?responseGroup=large&max_results='.$pageSize.'&start='.($page-1)*$pageSize.'&type='.$class);
+		$response = @file_get_contents(self::SERVER.'/search/subject/'.$keywords.'?responseGroup=large&max_results='.$pageSize.'&start='.($page-1)*$pageSize.'&type='.$class);
 		$response = json_decode($response, true);
 		if(!$response || (isset($response['results']) && !$response['results']))
 			return array('result' => false, 'message' => '搜索到0个结果');
@@ -79,4 +81,4 @@ class Collection_Source_Bangumi
 		return $info;
 	}
 }
-
+?>
