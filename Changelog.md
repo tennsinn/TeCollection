@@ -2,6 +2,7 @@
 
 ## v1.13
 
+- v1.13.8 add getLink func for source Bangumi
 - v1.13.7 change Bangumi API server url to const var
 - v1.13.6 change the name of Source classes
 - v1.13.5 fix the redirection of action editStatus

@@ -2,7 +2,7 @@
 if (!defined('__TYPECHO_ROOT_DIR__')) exit;
 
 /**
- * Bangumi API 处理
+ * Bangumi 源处理
  *
  * @author 两仪天心
  * @copyright Copyright (c) 2020 Tennsinn
@@ -79,6 +79,19 @@ class Collection_Source_Bangumi
 			'ep_status' => isset($value['eps']) ? 0 : NULL,
 		);
 		return $info;
+	}
+
+	/**
+	 * 获取链接
+	 *
+	 * @access public
+	 * @param array $source_id 条目ID
+	 * @return string
+	 */
+	public static function getLink($source_id)
+	{
+		$link = 'http://bgm.tv/subject/'.$source_id;
+		return $link;
 	}
 }
 ?>
