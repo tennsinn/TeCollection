@@ -7,10 +7,10 @@ include 'menu.php';
 include 'common-js.php';
 include 'table-js.php';
 
-$do = isset($request->do) ? $request->get('do') : 'manage';
-$category = isset($request->category) ? $request->get('category') : 'subject';
-$class = isset($request->class) ? $request->get('class') : '0';
-$status = isset($request->status) ? $request->get('status') : 'do';
+$do = $request->get('do', 'manage');
+$category = $request->get('category', 'subject');
+$class = $request->get('class', '0');
+$status = $request->get('status', 'do');
 
 $arrayClassStatus = array(
 	'all' => array('全部', '书籍', '动画', '音乐', '游戏', '广播', '影视'),
