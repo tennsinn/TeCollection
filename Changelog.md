@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.14
+
+- v1.14.0 move DB creation function and SQL to individual files; add support for other DB adapter
+
 ## v1.13
 
 - v1.13.10 add description for functions in Config
