@@ -8,11 +8,17 @@ if (!defined('__TYPECHO_ROOT_DIR__')) exit;
  * @author 两仪天心
  * @copyright Copyright (c) 2020 Tennsinn
  * @license GNU General Public License v3.0
- * @version 1.14.0
+ * @version 1.14.1
  * @link http://tennsinn.com
  */
 class Collection_Plugin implements Typecho_Plugin_Interface
 {
+	/**
+	 * 启用插件
+	 *
+	 * @access public
+	 * @return string
+	 */
 	public static function activate()
 	{
 		Collection_Database::checkVersion();
@@ -22,6 +28,12 @@ class Collection_Plugin implements Typecho_Plugin_Interface
 		return(_t('插件已启用'));
 	}
 
+	/**
+	 * 禁用插件
+	 *
+	 * @access public
+	 * @return string
+	 */
 	public static function deactivate()
 	{
 		Helper::removeAction('collection');
@@ -35,10 +47,16 @@ class Collection_Plugin implements Typecho_Plugin_Interface
 			return(_t('插件已经禁用, 插件数据保留'));
 	}
 
+	/**
+	 * 插件通用设置
+	 *
+	 * @access public
+	 * @param Typecho_Widget_Helper_Form $form
+	 * @return void
+	 */
 	public static function config(Typecho_Widget_Helper_Form $form)
 	{
-		$arrayGrade = array(_t('公开'), _t('私密1'), _t('私密2'), _t('私密3'), _t('私密4'), _t('私密5'), _t('私密6'), _t('私密7'), _t('私密8'), _t('私密9'));
-		$grade = new Typecho_Widget_Helper_Form_Element_Text('grade', NULL, implode(',', $arrayGrade), _t('分级标签'), _t('依次写入至多10个分级标签名称，以逗号分隔，不允许空标签。'));
+		$grade = new Typecho_Widget_Helper_Form_Element_Text('grade', NULL, _t('公开,私密1,私密2,私密3,私密4,私密5,私密6,私密7,私密8,私密9'), _t('分级标签'), _t('依次写入至多10个分级标签名称，以逗号分隔，不允许空标签。'));
 		$grade->addRule(array('Collection_Config', 'checkGrade'), _t('请以逗号分隔填入至多10个非空有效标签'));
 		$form->addInput($grade);
 
@@ -50,8 +68,21 @@ class Collection_Plugin implements Typecho_Plugin_Interface
 		$form->addInput($drop_data);
 	}
 
+	/**
+	 * 插件个人设置
+	 *
+	 * @access public
+	 * @param Typecho_Widget_Helper_Form $form
+	 * @return void
+	 */
 	public static function personalConfig(Typecho_Widget_Helper_Form $form){}
 
+	/**
+	 * 模板化输出
+	 *
+	 * @access public
+	 * @return void
+	 */
 	public static function render()
 	{
 		$export = Typecho_Plugin::export();
