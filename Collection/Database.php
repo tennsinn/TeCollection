@@ -16,33 +16,51 @@ class Collection_Database
 	 * @access public
 	 * @return void
 	 */
-	public static function checkVersion()
+	public static function checkDatabase()
 	{
 		$db = Typecho_Db::get();
 		$info = Typecho_Plugin::parseInfo(__DIR__.'/Plugin.php');
-		if($db->fetchRow($db->select()->from('table.options')->where('name = ?', 'Collection:version')))
-			$db->query($db->update('table.options')->where('name = ?', 'Collection:version')->rows(array('value' => $info['version'])));
+		$current_version = $info['version'];
+		$installed_version = $db->fetchRow($db->select()->from('table.options')->where('name = ?', 'Collection:version'));
+		if($installed_version)
+			self::upgrade($current_version, $installed_version);
 		else
-			$db->query($db->insert('table.options')->rows(array('name' => 'Collection:version', 'user' => 0, 'value' => $info['version'])));
+			self::install($current_version);
 	}
 
 	/**
 	 * 创建数据表
 	 *
 	 * @access public
+	 * @param string $current_version 当前版本号
 	 * @return void
 	 */
-	public static function createTable()
+	public static function install($current_version)
 	{
 		$db = Typecho_Db::get();
 		$charset = Helper::options()->charset == 'UTF-8' ? 'utf8' : 'gbk';
 		$type = explode('_', $db->getAdapterName());
 		$type = array_pop($type);
 		$type = $type == 'Mysqli' ? 'Mysql' : $type;
-		$scripts = file_get_contents(__DIR__.'/Database/'.$type.'_create.sql');
+		$scripts = file_get_contents(__DIR__.'/Database/Install/'.$type.'.sql');
 		$scripts = str_replace('typecho_', $db->getPrefix(), $scripts);
 		$scripts = str_replace('%charset%', $charset, $scripts);
 		$db->query($scripts);
+		$db->query($db->insert('table.options')->rows(array('name' => 'Collection:version', 'user' => 0, 'value' => $current_version)));
+	}
+
+	/**
+	 * 升级数据表
+	 *
+	 * @access public
+	 * @param string $current_version 当前版本号
+	 * @param string $installed_version 已安装版本号
+	 * @return void
+	 */
+	public static function upgrade($current_version, $installed_version)
+	{
+		$db = Typecho_Db::get();
+		$db->query($db->update('table.options')->where('name = ?', 'Collection:version')->rows(array('value' => $current_version)));
 	}
 
 	/**
