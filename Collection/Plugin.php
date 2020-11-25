@@ -8,7 +8,7 @@ if (!defined('__TYPECHO_ROOT_DIR__')) exit;
  * @author 两仪天心
  * @copyright Copyright (c) 2020 Tennsinn
  * @license GNU General Public License v3.0
- * @version 1.14.2
+ * @version 1.14.3
  * @link http://tennsinn.com
  */
 class Collection_Plugin implements Typecho_Plugin_Interface
@@ -21,10 +21,10 @@ class Collection_Plugin implements Typecho_Plugin_Interface
 	 */
 	public static function activate()
 	{
-		Collection_Database::checkDatabase();
+		$message = Collection_Database::checkDatabase();
 		Helper::addAction('collection', 'Collection_Action');
 		Helper::addPanel(3, "Collection/Panel.php", _t("Collection"), _t("Collection"), 'administrator', false, 'extending.php?panel=Collection%2FPanel.php&do=input');
-		return(_t('插件已启用'));
+		return _t('插件已启用').' / '.$message;
 	}
 
 	/**
@@ -40,10 +40,10 @@ class Collection_Plugin implements Typecho_Plugin_Interface
 		if (Helper::options()->plugin('Collection')->drop_data)
 		{
 			Collection_Database::dropData();
-			return(_t('插件已经禁用, 插件数据已经删除'));
+			return(_t('插件已禁用').' / '._t('插件数据已删除'));
 		}
 		else
-			return(_t('插件已经禁用, 插件数据保留'));
+			return(_t('插件已禁用').' / '._t('插件数据保留'));
 	}
 
 	/**

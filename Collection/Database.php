@@ -14,18 +14,27 @@ class Collection_Database
 	 * 版本检查
 	 *
 	 * @access public
-	 * @return void
+	 * @return string
 	 */
 	public static function checkDatabase()
 	{
 		$db = Typecho_Db::get();
 		$info = Typecho_Plugin::parseInfo(__DIR__.'/Plugin.php');
 		$current_version = $info['version'];
-		$installed_version = $db->fetchRow($db->select()->from('table.options')->where('name = ?', 'Collection:version'));
-		if($installed_version)
-			self::upgrade($current_version, $installed_version);
+		$row = $db->fetchRow($db->select()->from('table.options')->where('name = ?', 'Collection:version'));
+		if($row)
+		{
+			$message = _t('检测到插件版本信息');
+			$result = self::upgrade($current_version, $row['value']);
+			if($result)
+				$message .= ' / '.implode($result, ' / ');
+			return $message;
+		}
 		else
+		{
 			self::install($current_version);
+			return _t('已创建数据表');
+		}
 	}
 
 	/**
@@ -55,12 +64,34 @@ class Collection_Database
 	 * @access public
 	 * @param string $current_version 当前版本号
 	 * @param string $installed_version 已安装版本号
-	 * @return void
+	 * @return array
 	 */
 	public static function upgrade($current_version, $installed_version)
 	{
 		$db = Typecho_Db::get();
+		$packages = get_class_methods('Collection_Database_Upgrade');
+		$filterPackage = function($package) use ($installed_version) {
+			$version = substr(str_replace('_', '.', $package), 1);
+			return version_compare($version, $installed_version, '>');
+		};
+		$sortPackage = function($a, $b) {
+			$version_a = substr(str_replace('_', '.', $a), 1);
+			$version_b = substr(str_replace('_', '.', $b), 1);
+			return version_compare($version_a, $version_b, '>') ? 1 : -1;
+		};
+		$packages = array_filter($packages, $filterPackage);
+		usort($packages, $sortPackage);
+		$message = array();
+		foreach ($packages as $package)
+		{
+			$version = substr(str_replace('_', '.', $package), 1);
+			$result = call_user_func(array('Collection_Database_Upgrade', $package), $db);
+			if(!empty($result))
+				$message[] = $result;
+			$db->query($db->update('table.options')->where('name = ?', 'Collection:version')->rows(array('value' => $version)));
+		}
 		$db->query($db->update('table.options')->where('name = ?', 'Collection:version')->rows(array('value' => $current_version)));
+		return $message;
 	}
 
 	/**

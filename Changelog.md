@@ -2,6 +2,7 @@
 
 ## v1.14
 
+- v1.14.3 add upgrade feature
 - v1.14.2 rebuild the plugin installation entry
 - v1.14.1 add the description for Plugin file; optimize the setting config; add the data removal instruction
 - v1.14.0 move DB creation function and SQL to individual files; add support for other DB adapter
