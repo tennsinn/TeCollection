@@ -11,15 +11,45 @@ if (!defined('__TYPECHO_ROOT_DIR__')) exit;
 class Collection_Database_Upgrade
 {
 	/**
-	 * 升级至1.14.3
+	 * 升级至1.14.0
 	 *
 	 * @access public
 	 * @param Typecho_Db $db 数据库对象
-	 * @param Typecho_Widget $options 全局信息组件
+	 * @param string $adapter 数据库类型
+	 * @param string $prefix 数据表前缀
 	 * @return void
 	 */
-	public static function v1_14_3($db, $options=NULL)
+	public static function v1_14_0($db, $adapter, $prefix)
 	{
-		return _t('暂无数据表升级至此版本方案');
+		$installed_version = Collection_Database::getInstalledVersion();
+		if(version_compare($installed_version, '1.14.0'))
+			throw new Typecho_Exception(_t('暂无数据表从v'.$installed_version.'升级至此版本方案，请先安装v1.14.0或以上版本'));
+	}
+
+	/**
+	 * 升级至1.14.4
+	 *
+	 * @access public
+	 * @param Typecho_Db $db 数据库对象
+	 * @param string $adapter 数据库类型
+	 * @param string $prefix 数据表前缀
+	 * @return string
+	 */
+	public static function v1_14_4($db, $adapter, $prefix)
+	{
+		switch($adapter)
+		{
+			case 'Mysql':
+				$db->query('ALTER TABLE `'.$prefix.'collection` ADD `author` varchar(50) default NULL', Typecho_Db::WRITE);
+				break;
+			case 'Pgsql':
+				$db->query('ALTER TABLE "'.$prefix.'collection" ADD COLUMN "author" VARCHAR(50) NULL DEFAULT NULL', Typecho_Db::WRITE);
+				break;
+			case 'SQLite':
+				$db->query('ALTER TABLE "'.$prefix.'collection" ADD COLUMN "author" varchar(50) default NULL', Typecho_Db::WRITE);
+				break;
+			default:
+				throw new Typecho_Db_Exception("Adapter {$adapter} is not available");
+		}
 	}
 }

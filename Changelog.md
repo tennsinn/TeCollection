@@ -2,6 +2,7 @@
 
 ## v1.14
 
+- v1.14.4 add data column of author; block the upgrade process for version below v1.14.0
 - v1.14.3 add upgrade feature
 - v1.14.2 rebuild the plugin installation entry
 - v1.14.1 add the description for Plugin file; optimize the setting config; add the data removal instruction

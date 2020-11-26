@@ -166,6 +166,7 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 				'name' => $this->request->name,
 				'name_cn' => $this->request->name_cn,
 				'image' => $this->request->image,
+				'author' => NULL,
 				'publisher' => NULL,
 				'published' => NULL,
 				'ep_count' => NULL,
@@ -190,6 +191,7 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 				'name' => $this->request->name,
 				'name_cn' => $this->request->name_cn,
 				'image' => $this->request->image,
+				'author' => $this->request->get('author'),
 				'publisher' => $this->request->get('publisher'),
 				'published' => $published,
 				'ep_count' => $this->request->ep_count,
@@ -415,6 +417,7 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 							'name' => $this->request->name,
 							'name_cn' => $this->request->name_cn,
 							'image' => $this->request->image,
+							'author' => $this->request->get('author'),
 							'publisher' => $this->request->get('publisher'),
 							'published' => $published,
 							'ep_count' => $ep_count,
@@ -578,6 +581,10 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 		$name_cn = new Typecho_Widget_Helper_Form_Element_Text('name_cn', NULL, NULL, '译名');
 		$name_cn->input->setAttribute('class', 'text-s w-40');
 		$form->addInput($name_cn);
+
+		$author = new Typecho_Widget_Helper_Form_Element_Text('author', NULL, NULL, '作者');
+		$author->input->setAttribute('class', 'w-40');
+		$form->addInput($author);
 
 		$publisher = new Typecho_Widget_Helper_Form_Element_Text('publisher', NULL, NULL, '出版商');
 		$publisher->input->setAttribute('class', 'w-40');

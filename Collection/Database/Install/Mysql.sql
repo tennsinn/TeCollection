@@ -7,6 +7,7 @@ CREATE TABLE IF NOT EXISTS `typecho_collection` (
   `name_cn` varchar(100) default NULL,
   `image` varchar(200) default NULL,
   `ep_count` smallint unsigned default NULL,
+  `author` varchar(50) default NULL,
   `publisher` varchar(50) default NULL,
   `published` int(10) default NULL,
   `source` varchar(20) NOT NULL default 'Collection',

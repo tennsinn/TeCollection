@@ -21,11 +21,11 @@ class Collection_Database
 		$db = Typecho_Db::get();
 		$info = Typecho_Plugin::parseInfo(__DIR__.'/Plugin.php');
 		$current_version = $info['version'];
-		$row = $db->fetchRow($db->select()->from('table.options')->where('name = ?', 'Collection:version'));
-		if($row)
+		$installed_version = self::getInstalledVersion();
+		if($installed_version)
 		{
 			$message = _t('检测到插件版本信息');
-			$result = self::upgrade($current_version, $row['value']);
+			$result = self::upgrade($current_version, $installed_version);
 			if($result)
 				$message .= ' / '.implode($result, ' / ');
 			return $message;
@@ -48,10 +48,8 @@ class Collection_Database
 	{
 		$db = Typecho_Db::get();
 		$charset = Helper::options()->charset == 'UTF-8' ? 'utf8' : 'gbk';
-		$type = explode('_', $db->getAdapterName());
-		$type = array_pop($type);
-		$type = $type == 'Mysqli' ? 'Mysql' : $type;
-		$scripts = file_get_contents(__DIR__.'/Database/Install/'.$type.'.sql');
+		$adapter = self::getAdapter();
+		$scripts = file_get_contents(__DIR__.'/Database/Install/'.$adapter.'.sql');
 		$scripts = str_replace('typecho_', $db->getPrefix(), $scripts);
 		$scripts = str_replace('%charset%', $charset, $scripts);
 		$db->query($scripts);
@@ -81,16 +79,22 @@ class Collection_Database
 		};
 		$packages = array_filter($packages, $filterPackage);
 		usort($packages, $sortPackage);
+		$adapter = self::getAdapter();
+		$prefix  = $db->getPrefix();
 		$message = array();
-		foreach ($packages as $package)
+		foreach($packages as $package)
 		{
 			$version = substr(str_replace('_', '.', $package), 1);
-			$result = call_user_func(array('Collection_Database_Upgrade', $package), $db);
+			$result = call_user_func(array('Collection_Database_Upgrade', $package), $db, $adapter, $prefix);
 			if(!empty($result))
 				$message[] = $result;
 			$db->query($db->update('table.options')->where('name = ?', 'Collection:version')->rows(array('value' => $version)));
 		}
 		$db->query($db->update('table.options')->where('name = ?', 'Collection:version')->rows(array('value' => $current_version)));
+		if(empty($packages))
+			$message[] = _t('未检测到升级包');
+		elseif(empty($message))
+			$message[] = _t('已完成数据表升级');
 		return $message;
 	}
 
@@ -105,6 +109,37 @@ class Collection_Database
 		$db = Typecho_Db::get();
 		$db->query('DROP TABLE IF EXISTS '.$db->getPrefix().'collection');
 		$db->query($db->delete('table.options')->where('name = ?', 'Collection:version'));
+	}
+
+	/**
+	 * 获取已记录版本号
+	 *
+	 * @access public
+	 * @return string|bool
+	 */
+	public static function getInstalledVersion()
+	{
+		$db = Typecho_Db::get();
+		$row = $db->fetchRow($db->select()->from('table.options')->where('name = ?', 'Collection:version'));
+		if(!empty($row))
+			return $row['value'];
+		else
+			return false;
+	}
+
+	/**
+	 * 获取数据库类型
+	 *
+	 * @access private
+	 * @return string
+	 */
+	private static function getAdapter()
+	{
+		$db = Typecho_Db::get();
+		$adapter = explode('_', $db->getAdapterName());
+		$adapter = array_pop($adapter);
+		$adapter = $adapter == 'Mysqli' ? 'Mysql' : $adapter;
+		return $adapter;
 	}
 }
 ?>

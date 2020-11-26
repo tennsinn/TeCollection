@@ -314,6 +314,7 @@ echo "};\n";
 										string += '<option value="'+key+'">'+value+'</option>';
 									});
 								string += '</select></p>'
+									+ '<p><label for="'+id+'-author"><?=_t('作者')?></label><input type="text" id="'+id+'-author" name="author" class="text-s"></p>'
 									+ '<p><label for="'+id+'-publisher"><?=_t('出版商')?></label><input type="text" id="'+id+'-publisher" name="publisher" class="text-s"></p>'
 									+ '<p><label for="'+id+'-published"><?=_t('出版时间')?></label><input type="text" id="'+id+'-published" name="published" class="text-s"></p>'
 									+ '<p><label for="'+id+'-source"><?=_t('信息来源')?></label><select id="'+id+'-source" name="source" class="w-100">'
@@ -355,6 +356,7 @@ echo "};\n";
 								$('select[name=class]', edit).val(subject.class);
 								$('select[name=type]', edit).val(subject.type);
 								$('select[name=source]', edit).val(subject.source);
+								$('input[name=author]', edit).val(subject.author);
 								$('input[name=publisher]', edit).val(subject.publisher);
 								$('input[name=published]', edit).val(subject.published);
 								$('input[name=source_id]', edit).val(subject.source_id);
@@ -431,6 +433,7 @@ echo "};\n";
 									{
 										subject['class'] = null;
 										subject['type'] = null;
+										subject['author'] = null;
 										subject['publisher'] = null;
 										subject['published'] = null;
 										subject['type'] = null;
