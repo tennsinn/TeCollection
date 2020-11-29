@@ -2,6 +2,7 @@
 
 ## v1.14
 
+- v1.14.6 fix the auto-fill of field published for source Bangumi
 - v1.14.5 add data column of media link; move adpater exception to function getAdpater
 - v1.14.4 add data column of author; block the upgrade process for version below v1.14.0
 - v1.14.3 add upgrade feature
