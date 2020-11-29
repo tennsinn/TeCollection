@@ -139,7 +139,10 @@ class Collection_Database
 		$adapter = explode('_', $db->getAdapterName());
 		$adapter = array_pop($adapter);
 		$adapter = $adapter == 'Mysqli' ? 'Mysql' : $adapter;
-		return $adapter;
+		if(in_array($adapter, array('Mysql', 'Pgsql', 'SQLite')))
+			return $adapter;
+		else
+			throw new Typecho_Db_Exception("Adapter {$adapter} is not available");
 	}
 }
 ?>

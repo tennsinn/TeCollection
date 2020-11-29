@@ -130,6 +130,9 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 		if(!filter_var($this->request->get('image'), FILTER_VALIDATE_URL) && !is_null($this->request->get('image')))
 			$this->response->throwJson(array('result' => false, 'message' => '图片地址错误'));
 
+		if(!filter_var($this->request->filter('url')->get('media_link'), FILTER_VALIDATE_URL) && !empty($this->request->filter('url')->get('media_link')))
+			$this->response->throwJson(array('result' => false, 'message' => '请输入有效链接地址'));
+
 		if('series' != $category)
 		{
 			if((!is_null($this->request->get('ep_status')) || !is_null($this->request->get('ep_count'))) && (!is_numeric($this->request->ep_status) || !is_numeric($this->request->ep_count) || $this->request->ep_status<0 || $this->request->ep_count<0 || ($this->request->ep_count>0 && $this->request->ep_status>$this->request->ep_count)))
@@ -172,6 +175,7 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 				'ep_count' => NULL,
 				'source' => $this->request->source,
 				'source_id' => $this->request->source_id,
+				'media_link' => $this->request->filter('url')->get('media_link'),
 				'parent' => 0,
 				'parent_order' => 0,
 				'parent_label' => NULL,
@@ -197,6 +201,7 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 				'ep_count' => $this->request->ep_count,
 				'source' => $this->request->source,
 				'source_id' => $this->request->source_id,
+				'media_link' => $this->request->filter('url')->get('media_link'),
 				'parent' => $this->request->parent,
 				'parent_order' => $this->request->parent_order,
 				'parent_label' => $this->request->get('parent_label'),
@@ -397,6 +402,7 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 							'image' => $this->request->image,
 							'source' => $this->request->source,
 							'source_id' => $this->request->source_id,
+							'media_link' => $this->request->filter('url')->get('media_link'),
 							'grade' => $this->request->grade,
 							'status' => $this->request->status,
 							'time_start' => $time_start,
@@ -423,6 +429,7 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 							'ep_count' => $ep_count,
 							'source' => $this->request->source,
 							'source_id' => $this->request->source_id,
+							'media_link' => $this->request->filter('url')->get('media_link'),
 							'parent' => $this->request->parent,
 							'parent_order' => $this->request->parent_order,
 							'parent_label' => $this->request->get('parent_label'),
@@ -601,6 +608,10 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 		$source_id = new Typecho_Widget_Helper_Form_Element_Text('source_id', NULL, NULL, '来源ID');
 		$source_id->input->setAttribute('class', 'text-s w-30');
 		$form->addInput($source_id);
+
+		$media_link = new Typecho_Widget_Helper_Form_Element_Text('media_link', NULL, NULL, '媒体链接');
+		$media_link->addRule('url', '请输入有效链接地址');
+		$form->addInput($media_link);
 
 		$image = new Typecho_Widget_Helper_Form_Element_Text('image', NULL, NULL, '封面地址');
 		$image->addRule('url', '请正确输入图片地址');

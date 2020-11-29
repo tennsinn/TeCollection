@@ -195,8 +195,12 @@ echo "};\n";
 													</td>
 													<td class="Collection-subject-meta">
 														<div class="Collection-subject-name">
-															<i class="Collection-subject-class-ico Collection-subject-class-<?php echo $subject['class']; ?>"></i><small>(#<?php echo $subject['id']; ?>)</small>
 															<?php
+																if($subject['media_link'])
+																	echo '<a href="'.$subject['media_link'].'" target="_blank"><i class="Collection-subject-class-ico Collection-subject-class-.'.$subject['class'].'"></i></a>';
+																else
+																	echo '<i class="Collection-subject-class-ico Collection-subject-class-.'.$subject['class'].'"></i>';
+																echo '<small>(#'.$subject['id'].')</small>';
 																if(array_key_exists($subject['source'], $dictSource))
 																	echo '<a href="'.$dictSource[$subject['source']]['url'].$subject['source_id'].'" target="_blank">'.$subject['name'].'</a>';
 																else
@@ -335,6 +339,7 @@ echo "};\n";
 									+ '<p><label for="'+id+'-ep_count"><?=_t('主进度总数')?></label><input type="text" name="ep_count" id="'+id+'-ep_count" class="text-s"></p>'
 									+ '</form></td>'
 									+ '<td><form method="post" action="'+t.attr('rel')+'" class="Collection-subject-edit-content">'
+									+ '<p><label for="'+id+'-media_link"><?=_t('媒体链接')?></label><input type="text" name="media_link" id="'+id+'-media_link" class="text-s w-100"></p>'
 									+ '<p><label for="'+id+'-grade"><?=_t('显示分级')?></label><select id="'+id+'-grade" name="grade" class="w-100">'
 								$.each(dictGrade, function(key, value){
 									string += '<option value="'+key+'">'+value+'</option>';
@@ -360,6 +365,7 @@ echo "};\n";
 								$('input[name=publisher]', edit).val(subject.publisher);
 								$('input[name=published]', edit).val(subject.published);
 								$('input[name=source_id]', edit).val(subject.source_id);
+								$('input[name=media_link]', edit).val(subject.media_link);
 								$('input[name=name]', edit).val(subject.name);
 								$('input[name=name_cn]', edit).val(subject.name_cn);
 								$('input[name=parent]', edit).val(subject.parent);
@@ -466,7 +472,11 @@ echo "};\n";
 													tempHTML = '未知 / 未知';
 											$('.Collection-subject-type', oldTr).html(tempHTML);
 
-											tempHTML = '<i class="Collection-subject-class-ico Collection-subject-class-'+subject.class+'"></i><small>(#'+subject.id+')</small>';
+											if(subject.media_link)
+												tempHTML = '<a href="'+subject.media_link+'" target="_blank"><i class="Collection-subject-class-ico Collection-subject-class-'+subject.class+'"></i></a>';
+											else
+												tempHTML = '<i class="Collection-subject-class-ico Collection-subject-class-'+subject.class+'"></i>';
+											tempHTML += '<small>(#'+subject.id+')</small>';
 											if(dictSource.hasOwnProperty(subject.source))
 												tempHTML += '<a href="' + dictSource[subject.source]['url'] + subject.source_id + '" target="_blank">' + subject.name + '</a>';
 											else

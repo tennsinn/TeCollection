@@ -13,6 +13,7 @@ CREATE TABLE IF NOT EXISTS "typecho_contents" (  "id" INT NOT NULL DEFAULT nextv
   "published" INT NULL DEFAULT NULL,
   "source" VARCHAR(20) NOT NULL DEFAULT 'Collection',
   "source_id" VARCHAR(50) NULL DEFAULT NULL,
+  "media_link" VARCHAR(255) NULL DEFAULT NULL,
   "parent" INT NOT NULL DEFAULT '0',
   "parent_order" INT NOT NULL DEFAULT '0',
   "parent_label" VARCHAR(10) NULL DEFAULT NULL,

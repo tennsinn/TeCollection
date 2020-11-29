@@ -12,6 +12,7 @@ CREATE TABLE IF NOT EXISTS `typecho_collection` (
   `published` int(10) default NULL,
   `source` varchar(20) NOT NULL default 'Collection',
   `source_id` varchar(50) default NULL,
+  `media_link` varchar(255) default NULL,
   `parent` int unsigned NOT NULL default '0',
   `parent_order` smallint unsigned NOT NULL default '0',
   `parent_label` varchar(10) default NULL,
