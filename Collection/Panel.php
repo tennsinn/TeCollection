@@ -12,70 +12,18 @@ $category = $request->get('category', 'subject');
 $class = $request->get('class', '0');
 $status = $request->get('status', 'do');
 
-$arrayClassStatus = array(
-	'all' => array('全部', '书籍', '动画', '音乐', '游戏', '广播', '影视'),
-	'do' => array('进行', '在读', '在看', '在听', '在玩', '在听', '在看'),
-	'collect' => array('完成', '读过', '看过', '听过', '玩过', '听过', '看过'),
-	'wish' => array('计划', '想读', '想看', '想听', '想玩', '想听', '想看'),
-	'on_hold' => array('搁置', '搁置', '搁置', '搁置', '搁置', '搁置', '搁置'),
-	'dropped' => array('抛弃', '抛弃', '抛弃', '抛弃', '抛弃', '抛弃', '抛弃')
-);
-
-$dictCategory = array('series' => '系列', 'subject' => '记录', 'volume' => '分卷', 'episode' => '章节');
-$dictClass = array(1 => '书籍', 2 => '动画', 3 => '音乐', 4 => '游戏', 5 => '广播', 6 => '影视');
-$dictType = array(
-	1 => array('Novel' => '小说', 'Comic' => '漫画', 'Doujinshi' => '同人志', 'Textbook' => '教材'),
-	2 => array('TV' => 'TV', 'Movie' => '剧场', 'OVA' => 'OVA', 'OAD' => 'OAD', 'SP' => 'SP'),
-	3 => array('Album' => '专辑', 'Single' => '单曲', 'Maxi' => 'Maxi', 'EP' => '细碟', 'Selections' => '选集'),
-	4 => array('iOS' => 'iOS', 'Android' => 'Android', 'PSP' => 'PSP', 'PSV' => 'PSV', 'PS4' => 'PS4', 'NDS' => 'NDS', '3DS' => '3DS', 'NSwitch' => 'NSwitch', 'XBox' => 'XBox', 'Windows' => 'Windows', 'Online' => '网游', 'Table' => '桌游'),
-	5 => array('RadioDrama' => '广播剧', 'Drama' => '歌剧'),
-	6 => array('Film' => '电影', 'Teleplay' => '电视剧', 'Documentary' => '纪录片', 'TalkShow' => '脱口秀', 'VarietyShow' => '综艺')
-);
-$dictSource = array(
-	'Bangumi' => array('name' => 'Bangumi', 'url' => 'http://bgm.tv/subject/'),
-	'Douban' => array('name' => '豆瓣', 'url' => 'https://www.douban.com/subject/'),
-	'Steam' => array('name' => 'Steam', 'url' => 'http://store.steampowered.com/app/'),
-	'Wandoujia' => array('name' => '豌豆荚', 'url' => 'http://www.wandoujia.com/apps/'),
-	'TapTap' => array('name' => 'TapTap', 'url' => 'https://www.taptap.com/app/'),
-	'BiliBili' => array('name' => 'BiliBili', 'url' => 'https://www.bilibili.com/bangumi/media/')
-);
-$dictGrade = Collection_Config::getGrade();
+Typecho_Widget::widget('Collection_Config@panel')->to($config);
 ?>
 
 <link rel="stylesheet" type="text/css" href="<?php $options->pluginUrl('Collection/template/stylesheet-common.css'); ?>">
 <link rel="stylesheet" type="text/css" href="<?php $options->pluginUrl('Collection/template/stylesheet-panel.css'); ?>">
 <script type="text/javascript">
 <?php
-echo "var dictCategory = {";
-foreach ($dictCategory as $key => $value)
-	echo "'$key' : '$value', ";
-echo "};\n";
-echo "var dictClass = {";
-foreach ($dictClass as $key => $value)
-	echo "'$key' : '$value', ";
-echo "};\n";
-echo "var dictType = {";
-	foreach ($dictType as $subkey => $subvalue)
-	{
-		echo "$subkey : {";
-		foreach ($subvalue as $key => $value)
-			echo "'$key' : '$value', ";
-		echo "},";
-	}
-	echo "};\n";
-echo "var dictSource = {";
-foreach ($dictSource as $subkey => $subvalue)
-{
-	echo "'$subkey' : {";
-	foreach ($subvalue as $key => $value)
-		echo "'$key' : '$value', ";
-	echo "},";
-}
-echo "};\n";
-echo "var dictGrade = {";
-foreach ($dictGrade as $key => $value)
-	echo "$key : '$value', ";
-echo "};\n";
+echo "var dictCategory = ".$config->jsCategory.";\n";
+echo "var dictClass = ".$config->jsClass.";\n";
+echo "var dictType = ".$config->jsType.";\n";
+echo "var dictSource = ".$config->jsSource.";\n";
+echo "var dictGrade = ".$config->jsGrade.";\n";
 ?>
 </script>
 <div class="main">
@@ -85,22 +33,22 @@ echo "};\n";
 			<div class="col-mb-12">
 				<?php if($do == 'manage'): ?>
 					<ul class="typecho-option-tabs clearfix">
-						<?php foreach($dictCategory as $key => $value): ?>
+						<?php foreach($config->dictCategory as $key => $value): ?>
 							<li<?php if($category == $key): ?> class="current"<?php endif; ?>><a href="<?php 'series' == $key ? $options->adminUrl('extending.php?panel=Collection%2FPanel.php&category=series&status='.$status) : $options->adminUrl('extending.php?panel=Collection%2FPanel.php&category='.$key.'&class='.$class.'&status='.$status); ?>"><?php _e($value); ?></a></li>
 						<?php endforeach; ?>
 					</ul>
 					<ul class="typecho-option-tabs clearfix">
 						<?php if('series' != $category) : ?>
-							<?php foreach($arrayClassStatus['all'] as $key => $value): ?>
+							<?php foreach($config->dictStatusAll['all'] as $key => $value): ?>
 								<li<?php if($class == $key): ?> class="current"<?php endif; ?>><a href="<?php $options->adminUrl('extending.php?panel=Collection%2FPanel.php&category='.$category.'&class='.$key.'&status='.$status); ?>"><?php _e($value); ?></a></li>
 							<?php endforeach; ?>
 						<?php else: ?>
-							<li class="current"><a href="<?php $options->adminUrl('extending.php?panel=Collection%2FPanel.php&class='.$key.'&status='.$status); ?>"><?php echo $arrayClassStatus['all'][0] ?></a></li>
+							<li class="current"><a href="<?php $options->adminUrl('extending.php?panel=Collection%2FPanel.php&class='.$key.'&status='.$status); ?>"><?php echo $config->dictStatusAll['all'][0] ?></a></li>
 						<?php endif; ?>
 					</ul>
 					<ul class="typecho-option-tabs clearfix">
-						<?php foreach($arrayClassStatus as $key => $value): ?>
-							<li<?php if($status == $key): ?> class="current"<?php endif; ?>><a href="<?php $options->adminUrl('extending.php?panel=Collection%2FPanel.php&category='.$category.'&class='.$class.'&status='.$key); ?>"><?php _e($arrayClassStatus[$key][$class]); ?></a></li>
+						<?php foreach($config->dictStatusAll as $key => $value): ?>
+							<li<?php if($status == $key): ?> class="current"<?php endif; ?>><a href="<?php $options->adminUrl('extending.php?panel=Collection%2FPanel.php&category='.$category.'&class='.$class.'&status='.$key); ?>"><?php _e($config->dictStatusAll[$key][$class]); ?></a></li>
 						<?php endforeach; ?>
 					</ul>
 					<div class="col-mb-12 typecho-list" role="main">
@@ -113,7 +61,7 @@ echo "};\n";
 										<button class="btn dropdown-toggle btn-s" type="button"><?php _e('<i class="sr-only">操作</i>选中项'); ?> <i class="i-caret-down"></i></button>
 										<ul class="dropdown-menu">
 											<?php foreach(array('do', 'collect', 'wish', 'on_hold', 'dropped') as $value): ?>
-												<li><a lang="<?php _e('你确认要修改这些记录到'.$arrayClassStatus[$value][$class].'吗?'); ?>" href="<?php $security->index('/action/collection?do=editStatus&status='.$value); ?>"><?php _e('修改到'.$arrayClassStatus[$value][$class]); ?></a></li>
+												<li><a lang="<?php _e('你确认要修改这些记录到'.$config->dictStatusAll[$value][$class].'吗?'); ?>" href="<?php $security->index('/action/collection?do=editStatus&status='.$value); ?>"><?php _e('修改到'.$config->dictStatusAll[$value][$class]); ?></a></li>
 											<?php endforeach; ?>
 											<li><a lang="<?php _e('你确认要删除记录中的这些记录吗?'); ?>" href="<?php $security->index('/action/collection?do=editStatus&status=delete'); ?>"><?php _e('删除记录'); ?></a></li>
 										</ul>
@@ -176,15 +124,15 @@ echo "};\n";
 												<tr id="Collection-subject-<?php echo $subject['id']; ?>" data-subject="<?php echo htmlspecialchars(json_encode($subject)); ?>">
 													<td><input type="checkbox" name="id[]" value="<?php echo $subject['id']; ?>"></td>
 													<td>
-														<div class="Collection-subject-category"><?php echo $dictCategory[$subject['category']].' / '.$dictGrade[$subject['grade']]; ?></div>
+														<div class="Collection-subject-category"><?php echo $config->dictCategory[$subject['category']].' / '.$config->dictgrade[$subject['grade']]; ?></div>
 														<div class="Collection-subject-image"><img src="<?php echo $subject['image'] ? $subject['image'] : Typecho_common::url('Collection/template/default_cover.jpg', $options->pluginUrl); ?>" width="100px"></div>
 														<div class="Collection-subject-type">
 															<?php if('series' != $subject['category'] && !is_null($subject['class']))
 																if($subject['class'] > 0 && $subject['class'] <= 6)
 																{
-																	echo $dictClass[$subject['class']].' / ';
-																	if(!is_null($subject['type']) && isset($dictType[$subject['class']][$subject['type']]))
-																		echo $dictType[$subject['class']][$subject['type']];
+																	echo $config->dictClass[$subject['class']].' / ';
+																	if(!is_null($subject['type']) && isset($config->dictType[$subject['class']][$subject['type']]))
+																		echo $config->dictType[$subject['class']][$subject['type']];
 																	else
 																		echo '未知';
 																}
@@ -201,8 +149,8 @@ echo "};\n";
 																else
 																	echo '<i class="Collection-subject-class-ico Collection-subject-class-.'.$subject['class'].'"></i>';
 																echo '<small>(#'.$subject['id'].')</small>';
-																if(array_key_exists($subject['source'], $dictSource))
-																	echo '<a href="'.$dictSource[$subject['source']]['url'].$subject['source_id'].'" target="_blank">'.$subject['name'].'</a>';
+																if(array_key_exists($subject['source'], $config->dictSource) && ('Collection' != $subject['source']))
+																	echo '<a href="'.$config->dictSource[$subject['source']]['url'].$subject['source_id'].'" target="_blank">'.$subject['name'].'</a>';
 																else
 																	echo $subject['name'];
 															?>
@@ -220,7 +168,7 @@ echo "};\n";
 																{
 																	echo '<div class="hidden-by-mouse"><small><a href="#'.$subject['id'].'" rel="';
 																	$security->index('/action/collection?do=plusEp');
-																	echo '" class="Collection-subject-progress-plus" id="Collection-subject-'.$subject['id'].'-progress-ep-plus">ep.'.($subject['ep_status']+1).'已'.$arrayClassStatus['collect'][$subject['class']].'</a></small></div>';
+																	echo '" class="Collection-subject-progress-plus" id="Collection-subject-'.$subject['id'].'-progress-ep-plus">ep.'.($subject['ep_status']+1).'已'.$config->dictStatusAll['collect'][$subject['class']].'</a></small></div>';
 																}
 															}
 															echo '</div>';
@@ -250,7 +198,7 @@ echo "};\n";
 										<button class="dropdown-toggle btn-s" type="button"><?php _e('<i class="sr-only">操作</i>选中项'); ?> <i class="i-caret-down"></i></button>
 										<ul class="dropdown-menu">
 											<?php foreach(array('do', 'collect', 'wish', 'on_hold', 'dropped') as $value): ?>
-												<li><a lang="<?php _e('你确认要修改这些记录到'.$arrayClassStatus[$value][$class].'吗?'); ?>" href="<?php $security->index('/action/collection?do=editStatus&status='.$value); ?>"><?php _e('修改到'.$arrayClassStatus[$value][$class]); ?></a></li>
+												<li><a lang="<?php _e('你确认要修改这些记录到'.$config->dictStatusAll[$value][$class].'吗?'); ?>" href="<?php $security->index('/action/collection?do=editStatus&status='.$value); ?>"><?php _e('修改到'.$config->dictStatusAll[$value][$class]); ?></a></li>
 											<?php endforeach; ?>
 											<li><a lang="<?php _e('你确认要删除记录中的这些记录吗?'); ?>" href="<?php $security->index('/action/collection?do=editStatus&status=delete'); ?>"><?php _e('删除记录'); ?></a></li>
 										</ul>
@@ -322,7 +270,6 @@ echo "};\n";
 									+ '<p><label for="'+id+'-publisher"><?=_t('出版商')?></label><input type="text" id="'+id+'-publisher" name="publisher" class="text-s"></p>'
 									+ '<p><label for="'+id+'-published"><?=_t('出版时间')?></label><input type="text" id="'+id+'-published" name="published" class="text-s"></p>'
 									+ '<p><label for="'+id+'-source"><?=_t('信息来源')?></label><select id="'+id+'-source" name="source" class="w-100">'
-										+ '<option value="Collection"><?=_t('收藏')?></option>';
 								$.each(dictSource, function(key, value){
 									string += '<option value="'+key+'">'+value['name']+'</option>';
 								});
@@ -477,7 +424,7 @@ echo "};\n";
 											else
 												tempHTML = '<i class="Collection-subject-class-ico Collection-subject-class-'+subject.class+'"></i>';
 											tempHTML += '<small>(#'+subject.id+')</small>';
-											if(dictSource.hasOwnProperty(subject.source))
+											if(dictSource.hasOwnProperty(subject.source) && (subject.source != 'Collection'))
 												tempHTML += '<a href="' + dictSource[subject.source]['url'] + subject.source_id + '" target="_blank">' + subject.name + '</a>';
 											else
 												tempHTML += subject.name;
@@ -531,7 +478,7 @@ echo "};\n";
 											<button class="dropdown-toggle btn-s" type="button"><?php _e('<i class="sr-only">操作</i>选中项'); ?> <i class="i-caret-down"></i></button>
 											<ul class="dropdown-menu">
 												<?php foreach(array('do', 'collect', 'wish', 'on_hold', 'dropped') as $value): ?>
-													<li><a lang="<?php _e('你确认要添加这些记录到'.$arrayClassStatus[$value][$class].'吗?'); ?>" href="<?php $security->index('/action/collection?do=editStatus&status='.$value.'&source='.$request->source.'&class='.$request->class); ?>"><?php _e('添加到'.$arrayClassStatus[$value][$class]); ?></a></li>
+													<li><a lang="<?php _e('你确认要添加这些记录到'.$config->dictStatusAll[$value][$class].'吗?'); ?>" href="<?php $security->index('/action/collection?do=editStatus&status='.$value.'&source='.$request->source.'&class='.$request->class); ?>"><?php _e('添加到'.$config->dictStatusAll[$value][$class]); ?></a></li>
 												<?php endforeach; ?>
 											</ul>
 										</div>

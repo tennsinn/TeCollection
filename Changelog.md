@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.15
+
+- v1.15.0 move the basic arrays to Config and use Typecho widget factory method to load the configs
+
 ## v1.14
 
 - v1.14.6 fix the auto-fill of field published for source Bangumi

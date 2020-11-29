@@ -3,8 +3,6 @@ if (!defined('__TYPECHO_ROOT_DIR__')) exit;
 
 class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 {
-	private $_dictGrade;
-
 	public function __construct($request, $response, $params = NULL)
 	{
 		parent::__construct($request, $response, $params);
@@ -12,7 +10,7 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 		$this->_security = Helper::security();
 		$this->_settings = Helper::options()->plugin('Collection');
 		$this->_db = Typecho_Db::get();
-		$this->_dictGrade = Collection_Config::getGrade();
+		$this->_config = $this->widget('Collection_Config@action');
 	}
 
 	public function action()
@@ -26,22 +24,6 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 		$this->on($this->request->is('do=addSubject'))->addSubject();
 	}
 
-	private $arrayType = array(
-		'Novel', 'Comic', 'Doujinshi', 'Textbook',
-		'TV', 'Movie', 'OVA', 'OAD', 'SP',
-		'Album', 'Single', 'Maxi', 'EP', 'Selections',
-		'iOS', 'Android', 'PSP', 'PSV', 'PS4', 'NDS', '3DS', 'NSwitch', 'XBox', 'Windows', 'Online', 'Table', 
-		'RadioDrama', 'Drama',
-		'Film', 'Teleplay', 'Documentary', 'TalkShow', 'VarietyShow'
-	);
-	private $arrayCategory = array('series', 'subject', 'volume', 'episode');
-
-	private $dictCategory = array('series' => '系列', 'subject' => '记录', 'volume' => '分卷', 'episode' => '章节');
-	private $dictClass = array(1 => '书籍', 2 => '动画', 3 => '音乐', 4 => '游戏', 5 => '广播', 6 => '影视');
-	private $dictType = array('Novel' => '小说', 'Comic' => '漫画', 'Doujinshi' => '同人志', 'Textbook' => '课本');
-	private $dictSource = array('Collection' => '无来源', 'Bangumi' => 'Bangumi', 'Douban' => '豆瓣', 'Wandoujia' => '豌豆荚', 'Steam' => 'Steam', 'TapTap' => 'TapTap', 'BiliBili' => 'BiliBili');
-	private $dictStatus = array('do' => '进行', 'collect' => '完成', 'wish' => '计划', 'on_hold' => '搁置', 'dropped' => '抛弃');
-
 	/**
 	 * 对外展示收藏内容
 	 *
@@ -49,9 +31,9 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 	 */
 	public function getCollection()
 	{
-		$interCategory = array_intersect($this->request->getArray('category'), $this->arrayCategory);
+		$interCategory = array_intersect($this->request->getArray('category'), $this->_config->arrayCategory);
 		$interClass = array_intersect($this->request->filter('int')->getArray('class'), array(1, 2, 3, 4, 5, 6));
-		$interType = array_intersect($this->request->getArray('type'), $this->arrayType);
+		$interType = array_intersect($this->request->getArray('type'), $this->_config->arrayType);
 		$interStatus = array_intersect($this->request->getArray('status'), array('do', 'wish', 'collect', 'on_hold', 'dropped'));
 		$rate = explode(',', $this->request->get('rate'));
 		$minRate = ($rate[0]<=$rate[1] && $rate[0]>=0) ? $rate[0] : '0';
@@ -111,7 +93,7 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 		if(!$this->request->get('id'))
 			$this->response->throwJson(array('result' => false, 'message' => '缺少ID信息'));
 
-		if(!is_null($this->request->get('category')) && !in_array($this->request->get('category'), $this->arrayCategory))
+		if(!is_null($this->request->get('category')) && !in_array($this->request->get('category'), $this->_config->arrayCategory))
 			$this->response->throwJson(array('result' => false, 'message' => '大类信息错误'));
 
 		$category = $this->request->get('category');
@@ -120,7 +102,7 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 			if(!is_numeric($this->request->get('class')) || $this->request->class<=0 || $this->request->class>6)
 				$this->response->throwJson(array('result' => false, 'message' => '种类信息错误'));
 
-			if(!is_null($this->request->get('type')) && !in_array($this->request->get('type'), $this->arrayType))
+			if(!is_null($this->request->get('type')) && !in_array($this->request->get('type'), $this->_config->arrayType))
 				$this->response->throwJson(array('result' => false, 'message' => '类型信息错误'));
 		}
 
@@ -568,15 +550,15 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 		$form->addInput($do);
 		$do->value('addSubject');
 
-		$category = new Typecho_Widget_Helper_Form_Element_Radio('category', $this->dictCategory, 'subject', '大类 *');
+		$category = new Typecho_Widget_Helper_Form_Element_Radio('category', $this->_config->dictCategory, 'subject', '大类 *');
 		$category->addRule('required', '必须选择大类');
 		$form->addInput($category);
 
-		$class = new Typecho_Widget_Helper_Form_Element_Radio('class', $this->dictClass, 1, '分类 *');
+		$class = new Typecho_Widget_Helper_Form_Element_Radio('class', $this->_config->dictClass, 1, '分类 *');
 		$class->addRule('required', '必须选择分类');
 		$form->addInput($class);
 
-		$type = new Typecho_Widget_Helper_Form_Element_Radio('type', $this->dictType, 'Novel', '类型 *');
+		$type = new Typecho_Widget_Helper_Form_Element_Radio('type', $this->_config->dictType[1], 'Novel', '类型 *');
 		$type->addRule('required', '必须选择类型');
 		$form->addInput($type);
 
@@ -601,7 +583,7 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 		$published->input->setAttribute('class', 'w-40');
 		$form->addInput($published);
 
-		$source = new Typecho_Widget_Helper_Form_Element_Select('source', $this->dictSource, 'Collection', '信息来源 *');
+		$source = new Typecho_Widget_Helper_Form_Element_Select('source', $this->_config->dictSourceName, 'Collection', '信息来源 *');
 		$source->addRule('required', '必须选择来源');
 		$form->addInput($source);
 
@@ -633,10 +615,10 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 		$parent_order->addRule('isInteger', '请正确输入ID');
 		$form->addInput($parent_order);
 
-		$grade = new Typecho_Widget_Helper_Form_Element_radio('grade', $this->_dictGrade, 0, '显示分级');
+		$grade = new Typecho_Widget_Helper_Form_Element_radio('grade', $this->_config->dictGrade, 0, '显示分级');
 		$form->addInput($grade);
 
-		$status = new Typecho_Widget_Helper_Form_Element_Radio('status', $this->dictStatus, 'wish', '记录当前状态 *');
+		$status = new Typecho_Widget_Helper_Form_Element_Radio('status', $this->_config->dictStatus, 'wish', '记录当前状态 *');
 		$status->addRule('required', '必须选择记录状态');
 		$form->addInput($status);
 
