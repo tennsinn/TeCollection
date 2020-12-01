@@ -2,6 +2,7 @@
 
 ## v1.15
 
+- v1.15.1 add class Validate to validate all the submission values
 - v1.15.0 move the basic arrays to Config and use Typecho widget factory method to load the configs
 
 ## v1.14

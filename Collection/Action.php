@@ -90,126 +90,72 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 	 */
 	private function editSubject()
 	{
-		if(!$this->request->get('id'))
-			$this->response->throwJson(array('result' => false, 'message' => '缺少ID信息'));
+		$data = array('id', 'category', 'class', 'type', 'name', 'name_cn', 'author', 'publisher', 'published', 'ep_count', 'source', 'source_id', 'parent', 'parent_order', 'parent_label', 'grade', 'status', 'ep_status', 'rate', 'tags', 'comment', 'note');
+		$data = $this->request->from($data);
+		if($data['published'])
+			$data['published'] = strtotime($data['published']) - $this->_options->timezone + $this->_options->serverTimezone;
+		$data['image'] = $this->request->filter('url')->get('image');
+		$data['media_link'] = $this->request->filter('url')->get('media_link');
 
-		if(!is_null($this->request->get('category')) && !in_array($this->request->get('category'), $this->_config->arrayCategory))
-			$this->response->throwJson(array('result' => false, 'message' => '大类信息错误'));
-
-		$category = $this->request->get('category');
-		if('series' != $category)
+		$validator = new Collection_Validate();
+		$validator->addRule('id', 'required', _t('缺少ID信息'));
+		$validator->addRule('category', 'required', _t('缺少大类信息'));
+		$validator->addRule('category', 'inArray', _t('请使用支持的大类'), $this->_config->arrayCategory);
+		$validator->addRule('name', 'required', _t('必须输入名称'));
+		$validator->addRule('image', 'url', _t('请输入有效图片地址'));
+		$validator->addRule('media_link', 'url', _t('请输入有效链接地址'));
+		$validator->addRule('source', 'inArray', _t('请使用支持的来源'), $this->_config->arraySource);
+		$validator->addRule('grade', 'isInteger', _t('请用0-9的数字表示级别'));
+		$validator->addRule('grade', 'inRange', _t('请用0-9的数字表示级别'), 0, 9);
+		$validator->addRule('rate', 'isInteger', _t('请使用0-10的数字表示评价'));
+		$validator->addRule('rate', 'inRange', _t('请使用0-10的数字表示评价'), 0, 10);
+		if('series' != $data['category'])
 		{
-			if(!is_numeric($this->request->get('class')) || $this->request->class<=0 || $this->request->class>6)
-				$this->response->throwJson(array('result' => false, 'message' => '种类信息错误'));
-
-			if(!is_null($this->request->get('type')) && !in_array($this->request->get('type'), $this->_config->arrayType))
-				$this->response->throwJson(array('result' => false, 'message' => '类型信息错误'));
+			$validator->addRule('class', 'required', _t('必须选择分类'));
+			$validator->addRule('class', 'isInteger', _t('分类信息错误'));
+			$validator->addRule('class', 'inRange', _t('分类信息错误'), 1, 6);
+			$validator->addRule('type', 'required', _t('必须选择类型'));
+			$validator->addRule('type', 'inArray', _t('类型信息错误'), $this->_config->arrayType);
+			$validator->addRule('parent', 'isInteger', _t('父记录错误'));
+			$validator->addRule('parent', 'inDb', _t('父记录不存在'), 'id', 0);
+			$validator->addRule('parent_order', 'isInteger', _t('记录序号错误'));
+			$validator->addRule('parent_order', 'inRange', _t('记录序号错误'), 0);
+			$validator->addRule('ep_count', 'isInteger', _t('请使用整数值标记进度'));
+			$validator->addRule('ep_status', 'isInteger', _t('请使用整数值标记进度'));
+			$validator->addRule('ep_status', 'isValidProgress', _t('请输入正确的进度'), $data['ep_count']);
 		}
+		if($error = $validator->run($data))
+			$this->response->throwJson(array('result' => false, 'message' => implode("\n", $error)));
 
-		if(!$this->request->get('name'))
-			$this->response->throwJson(array('result' => false, 'message' => '必须输入名称'));
-
-		if(!filter_var($this->request->get('image'), FILTER_VALIDATE_URL) && !is_null($this->request->get('image')))
-			$this->response->throwJson(array('result' => false, 'message' => '图片地址错误'));
-
-		if(!filter_var($this->request->filter('url')->get('media_link'), FILTER_VALIDATE_URL) && !empty($this->request->filter('url')->get('media_link')))
-			$this->response->throwJson(array('result' => false, 'message' => '请输入有效链接地址'));
-
-		if('series' != $category)
+		if('series' == $data['category'])
 		{
-			if((!is_null($this->request->get('ep_status')) || !is_null($this->request->get('ep_count'))) && (!is_numeric($this->request->ep_status) || !is_numeric($this->request->ep_count) || $this->request->ep_status<0 || $this->request->ep_count<0 || ($this->request->ep_count>0 && $this->request->ep_status>$this->request->ep_count)))
-				$this->response->throwJson(array('result' => false, 'message' => '请输入正确的主进度'));
-		}
-
-		if(!in_array($this->request->get('source'), array('Collection', 'Bangumi', 'Douban', 'Steam', 'Wandoujia', 'TapTap', 'BiliBili')))
-			$this->response->throwJson(array('result' => false, 'message' => '来源信息错误'));
-
-		if('series' != $category)
-		{
-			if($this->request->get('parent') && !is_numeric($this->request->parent) && $this->_db->fetchRow($this->_db->select()->from('table.collection')->where('id = ?', $this->request->parent)))
-				$this->response->throwJson(array('result' => false, 'message' => '父记录错误或不存在父记录'));
-
-			if($this->request->get('parent_order') && !is_numeric($this->request->parent_order))
-				$this->response->throwJson(array('result' => false, 'message' => '记录序号错误'));
-		}
-
-		if(!is_numeric($this->request->get('grade')) || $this->request->grade<0 || $this->request->grade>9)
-			$this->response->throwJson(array('result' => false, 'message' => '请用0-9的数字表示级别'));
-
-		if($this->request->get('rate') && (!is_numeric($this->request->get('rate')) || $this->request->rate>10 || $this->request->rate<0))
-			$this->response->throwJson(array('result' => false, 'message' => '评价请使用0-10的数字表示'));
-
-		$published = NULL;
-		if($this->request->get('published'))
-			$published = strtotime($this->request->published) - $this->_options->timezone + $this->_options->serverTimezone;
-
-		if('series' == $category)
 			$row = array(
-				'category' => 'series',
 				'class' => NULL,
 				'type' => NULL,
-				'name' => $this->request->name,
-				'name_cn' => $this->request->name_cn,
-				'image' => $this->request->image,
 				'author' => NULL,
 				'publisher' => NULL,
 				'published' => NULL,
 				'ep_count' => NULL,
-				'source' => $this->request->source,
-				'source_id' => $this->request->source_id,
-				'media_link' => $this->request->filter('url')->get('media_link'),
 				'parent' => 0,
 				'parent_order' => 0,
 				'parent_label' => NULL,
-				'grade' => $this->request->grade,
-				'time_touch' => Typecho_Date::gmtTime(),
 				'ep_status' => NULL,
-				'rate' => $this->request->rate,
-				'tags' => $this->request->tags,
-				'comment' => $this->request->comment,
-				'note' => $this->request->note
 			);
-		else
-			$row = array(
-				'category' => $this->request->category,
-				'class' => $this->request->class,
-				'type' => $this->request->type,
-				'name' => $this->request->name,
-				'name_cn' => $this->request->name_cn,
-				'image' => $this->request->image,
-				'author' => $this->request->get('author'),
-				'publisher' => $this->request->get('publisher'),
-				'published' => $published,
-				'ep_count' => $this->request->ep_count,
-				'source' => $this->request->source,
-				'source_id' => $this->request->source_id,
-				'media_link' => $this->request->filter('url')->get('media_link'),
-				'parent' => $this->request->parent,
-				'parent_order' => $this->request->parent_order,
-				'parent_label' => $this->request->get('parent_label'),
-				'grade' => $this->request->grade,
-				'time_touch' => Typecho_Date::gmtTime(),
-				'ep_status' => $this->request->ep_status,
-				'rate' => $this->request->rate,
-				'tags' => $this->request->tags,
-				'comment' => $this->request->comment,
-				'note' => $this->request->note
-			);
-
-		if($this->request->status == 'do' && ($this->request->ep_count > 0 && $this->request->ep_count == $this->request->ep_status))
+			$data = array_replace($data, $row);
+		}
+		$data['time_touch'] = Typecho_Date::gmtTime();
+		if($data['status'] == 'do' && ($data['ep_count'] > 0 && $data['ep_count'] == $data['ep_status']))
 		{
-			$row['status'] = 'collect';
-			$row['time_finish'] = Typecho_Date::gmtTime();
+			$data['status'] = 'collect';
+			$data['time_finish'] = Typecho_Date::gmtTime();
 			$json['status'] = 'collect';
 		}
-		else
-			$json['status'] = $this->request->status;
-		$update = $this->_db->query($this->_db->update('table.collection')->where('id = ?', $this->request->id)->rows($row));
+
+		$update = $this->_db->query($this->_db->update('table.collection')->where('id = ?', $data['id'])->rows($data));
 		if($update > 0)
-			$json = array('result' => true, 'message' => '已修改'.$update.'项');
+			$this->response->throwJson(array('result' => true, 'message' => _t('记录已修改')));
 		else
-			$json = array('result' => false, 'message' => '数据库更新失败');
-		$this->response->throwJson($json);
+			$this->response->throwJson(array('result' => false, 'message' => _t('记录修改失败')));
 	}
 
 	/**

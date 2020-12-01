@@ -131,6 +131,17 @@ class Collection_Config extends Typecho_Widget
 	}
 
 	/**
+	 * 源名称数组
+	 *
+	 * @access public
+	 * @return array
+	 */
+	public function ___arraySource()
+	{
+		return array_keys($this->dictSource);
+	}
+
+	/**
 	 * 大类js字典
 	 *
 	 * @access public
@@ -209,24 +220,6 @@ class Collection_Config extends Typecho_Widget
 		}
 		$str .= '}';
 		return $str;
-	}
-
-	/**
-	 * 分级名称设置检查
-	 *
-	 * @access public
-	 * @param string $value 分级设置名称组
-	 * @return bool
-	 */
-	public static function checkGrade($value)
-	{
-		$grades = explode(',', $value);
-		if(count($grades) > 10)
-			return false;
-		foreach($grades as $grade)
-			if(!trim($grade, ' '))
-				return false;
-		return true;
 	}
 
 	/**
