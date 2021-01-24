@@ -21,11 +21,18 @@ class Collection_Source_Bangumi
 	 */
 	public static function getSubject($source_id)
 	{
-		$response = @file_get_contents(self::SERVER.'/subject/'.$source_id);
+		$response = @file_get_contents(self::SERVER.'/subject/'.$source_id.'?responseGroup=large');
 		$response = json_decode($response, true);
 		if(!$response)
 			return false;
-		$row = self::formatInfo($response);
+		$row = self::parseBasicInfo($response);
+		if($row['ep_count'])
+			$row['ep_status'] = 0;
+		if(isset($response['staff']))
+		{
+			$staff = self::parseStaffInfo($response['staff']);
+			$row = array_merge($row, $staff);
+		}
 		return $row;
 	}
 
@@ -54,30 +61,59 @@ class Collection_Source_Bangumi
 				$info .= '<div>总集数：'.$value['eps'].'</div>';
 			if(isset($value['summary']))
 				$info .= '<div>简介：'.$value['summary'].'</div>';
-			$list[$value['id']] = self::formatInfo($value);
+			$list[$value['id']] = self::parseBasicInfo($value);
 			$list[$value['id']]['info'] = $info;
 		}
 		return array('result' => true, 'count' => $response['results'], 'list' => $list);
 	}
 
 	/**
-	 * 根据已解析数据获取所需内容
+	 * 获取条目基本信息
 	 *
 	 * @access private
 	 * @param array $value 解析后的数组
 	 * @return array
 	 */
-	private static function formatInfo($value)
+	private static function parseBasicInfo($value)
 	{
-		$info = array(
-			'class' => isset($value['type']) ? $value['type'] : 1,
-			'name' => isset($value['name']) ? $value['name'] : 'Unknown Subject',
-			'name_cn' => isset($value['name_cn']) ? $value['name_cn'] : NULL,
-			'published' => (isset($value['air_date']) && !empty($value['air_date']) && ('0000-00-00' != $value['air_date'])) ? strtotime($value['air_date']) : NULL,
-			'image' => isset($value['images']['common']) ? $value['images']['common'] : NULL,
-			'ep_count' => isset($value['eps']) ? $value['eps'] : NULL,
-			'ep_status' => isset($value['eps']) ? 0 : NULL,
-		);
+		$info = array();
+		$info['class'] = isset($value['type']) ? $value['type'] : 1;
+		$info['name'] = isset($value['name']) ? $value['name'] : 'Unknown Subject';
+		$info['name_cn'] = isset($value['name_cn']) ? $value['name_cn'] : NULL;
+		$info['published'] = (isset($value['air_date']) && !empty($value['air_date']) && ('0000-00-00' != $value['air_date'])) ? strtotime($value['air_date']) : NULL;
+		$info['image'] = isset($value['images']['common']) ? $value['images']['common'] : NULL;
+		$info['ep_count'] = isset($value['eps_count']) ? $value['eps_count'] : NULL;
+		return $info;
+	}
+
+	/**
+	 * 获取条目Staff信息
+	 *
+	 * @access private
+	 * @param array $value 解析后的数组
+	 * @return array
+	 */
+	private static function parseStaffInfo($value)
+	{
+		$info = array('author' => NULL, 'publisher' => NULL);
+		foreach($value as $val)
+		{
+			foreach($val['jobs'] as $job)
+			{
+				switch($job)
+				{
+					case '作者':
+					case '开发':
+					case '动画制作':
+						$info['author'] = $info['author'] ? $info['author'].' / '.$val['name'] : $val['name'];
+						break;
+					case '出版社':
+					case '连载杂志':
+						$info['publisher'] = $info['publisher'] ? $info['publisher'].' / '.$val['name'] : $val['name'];
+						break;
+				}
+			}
+		}
 		return $info;
 	}
 
