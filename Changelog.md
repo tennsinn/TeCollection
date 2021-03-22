@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.16
+
+- v1.16.0 update the 3rd party scripts
+
 ## v1.15
 
 - v1.15.2 add parser for the staff info of source Bangumi subjects

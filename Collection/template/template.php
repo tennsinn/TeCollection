@@ -12,6 +12,7 @@ $dictStatus = array('do' => '进行', 'wish' => '计划', 'collect' => '完成',
 $dictOrderby = array('id' => 'ID', 'rate' => '评价', 'time_touch' => '最后修改', 'time_start' => '开始时间', 'time_finish' => '结束时间');
 ?>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <link rel="stylesheet" type="text/css" href="<?php Helper::options()->pluginUrl('Collection/template/stylesheet-common.css'); ?>">
 <link rel="stylesheet" type="text/css" href="<?php Helper::options()->pluginUrl('Collection/template/stylesheet-page.css'); ?>">
 <div id="Collection-Box">
@@ -56,15 +57,15 @@ $dictOrderby = array('id' => 'ID', 'rate' => '评价', 'time_touch' => '最后�
 			</div>
 		</form>
 	</div>
-	<div id="Collection-nav-1" class="Collection-nav"></div>
+	<div id="Collection-nav-1" class="holder"></div>
 	<ul id="Collection-list" class="Collection-list"></ul>
-	<div id="Collection-nav-2" class="Collection-nav"></div>
+	<div id="Collection-nav-2" class="holder"></div>
 </div>
-<link rel="stylesheet" href="<?php Helper::options()->pluginUrl('Collection/jRange/jquery.range.css'); ?>">
-<script src="<?php Helper::options()->pluginUrl('Collection/jRange/jquery.range-min.js'); ?>"></script>
-<link rel="stylesheet" href="<?php Helper::options()->pluginUrl('Collection/jPages/jPages.css'); ?>">
-<link rel="stylesheet" href="<?php Helper::options()->pluginUrl('Collection/jPages/animate.css'); ?>">
-<script src="<?php Helper::options()->pluginUrl('Collection/jPages/jPages.min.js'); ?>"></script>
+<link rel="stylesheet" href="<?php Helper::options()->pluginUrl('Collection/3rdParty/jquery.range.css'); ?>">
+<script src="<?php Helper::options()->pluginUrl('Collection/3rdParty/jquery.range-min.js'); ?>"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+<link rel="stylesheet" href="<?php Helper::options()->pluginUrl('Collection/3rdParty/jPages.css'); ?>">
+<script src="<?php Helper::options()->pluginUrl('Collection/3rdParty/jPages.min.js'); ?>"></script>
 <script>
 Date.prototype.format = function(format) {  
 	var o = {  
@@ -204,7 +205,7 @@ $(document).ready(function(){
 				tempHTML = data.message;
 			}
 			$('#Collection-list').html(tempHTML);
-			$(".Collection-nav").jPages({
+			$(".holder").jPages({
 				containerID : "Collection-list",
 				perPage : 20,
 				minHeight : false,
