@@ -131,11 +131,7 @@
 	margin-left: 10px;
 }
 
-#Collection-opt-class,
-#Collection-opt-type,
-#Collection-opt-status,
-#Collection-opt-rate,
-#Collection-opt-order
+[id^=Collection-opt-]
 {
 	position: relative;
 	padding-right: 50px;

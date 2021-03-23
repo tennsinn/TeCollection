@@ -40,16 +40,19 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 		$maxRate = ($rate[0]<=$rate[1] && $rate[1]<=10) ? $rate[1] : '10';
 
 		$query = $this->_db->select()->from('table.collection')->where('grade = ?', 0);
-		$query->where("category='".implode("' OR type='", $interCategory)."'");
-		$query->where('class='.implode(' OR class=', $interClass));
-		$query->where("type='".implode("' OR type='", $interType)."'");
+		$query->where("category='".implode("' OR category='", $interCategory)."'");
+		$query->where("class='".implode("' OR class='", $interClass)."'");
+		if(in_array('null', $this->request->getArray('type')))
+			$query->where("ISNULL(type) OR type='".implode("' OR type='", $interType)."'");
+		else
+			$query->where("type='".implode("' OR type='", $interType)."'");
 		$query->where("status='".implode("' OR status='", $interStatus)."'");
 		$query->where('rate>='.$minRate.' AND rate<='.$maxRate);
 
 		$queryNum = clone $query;
 		
 		$num = $this->_db->fetchObject($queryNum->select(array('COUNT(table.collection.id)' => 'num')))->num;
-		if($num)		
+		if($num)
 		{
 			if(in_array($this->request->get('orderby'), array('id', 'rate', 'time_touch', 'time_start', 'time_finish')) && in_array($this->request->get('order'), array('DESC', 'ASC')))
 				$query->order($this->request->get('orderby'), $this->request->get('order'));

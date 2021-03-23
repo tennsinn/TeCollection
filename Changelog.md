@@ -2,6 +2,7 @@
 
 ## v1.16
 
+- v1.16.1 fix the subjects selection error in rendering the default template
 - v1.16.0 update the 3rd party scripts
 
 ## v1.15

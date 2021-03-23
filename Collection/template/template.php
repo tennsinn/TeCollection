@@ -1,14 +1,5 @@
 <?php
-$dictClass = array(1 => '书籍', 2 => '动画', 3 => '音乐', 4 => '游戏', 5 => '广播', 6 => '影视');
-$dictType = array(
-	1 => array('Novel' => '小说', 'Comic' => '漫画', 'Doujinshi' => '同人志', 'Textbook' => '课本'),
-	2 => array('TV' => 'TV', 'OVA' => 'OVA', 'OAD' => 'OAD', 'Movie' => '剧场'),
-	3 => array('Album' => '专辑', 'Single' => '单曲', 'Maxi' => 'Maxi', 'EP' => '细碟', 'Selections' => '选集'),
-	4 => array('iOS' => 'iOS', 'Android' => 'Andriod', 'PSP' => 'PSP', 'PSV' => 'PSV', 'PS' => 'PS', 'NDS' => 'NDS', '3DS' => '3DS', 'XBox' => 'XBox', 'Windows' => 'Windows', 'Online' => '网游', 'Table' => '桌游'),
-	5 => array('RadioDrama' => '广播剧', 'Drama' => '歌剧'),
-	6 => array('Film' => '电影', 'Teleplay' => '电视剧', 'Documentary' => '纪录片', 'TalkShow' => '脱口秀', 'VarietyShow' => '综艺')
-);
-$dictStatus = array('do' => '进行', 'wish' => '计划', 'collect' => '完成', 'on_hold' => '搁置', 'dropped' => '抛弃');
+Typecho_Widget::widget('Collection_Config@panel')->to($config);
 $dictOrderby = array('id' => 'ID', 'rate' => '评价', 'time_touch' => '最后修改', 'time_start' => '开始时间', 'time_finish' => '结束时间');
 ?>
 
@@ -18,16 +9,24 @@ $dictOrderby = array('id' => 'ID', 'rate' => '评价', 'time_touch' => '最后�
 <div id="Collection-Box">
 	<div id="Collection-opt" class="Collection-opt">
 		<form id="Collection-form" method="post" action="<?php Helper::options()->index('/action/collection'); ?>">
+			<div id="Collection-opt-category">
+				<label class="Collection-opt-label">大类：</label>
+				<?php foreach($config->dictCategory as $key => $value): ?>
+					<span class="Collection-opt-checkbox"><input type="checkbox" id="Collection-opt-category-<?php echo $key; ?>" name="category[]" value="<?php echo $key; ?>" checked><label for="Collection-opt-category-<?php echo $key; ?>"><?php echo $value; ?></label></span>
+				<?php endforeach; ?>
+				<span class="Collection-opt-checkbox Collection-opt-checkbox-all"><input type="checkbox" id="Collection-opt-category-all" checked><label for="Collection-opt-category-all">全选</label></span>
+			</div>
 			<div id="Collection-opt-class">
 				<label class="Collection-opt-label">种类：</label>
-				<?php foreach($dictClass as $key => $value): ?>
+				<?php foreach($config->dictClass as $key => $value): ?>
 					<span class="Collection-opt-checkbox"><input type="checkbox" id="Collection-opt-class-<?php echo $key; ?>" name="class[]" value="<?php echo $key; ?>" checked><label for="Collection-opt-class-<?php echo $key; ?>"><?php echo $value; ?></label></span>
 				<?php endforeach; ?>
 				<span class="Collection-opt-checkbox Collection-opt-checkbox-all"><input type="checkbox" id="Collection-opt-class-all" checked><label for="Collection-opt-class-all">全选</label></span>
 			</div>
 			<div id="Collection-opt-type">
 				<label class="Collection-opt-label">类型：</label>
-				<?php foreach($dictType as $class => $items): ?>
+				<?php foreach($config->dictType as $class => $items): ?>
+					<span class="Collection-opt-checkbox"><input type="checkbox" class="Collection-opt-type-class-0" id="Collection-opt-type-null" name="type[]" value="null" checked><label for="Collection-opt-type-null">未知</label></span>
 					<?php foreach($items as $key => $value): ?>
 						<span class="Collection-opt-checkbox"><input type="checkbox" class="Collection-opt-type-class-<?php echo $class; ?>" id="Collection-opt-type-<?php echo $key; ?>" name="type[]" value="<?php echo $key; ?>" checked><label for="Collection-opt-type-<?php echo $key; ?>"><?php echo $value; ?></label></span>
 					<?php endforeach; ?>
@@ -36,7 +35,7 @@ $dictOrderby = array('id' => 'ID', 'rate' => '评价', 'time_touch' => '最后�
 			</div>
 			<div id="Collection-opt-status">
 				<label class="Collection-opt-label">状态：</label>
-				<?php foreach($dictStatus as $key => $value):?>
+				<?php foreach($config->dictStatus as $key => $value):?>
 					<span class="Collection-opt-checkbox"><input type="checkbox" id="Collection-opt-status-<?php echo $key; ?>" name="status[]" value="<?php echo $key; ?>"<?php if($key=='do'): ?> checked<?php endif; ?>><label for="Collection-opt-status-<?php echo $key; ?>"><?php echo $value; ?></label></span>
 				<?php endforeach; ?>
 				<span class="Collection-opt-checkbox Collection-opt-checkbox-all"><input type="checkbox" id="Collection-opt-status-all"><label for="Collection-opt-status-all">全选</label></span>
@@ -88,14 +87,7 @@ format = format.replace(RegExp.$1, RegExp.$1.length == 1 ? o[k] : ("00" + o[k]).
 	return format;
 }
 
-var dictTypeTrans = {
-	1:{'Mix':'混合', 'Series':'系列', 'Novel':'小说', 'Comic':'漫画', 'Doujinshi':'同人志', 'Textbook':'课本'},
-	2:{'Mix':'混合', 'Series':'系列', 'TV':'TV', 'OVA':'OVA', 'OAD':'OAD', 'Movie':'剧场'},
-	3:{'Mix':'混合', 'Series':'系列', 'Album':'专辑', 'Single':'单曲', 'Selections':'选集'},
-	4:{'Mix':'混合', 'Series':'系列', 'iOS':'iOS', 'Android':'Andriod', 'PSP':'PSP', 'PSV':'PSV', 'PS':'PS', 'NDS':'NDS', '3DS':'3DS', 'XBox':'XBox', 'Windows':'Windows', 'Online':'网游', 'Table':'桌游'},
-	5:{'Mix':'混合', 'Series':'系列', 'RadioDrama':'广播剧', 'Drama':'歌剧'},
-	6:{'Mix':'混合', 'Series':'系列', 'Film':'电影', 'Teleplay':'电视剧', 'Documentary':'纪录片', 'TalkShow':'脱口秀', 'VarietyShow':'综艺'}
-};
+var dictTypeTrans = <?php echo $config->jsType; ?>
 
 var dictStatusTrans = {
 	'do':{1:'在读', 2:'在看', 3:'在听', 4:'在玩', 5:'在听', 6:'在看'},
@@ -135,9 +127,12 @@ $(document).ready(function(){
 						tempHTML += "<?php Helper::options()->pluginUrl('Collection/template/default_cover.jpg'); ?>";
 					tempHTML += '"></div>';
 					tempHTML += '<div class="Collection-subject-info">'
-						+ '<div class="Collection-subject-name">'
+						+ '<div class="Collection-subject-name">';
+					if(subject.category != 'series')
+					{
 						+ '<i class="Collection-subject-class-ico Collection-subject-class-'+subject.class+'"></i>'
 						+ '<small>（'+dictTypeTrans[subject.class][subject.type]+'）</small>';
+					}
 					if(subject.source != 'Collection')
 					{
 						tempHTML += '<a href="';
@@ -213,6 +208,10 @@ $(document).ready(function(){
 			});
 		}, 'json');
 		return false;
+	});
+
+	$('#Collection-opt-category-all').click(function(){
+		$('input[name="category[]"]').prop("checked", this.checked);
 	});
 
 	$('#Collection-opt-class-all').click(function(){
