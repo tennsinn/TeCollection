@@ -1,4 +1,14 @@
 <?php
+if (!defined('__TYPECHO_ROOT_DIR__')) exit;
+
+/**
+ * 默认前台输出模板
+ *
+ * @author 两仪天心
+ * @copyright Copyright (c) 2020 Tennsinn
+ * @license GNU General Public License v3.0
+ */
+
 Typecho_Widget::widget('Collection_Config@panel')->to($config);
 $dictOrderby = array('id' => 'ID', 'rate' => '评价', 'time_touch' => '最后修改', 'time_start' => '开始时间', 'time_finish' => '结束时间');
 ?>
@@ -122,13 +132,7 @@ $(document).ready(function(){
 						+ '<div>状态：</div>'
 						+ '<div>'+dictStatusTrans[subject.status][subject.class]+'</div>';
 					if(subject.ep_count != null && subject.ep_status != null)
-					{
-						tempHTML += '<div>主进度：</div>'
-							+ '<div class="Collection-subject-progress"><div class="Collection-subject-progress-inner" style="color:white; width:'+(subject.ep_count!=0 ? subject.ep_status/subject.ep_count*100 : 50)+'%"><small>'+subject.ep_status+' / '+(subject.ep_count!=0 ? subject.ep_count : '??')+'</small></div></div>';
-						if(subject.sp_count != null && subject.sp_status != null)
-							tempHTML += '<div>副进度：</div>'
-							+ '<div class="Collection-subject-progress"><div class="Collection-subject-progress-inner" style="color:white; width:'+(subject.sp_count!=0 ? subject.sp_status/subject.sp_count*100 : 50)+'%"><small>'+subject.sp_status+' / '+(subject.sp_count!=0 ? subject.sp_count : '??')+'</small></div></div>';
-					}
+						tempHTML += '<div class="Collection-subject-progress"><div class="Collection-subject-progress-inner" style="color:white; width:'+(subject.ep_count!=0 ? subject.ep_status/subject.ep_count*100 : 50)+'%"><small>'+subject.ep_status+' / '+(subject.ep_count!=0 ? subject.ep_count : '??')+'</small></div></div>';
 					tempHTML += '</div>'
 						+ '<div><i>备注：</i><small>'+(subject.note ? subject.note : '无')+'</small></div>'
 						+ '<div class="Collection-subject-review">'

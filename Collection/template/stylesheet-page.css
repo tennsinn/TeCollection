@@ -54,24 +54,6 @@
 	font-size: small;
 }
 
-.Collection-subject-meta span
-{
-	padding-right: 10px;
-	padding-left: 10px;
-	border-right: 1px  solid grey;
-}
-
-.Collection-subject-meta span:last-child
-{
-	padding-right: 0px;
-	border-right: none;
-}
-
-.Collection-subject-meta span:first-child
-{
-	padding-left: 0px;
-}
-
 .Collection-subject-box-progress
 {
 	height: 25px;
