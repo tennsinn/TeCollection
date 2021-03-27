@@ -65,28 +65,8 @@ $dictOrderby = array('id' => 'ID', 'rate' => '评价', 'time_touch' => '最后�
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
 <link rel="stylesheet" href="<?php Helper::options()->pluginUrl('Collection/3rdParty/jPages.css'); ?>">
 <script src="<?php Helper::options()->pluginUrl('Collection/3rdParty/jPages.min.js'); ?>"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
 <script>
-Date.prototype.format = function(format) {  
-	var o = {  
-		"M+" : this.getMonth() + 1,
-		"d+" : this.getDate(),
-		"h+" : this.getHours(),
-		"m+" : this.getMinutes(), 
-		"s+" : this.getSeconds(),
-		"q+" : Math.floor((this.getMonth() + 3) / 3),
-		"S" : this.getMilliseconds() 
-	}		   
-	if (/(y+)/.test(format)) {  
-		format = format.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));  
-	}
-	for (var k in o) {  
-		if (new RegExp("(" + k + ")").test(format)) {  
-format = format.replace(RegExp.$1, RegExp.$1.length == 1 ? o[k] : ("00" + o[k]).substr(("" + o[k]).length));
-		}  
-	}  
-	return format;
-}
-
 var dictTypeTrans = <?php echo $config->jsType; ?>
 
 var dictStatusTrans = {
@@ -169,9 +149,8 @@ $(document).ready(function(){
 						tempHTML += '<small>（'+subject.name_cn+'）</small>';
 					tempHTML += '</div>'
 						+ '<div class="Collection-subject-meta">'
-						+ '<span>记录起止：'+(subject.time_start ? new Date(parseInt(subject.time_start)*1000).format('yyyy-MM-dd') : '??')+' / '
-						+ (subject.time_finish ? new Date(parseInt(subject.time_finish)*1000).format("yyyy-MM-dd") : '??')+'</span>'
-						+ '<span>最后修改：'+(new Date(parseInt(subject.time_touch)*1000).format("yyyy-MM-dd"))+'</span>'
+						+ '<span>记录起止：'+(subject.time_start ? moment.unix(subject.time_start).format('YYYY-MM-DD') : '??')+' / '
+						+ (subject.time_finish ? moment.unix(subject.time_finish).format('YYYY-MM-DD') : '??')+'</span>'
 						+ '</div>'
 						+ '<div class="Collection-subject-box-progress">'
 						+ '<div>状态：</div>'
