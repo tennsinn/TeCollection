@@ -2,6 +2,7 @@
 
 ## v1.16
 
+- v1.16.4 update the js arrays in the default template
 - v1.16.3 update the source of 3rd party scripts
 - v1.16.2 replace the date formatting function with Moment.js
 - v1.16.1 fix the subjects selection error in rendering the default template

@@ -67,15 +67,9 @@ $dictOrderby = array('id' => 'ID', 'rate' => '评价', 'time_touch' => '最后�
 <script src="<?php Helper::options()->pluginUrl('Collection/3rdParty/jPages.min.js'); ?>"></script>
 <script src="https://cdn.bootcdn.net/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
 <script>
-var dictTypeTrans = <?php echo $config->jsType; ?>
-
-var dictStatusTrans = {
-	'do':{1:'在读', 2:'在看', 3:'在听', 4:'在玩', 5:'在听', 6:'在看'},
-	'collect':{1:'读过', 2:'看过', 3:'听过', 4:'玩过', 5:'过听', 6:'看过'},
-	'wish':{1:'想读', 2:'想看', 3:'想听', 4:'想玩', 5:'想听', 6:'想看'},
-	'on_hold':{1:'搁置', 2:'搁置', 3:'搁置', 4:'搁置', 5:'搁置', 6:'搁置'},
-	'dropped':{1:'抛弃', 2:'抛弃', 3:'抛弃', 4:'抛弃', 5:'抛弃', 6:'抛弃'}
-};
+var dictTypeTrans = <?php echo $config->jsType; ?>;
+var dictStatusTrans = <?php echo $config->jsStatusAll; ?>;
+var dictSource = <?php echo $config->jsSource; ?>;
 
 $(document).ready(function(){
 
@@ -114,35 +108,7 @@ $(document).ready(function(){
 						+ '<small>（'+dictTypeTrans[subject.class][subject.type]+'）</small>';
 					}
 					if(subject.source != 'Collection')
-					{
-						tempHTML += '<a href="';
-						switch(subject.source)
-						{
-							case 'Bangumi':
-								tempHTML += 'http://bangumi.tv/subject/';
-								break;
-							case 'Douban':
-								tempHTML += 'http://';
-								switch(subject.class)
-								{
-									case '1':
-										tempHTML += 'book';
-										break;
-									case '3':
-										tempHTML += 'music';
-										break;
-									case '6':
-										tempHTML += 'movie';
-										break;
-								}
-								tempHTML += '.douban.com/subject/';
-								break;
-							case 'Wandoujia':
-								tempHTML += 'http://www.wandoujia.com/apps/';
-								break;
-						}
-						tempHTML += subject.subject_id+'" target="_blank">'+subject.name+'</a>';
-					}
+						tempHTML += '<a href="'+dictSource[subject.source]['url']+subject.source_id+'" target="_blank">'+subject.name+'</a>';
 					else
 						tempHTML += subject.name;
 					if(subject.name_cn)

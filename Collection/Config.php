@@ -197,6 +197,17 @@ class Collection_Config extends Typecho_Widget
 	}
 
 	/**
+	 * 状态分类js字典
+	 *
+	 * @access public
+	 * @return string
+	 */
+	public function ___jsStatusAll()
+	{
+		return self::transArrayToJs($this->dictStatusAll);
+	}
+
+	/**
 	 * 数组转为Js数组
 	 *
 	 * @access public
