@@ -3,7 +3,7 @@ Typecho_Widget::widget('Collection_Config@panel')->to($config);
 $dictOrderby = array('id' => 'ID', 'rate' => '评价', 'time_touch' => '最后修改', 'time_start' => '开始时间', 'time_finish' => '结束时间');
 ?>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <link rel="stylesheet" type="text/css" href="<?php Helper::options()->pluginUrl('Collection/template/stylesheet-common.css'); ?>">
 <link rel="stylesheet" type="text/css" href="<?php Helper::options()->pluginUrl('Collection/template/stylesheet-page.css'); ?>">
 <div id="Collection-Box">
@@ -62,7 +62,7 @@ $dictOrderby = array('id' => 'ID', 'rate' => '评价', 'time_touch' => '最后�
 </div>
 <link rel="stylesheet" href="<?php Helper::options()->pluginUrl('Collection/3rdParty/jquery.range.css'); ?>">
 <script src="<?php Helper::options()->pluginUrl('Collection/3rdParty/jquery.range-min.js'); ?>"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+<link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/animate.css/4.1.1/animate.min.css" />
 <link rel="stylesheet" href="<?php Helper::options()->pluginUrl('Collection/3rdParty/jPages.css'); ?>">
 <script src="<?php Helper::options()->pluginUrl('Collection/3rdParty/jPages.min.js'); ?>"></script>
 <script src="https://cdn.bootcdn.net/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
