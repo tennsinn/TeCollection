@@ -100,7 +100,7 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 		$data['image'] = $this->request->filter('url')->get('image');
 		$data['media_link'] = $this->request->filter('url')->get('media_link');
 
-		$validator = new Collection_Validate();
+		$validator = new Collection_Extend_Validate();
 		$validator->addRule('id', 'required', _t('缺少ID信息'));
 		$validator->addRule('category', 'required', _t('缺少大类信息'));
 		$validator->addRule('category', 'inArray', _t('请使用支持的大类'), $this->_config->arrayCategory);
@@ -489,11 +489,11 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 	/**
 	 * 收藏输入表格
 	 * 
-	 * @return Typecho_Widget_Helper_Form
+	 * @return Collection_Extend_Form
 	 */
 	public function formInput()
 	{
-		$form = new Typecho_Widget_Helper_Form($this->_security->getIndex('/action/collection'), Typecho_Widget_Helper_Form::POST_METHOD);
+		$form = new Collection_Extend_Form($this->_security->getIndex('/action/collection'), Collection_Extend_Form::POST_METHOD);
 		
 		$do = new Typecho_Widget_Helper_Form_Element_Hidden('do');
 		$form->addInput($do);

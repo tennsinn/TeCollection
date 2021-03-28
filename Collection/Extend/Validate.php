@@ -8,7 +8,7 @@ if (!defined('__TYPECHO_ROOT_DIR__')) exit;
  * @copyright Copyright (c) 2020 Tennsinn
  * @license GNU General Public License v3.0
  */
-class Collection_Validate extends Typecho_Validate
+class Collection_Extend_Validate extends Typecho_Validate
 {
 	/**
 	 * 分级名称设置检查

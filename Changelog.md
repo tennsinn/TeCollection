@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.17
+
+- v1.17.0 add an extended Form class
+
 ## v1.16
 
 - v1.16.5 optimize the default template
