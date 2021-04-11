@@ -75,12 +75,12 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 		$row = $this->_db->fetchRow($this->_db->select()->from('table.collection')->where('id = ?', $this->request->id));
 		if(($row['ep_status']+1) < $row['ep_count'] || $row['ep_count'] == 0)
 		{
-			$this->_db->query($this->_db->update('table.collection')->rows(array('ep_status' => ($row['ep_status']+1), 'time_touch' => Typecho_Date::gmtTime()))->where('id = ?', $this->request->id));
+			$this->_db->query($this->_db->update('table.collection')->rows(array('ep_status' => ($row['ep_status']+1), 'time_touch' => Typecho_Date::time()))->where('id = ?', $this->request->id));
 			$this->response->throwJson(array('result' => true, 'status' => 'do', 'ep_status' => ($row['ep_status']+1)));
 		}
 		elseif(($row['ep_status']+1) == $row['ep_count'])
 		{
-			$this->_db->query($this->_db->update('table.collection')->rows(array('status' => 'collect', 'ep_status' => $row['ep_count'], 'time_finish' => Typecho_Date::gmtTime(), 'time_touch' => Typecho_Date::gmtTime()))->where('id = ?', $this->request->id));
+			$this->_db->query($this->_db->update('table.collection')->rows(array('status' => 'collect', 'ep_status' => $row['ep_count'], 'time_finish' => Typecho_Date::time(), 'time_touch' => Typecho_Date::time()))->where('id = ?', $this->request->id));
 			$this->response->throwJson(array('result' => true, 'status' => 'collect', 'ep_status' => $row['ep_count']));
 		}
 		$this->response->throwJson(array('result' => false, 'message' => '没有可以增加的进度'));
@@ -166,11 +166,11 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 			);
 			$data = array_replace($data, $row);
 		}
-		$data['time_touch'] = Typecho_Date::gmtTime();
+		$data['time_touch'] = Typecho_Date::time();
 		if($data['status'] == 'do' && ($data['ep_count'] > 0 && $data['ep_count'] == $data['ep_status']))
 		{
 			$data['status'] = 'collect';
-			$data['time_finish'] = Typecho_Date::gmtTime();
+			$data['time_finish'] = Typecho_Date::time();
 			$json['status'] = 'collect';
 		}
 
@@ -203,13 +203,13 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 				{
 					foreach($ids as $id)
 					{
-						$row = array('status' => $status, 'time_touch' => Typecho_Date::gmtTime());
+						$row = array('status' => $status, 'time_touch' => Typecho_Date::time());
 						$row_temp = $this->_db->fetchRow($this->_db->select()->from('table.collection')->where('id = ?', $id));
 						switch($status)
 						{
 							case 'do':
 								if(!$row_temp['time_start'])
-									$row['time_start'] = Typecho_Date::gmtTime();
+									$row['time_start'] = Typecho_Date::time();
 								if($row_temp['time_finish'])
 									$row['time_finish'] = NULL;
 								break;
@@ -217,7 +217,7 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 								if($row_temp['ep_count'])
 									$row['ep_status'] = $row_temp['ep_count'];
 							case 'dropped':
-								$row['time_finish'] = Typecho_Date::gmtTime();
+								$row['time_finish'] = Typecho_Date::time();
 								break;
 						}
 						$this->_db->query($this->_db->update('table.collection')->rows($row)->where('id = ?', $id));
@@ -235,13 +235,13 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 					{
 						$row = array(
 							'status' => $status,
-							'time_touch' => Typecho_Date::gmtTime()
+							'time_touch' => Typecho_Date::time()
 						);
 						switch($status)
 						{
 							case 'do':
 								if(!$row_temp['time_start'])
-									$row['time_start'] = Typecho_Date::gmtTime();
+									$row['time_start'] = Typecho_Date::time();
 								if($row_temp['time_finish'])
 									$row['time_finish'] = NULL;
 								break;
@@ -249,7 +249,7 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 								if($row_temp['ep_count'])
 									$row['ep_status'] = $row_temp['ep_count'];
 							case 'dropped':
-								$row['time_finish'] = Typecho_Date::gmtTime();
+								$row['time_finish'] = Typecho_Date::time();
 								break;
 						}
 						$this->_db->query($this->_db->update('table.collection')->where('source = ?', $source)->where('source_id = ?', $source_id)->rows($row));
@@ -268,16 +268,16 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 							switch($status)
 							{
 								case 'do':
-									$row['time_start'] = Typecho_Date::gmtTime();
+									$row['time_start'] = Typecho_Date::time();
 									break;
 								case 'collect':
 									if(isset($row['ep_count']) && $row['ep_count'])
 										$row['ep_status'] = $row['ep_count'];
 								case 'dropped':
-									$row['time_finish'] = Typecho_Date::gmtTime();
+									$row['time_finish'] = Typecho_Date::time();
 									break;
 							}
-							$row['time_touch'] = Typecho_Date::gmtTime();
+							$row['time_touch'] = Typecho_Date::time();
 							$row['status'] = $status;
 							$row['source'] = $source;
 							$row['source_id'] = $source_id;
@@ -338,66 +338,46 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 				$time_start = NULL;
 				$time_finish = NULL;
 				if($this->request->status == 'do')
-					$time_start = Typecho_Date::gmtTime();
+					$time_start = Typecho_Date::time();
 				else
 					if($this->request->status == 'collect')
-						$time_finish = Typecho_Date::gmtTime();
+						$time_finish = Typecho_Date::time();
 				$published = NULL;
 				if($this->request->get('published'))
 					$published = strtotime($this->request->published) - $this->_options->timezone + $this->_options->serverTimezone;
 
-				if('series' == $this->request->category)
-					$this->_db->query($this->_db->insert('table.collection')->rows(
-						array(
-							'category' => 'series',
-							'name' => $this->request->name,
-							'name_cn' => $this->request->name_cn,
-							'image' => $this->request->image,
-							'source' => $this->request->source,
-							'source_id' => $this->request->source_id,
-							'media_link' => $this->request->filter('url')->get('media_link'),
-							'grade' => $this->request->grade,
-							'status' => $this->request->status,
-							'time_start' => $time_start,
-							'time_finish' => $time_finish,
-							'time_touch' => Typecho_Date::gmtTime(),
-							'rate' => $this->request->rate,
-							'tags' => $this->request->tags,
-							'comment' => $this->request->comment,
-							'note' => $this->request->note
-						)
+				$query_array = array(
+					'category' => $this->request->category,
+					'name' => $this->request->name,
+					'name_cn' => $this->request->name_cn,
+					'image' => $this->request->image,
+					'source' => $this->request->source,
+					'source_id' => $this->request->source_id,
+					'media_link' => $this->request->filter('url')->media_link,
+					'grade' => $this->request->grade,
+					'status' => $this->request->status,
+					'time_start' => $time_start,
+					'time_finish' => $time_finish,
+					'time_touch' => Typecho_Date::time(),
+					'rate' => $this->request->rate,
+					'tags' => $this->request->tags,
+					'comment' => $this->request->comment,
+					'note' => $this->request->note,
+				);
+				if('series' != $this->request->category)
+					$query_array = array_merge($query_array, array(
+						'class' => $this->request->class,
+						'type' => $this->request->type,
+						'author' => $this->request->author,
+						'publisher' => $this->request->publisher,
+						'published' => $published,
+						'ep_count' => $ep_count,
+						'parent' => $this->request->parent,
+						'parent_order' => $this->request->parent_order,
+						'parent_label' => $this->request->parent_label,
+						'ep_status' => $ep_status,
 					));
-				else
-					$this->_db->query($this->_db->insert('table.collection')->rows(
-						array(
-							'category' => $this->request->category,
-							'class' => $this->request->class,
-							'type' => $this->request->type,
-							'name' => $this->request->name,
-							'name_cn' => $this->request->name_cn,
-							'image' => $this->request->image,
-							'author' => $this->request->get('author'),
-							'publisher' => $this->request->get('publisher'),
-							'published' => $published,
-							'ep_count' => $ep_count,
-							'source' => $this->request->source,
-							'source_id' => $this->request->source_id,
-							'media_link' => $this->request->filter('url')->get('media_link'),
-							'parent' => $this->request->parent,
-							'parent_order' => $this->request->parent_order,
-							'parent_label' => $this->request->get('parent_label'),
-							'grade' => $this->request->grade,
-							'status' => $this->request->status,
-							'time_start' => $time_start,
-							'time_finish' => $time_finish,
-							'time_touch' => Typecho_Date::gmtTime(),
-							'ep_status' => $ep_status,
-							'rate' => $this->request->rate,
-							'tags' => $this->request->tags,
-							'comment' => $this->request->comment,
-							'note' => $this->request->note
-						)
-					));
+				$this->_db->query($this->_db->insert('table.collection')->rows($query_array));
 				$this->widget('Widget_Notice')->set('记录添加成功', 'success');
 			}
 		}
