@@ -11,6 +11,56 @@ if (!defined('__TYPECHO_ROOT_DIR__')) exit;
 class Collection_Extend_Validate extends Typecho_Validate
 {
 	/**
+	 * 验证项集合
+	 *
+	 * @access private
+	 * @var array
+	 */
+	private $_items = array();
+
+	/**
+	 * 获取验证项集合
+	 *
+	 * @access public
+	 * @return array
+	 */
+	public function getItems()
+	{
+		return $this->_items;
+	}
+
+	/**
+	 * 增加验证规则
+	 *
+	 * @access public
+	 * @param string $key 数值键值
+	 * @param string $rule 规则名称
+	 * @param string $message 错误字符串
+	 * @return Collection_Extend_Validate
+	 */
+	public function addRule($key, $rule, $message)
+	{
+		$this->_items[] = $key;
+		$params = func_get_args();
+		parent::addRule(...$params);
+		return $this;
+	}
+
+	/**
+	 * 批量增加验证规则
+	 *
+	 * @access public
+	 * @param array $rules 验证规则数组
+	 * @return Collection_Extend_Validate
+	 */
+	public function addRules(array $rules)
+	{
+		foreach($rules as $rule)
+			$this->addRule(...$rule);
+		return $this;
+	}
+
+	/**
 	 * 分级名称设置检查
 	 *
 	 * @access public

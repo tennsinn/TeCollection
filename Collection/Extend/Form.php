@@ -16,30 +16,31 @@ class Collection_Extend_Form extends Typecho_Widget_Helper_Form
 	 * @access public
 	 * @return mixed
 	 */
-	public function validate()
+	public function validate(Collection_Extend_Validate $validator = NULL)
 	{
-		$validator = new Collection_Extend_Validate();
-		$rules = array();
 		$inputs = $this->getInputs();
-
-		foreach ($inputs as $name => $input) {
-			$rules[$name] = $input->rules;
-		}
-
 		$id = md5(implode('"', array_keys($inputs)));
-
-		/** 表单值 */
-		$formData = $this->getParams(array_keys($rules));
-		$error = $validator->run($formData, $rules);
-
-		if ($error) {
+		if($validator)
+		{
+			$formData = $this->getParams($validator->getItems());
+			$error = $validator->run($formData);
+		}
+		else
+		{
+			$validator = new Collection_Extend_Validate();
+			$rules = array();
+			foreach ($inputs as $name => $input)
+				$rules[$name] = $input->rules;
+			$formData = $this->getParams(array_keys($rules));
+			$error = $validator->run($formData, $rules);
+		}
+		if($error)
+		{
 			/** 利用session记录错误 */
 			Typecho_Cookie::set('__typecho_form_message_' . $id, Json::encode($error));
-
 			/** 利用session记录表单值 */
 			Typecho_Cookie::set('__typecho_form_record_' . $id, Json::encode($formData));
 		}
-
 		return $error;
 	}
 }

@@ -2,6 +2,7 @@
 
 ## v1.17
 
+- v1.17.1 allow validating the form with an external defined validator
 - v1.17.0 add an extended Form class
 
 ## v1.16

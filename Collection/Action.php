@@ -101,32 +101,36 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 		$data['media_link'] = $this->request->filter('url')->get('media_link');
 
 		$validator = new Collection_Extend_Validate();
-		$validator->addRule('id', 'required', _t('缺少ID信息'));
-		$validator->addRule('category', 'required', _t('缺少大类信息'));
-		$validator->addRule('category', 'inArray', _t('请使用支持的大类'), $this->_config->arrayCategory);
-		$validator->addRule('name', 'required', _t('必须输入名称'));
-		$validator->addRule('image', 'url', _t('请输入有效图片地址'));
-		$validator->addRule('media_link', 'url', _t('请输入有效链接地址'));
-		$validator->addRule('source', 'inArray', _t('请使用支持的来源'), $this->_config->arraySource);
-		$validator->addRule('grade', 'isInteger', _t('请用0-9的数字表示级别'));
-		$validator->addRule('grade', 'inRange', _t('请用0-9的数字表示级别'), 0, 9);
-		$validator->addRule('rate', 'isInteger', _t('请使用0-10的数字表示评价'));
-		$validator->addRule('rate', 'inRange', _t('请使用0-10的数字表示评价'), 0, 10);
+		$rules_common = array(
+			array('id', 'required', _t('缺少ID信息')),
+			array('category', 'required', _t('缺少大类信息')),
+			array('category', 'inArray', _t('请使用支持的大类'), $this->_config->arrayCategory),
+			array('name', 'required', _t('必须输入名称')),
+			array('image', 'url', _t('请输入有效图片地址')),
+			array('media_link', 'url', _t('请输入有效链接地址')),
+			array('source', 'inArray', _t('请使用支持的来源'), $this->_config->arraySource),
+			array('grade', 'isInteger', _t('请用0-9的数字表示级别')),
+			array('grade', 'inRange', _t('请用0-9的数字表示级别'), 0, 9),
+			array('rate', 'isInteger', _t('请使用0-10的数字表示评价')),
+			array('rate', 'inRange', _t('请使用0-10的数字表示评价'), 0, 10),
+		);
+		$rules_not_series = array(
+			array('class', 'required', _t('必须选择分类')),
+			array('class', 'isInteger', _t('分类信息错误')),
+			array('class', 'inRange', _t('分类信息错误'), 1, 6),
+			array('type', 'required', _t('必须选择类型')),
+			array('type', 'inArray', _t('类型信息错误'), $this->_config->arrayType),
+			array('parent', 'isInteger', _t('父记录错误')),
+			array('parent', 'inDb', _t('父记录不存在'), 'id', 0),
+			array('parent_order', 'isInteger', _t('记录序号错误')),
+			array('parent_order', 'inRange', _t('记录序号错误'), 0),
+			array('ep_count', 'isInteger', _t('请使用整数值标记进度')),
+			array('ep_status', 'isInteger', _t('请使用整数值标记进度')),
+			array('ep_status', 'isValidProgress', _t('请输入正确的进度'), $data['ep_count']),
+		);
+		$validator->addRules($rules_common);
 		if('series' != $data['category'])
-		{
-			$validator->addRule('class', 'required', _t('必须选择分类'));
-			$validator->addRule('class', 'isInteger', _t('分类信息错误'));
-			$validator->addRule('class', 'inRange', _t('分类信息错误'), 1, 6);
-			$validator->addRule('type', 'required', _t('必须选择类型'));
-			$validator->addRule('type', 'inArray', _t('类型信息错误'), $this->_config->arrayType);
-			$validator->addRule('parent', 'isInteger', _t('父记录错误'));
-			$validator->addRule('parent', 'inDb', _t('父记录不存在'), 'id', 0);
-			$validator->addRule('parent_order', 'isInteger', _t('记录序号错误'));
-			$validator->addRule('parent_order', 'inRange', _t('记录序号错误'), 0);
-			$validator->addRule('ep_count', 'isInteger', _t('请使用整数值标记进度'));
-			$validator->addRule('ep_status', 'isInteger', _t('请使用整数值标记进度'));
-			$validator->addRule('ep_status', 'isValidProgress', _t('请输入正确的进度'), $data['ep_count']);
-		}
+			$validator->addRules($rules_not_series);
 		if($error = $validator->run($data))
 			$this->response->throwJson(array('result' => false, 'message' => implode("\n", $error)));
 
