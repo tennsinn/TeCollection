@@ -87,6 +87,52 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 	}
 
 	/**
+	 * 创建条目验证器
+	 *
+	 * @access private
+	 * @param string $type 验证条目类型
+	 * @param string $category 条目大类
+	 * @param integer $ep_count 进度总数
+	 * @return Collection_Extend_Validate
+	 */
+	private function validator($type = 'edit', $category = 'subject', $ep_count = NULL)
+	{
+		$validator = new Collection_Extend_Validate();
+		if('edit' == $type)
+			$validator->addRule('id', 'required', _t('缺少ID信息'));
+		$validator->addRules(array(
+			array('category', 'required', _t('必须选择大类')),
+			array('category', 'inArray', _t('请使用支持的大类'), $this->_config->arrayCategory),
+			array('name', 'required', _t('必须输入名称')),
+			array('image', 'url', _t('请输入有效图片地址')),
+			array('media_link', 'url', _t('请输入有效链接地址')),
+			array('source', 'required', _t('必须选择来源')),
+			array('source', 'inArray', _t('请使用支持的来源'), $this->_config->arraySource),
+			array('grade', 'isInteger', _t('请用0-9的数字表示级别')),
+			array('grade', 'inRange', _t('请用0-9的数字表示级别'), 0, 9),
+			array('status', 'required', _t('必须选择记录状态')),
+			array('rate', 'isInteger', _t('请使用0-10的数字表示评价')),
+			array('rate', 'inRange', _t('请使用0-10的数字表示评价'), 0, 10),
+		));
+		if('series' != $category)
+			$validator->addRules(array(
+				array('class', 'required', _t('必须选择分类')),
+				array('class', 'isInteger', _t('分类信息错误')),
+				array('class', 'inRange', _t('分类信息错误'), 1, 6),
+				array('type', 'required', _t('必须选择类型')),
+				array('type', 'inArray', _t('类型信息错误'), $this->_config->arrayType),
+				array('parent', 'isInteger', _t('请输入正确的父记录ID')),
+				array('parent', 'inDb', _t('父记录不存在'), 'id', 0),
+				array('parent_order', 'isInteger', _t('请使用正整数序号')),
+				array('parent_order', 'inRange', _t('请使用正整数序号'), 0),
+				array('ep_count', 'isInteger', _t('请使用整数值标记进度')),
+				array('ep_status', 'isInteger', _t('请使用整数值标记进度')),
+				array('ep_status', 'isValidProgress', _t('请输入正确的进度'), $ep_count),
+			));
+		return $validator;
+	}
+
+	/**
 	 * 记录信息编辑
 	 *
 	 * @return void
@@ -100,37 +146,7 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 		$data['image'] = $this->request->filter('url')->get('image');
 		$data['media_link'] = $this->request->filter('url')->get('media_link');
 
-		$validator = new Collection_Extend_Validate();
-		$rules_common = array(
-			array('id', 'required', _t('缺少ID信息')),
-			array('category', 'required', _t('缺少大类信息')),
-			array('category', 'inArray', _t('请使用支持的大类'), $this->_config->arrayCategory),
-			array('name', 'required', _t('必须输入名称')),
-			array('image', 'url', _t('请输入有效图片地址')),
-			array('media_link', 'url', _t('请输入有效链接地址')),
-			array('source', 'inArray', _t('请使用支持的来源'), $this->_config->arraySource),
-			array('grade', 'isInteger', _t('请用0-9的数字表示级别')),
-			array('grade', 'inRange', _t('请用0-9的数字表示级别'), 0, 9),
-			array('rate', 'isInteger', _t('请使用0-10的数字表示评价')),
-			array('rate', 'inRange', _t('请使用0-10的数字表示评价'), 0, 10),
-		);
-		$rules_not_series = array(
-			array('class', 'required', _t('必须选择分类')),
-			array('class', 'isInteger', _t('分类信息错误')),
-			array('class', 'inRange', _t('分类信息错误'), 1, 6),
-			array('type', 'required', _t('必须选择类型')),
-			array('type', 'inArray', _t('类型信息错误'), $this->_config->arrayType),
-			array('parent', 'isInteger', _t('父记录错误')),
-			array('parent', 'inDb', _t('父记录不存在'), 'id', 0),
-			array('parent_order', 'isInteger', _t('记录序号错误')),
-			array('parent_order', 'inRange', _t('记录序号错误'), 0),
-			array('ep_count', 'isInteger', _t('请使用整数值标记进度')),
-			array('ep_status', 'isInteger', _t('请使用整数值标记进度')),
-			array('ep_status', 'isValidProgress', _t('请输入正确的进度'), $data['ep_count']),
-		);
-		$validator->addRules($rules_common);
-		if('series' != $data['category'])
-			$validator->addRules($rules_not_series);
+		$validator = $this->validator('edit', $data['category'], $data['ep_count']);
 		if($error = $validator->run($data))
 			$this->response->throwJson(array('result' => false, 'message' => implode("\n", $error)));
 
@@ -291,7 +307,9 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 	 */
 	public function addSubject()
 	{
-		$message = $this->formInput()->validate();
+		$data = $this->formInput()->getParams(array('category','ep_count'));
+		$validator = $this->validator('new', $data['category'], $data['ep_count']);
+		$message = $this->formInput()->validate($validator);
 		if($message)
 			$this->widget('Widget_Notice')->set($message, 'notice');
 		else
@@ -504,19 +522,15 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 		$do->value('addSubject');
 
 		$category = new Typecho_Widget_Helper_Form_Element_Radio('category', $this->_config->dictCategory, 'subject', '大类 *');
-		$category->addRule('required', '必须选择大类');
 		$form->addInput($category);
 
 		$class = new Typecho_Widget_Helper_Form_Element_Radio('class', $this->_config->dictClass, 1, '分类 *');
-		$class->addRule('required', '必须选择分类');
 		$form->addInput($class);
 
 		$type = new Typecho_Widget_Helper_Form_Element_Radio('type', $this->_config->dictType[1], 'Novel', '类型 *');
-		$type->addRule('required', '必须选择类型');
 		$form->addInput($type);
 
 		$name = new Typecho_Widget_Helper_Form_Element_Text('name', NULL, NULL, '名称 *');
-		$name->addRule('required', '必须填写记录名称');
 		$name->input->setAttribute('class', 'text-s w-40');
 		$form->addInput($name);
 
@@ -537,7 +551,6 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 		$form->addInput($published);
 
 		$source = new Typecho_Widget_Helper_Form_Element_Select('source', $this->_config->dictSourceName, 'Collection', '信息来源 *');
-		$source->addRule('required', '必须选择来源');
 		$form->addInput($source);
 
 		$source_id = new Typecho_Widget_Helper_Form_Element_Text('source_id', NULL, NULL, '来源ID');
@@ -545,11 +558,9 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 		$form->addInput($source_id);
 
 		$media_link = new Typecho_Widget_Helper_Form_Element_Text('media_link', NULL, NULL, '媒体链接');
-		$media_link->addRule('url', '请输入有效链接地址');
 		$form->addInput($media_link);
 
 		$image = new Typecho_Widget_Helper_Form_Element_Text('image', NULL, NULL, '封面地址');
-		$image->addRule('url', '请正确输入图片地址');
 		$form->addInput($image);
 
 		$editProgress = array(
@@ -560,19 +571,16 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 
 		$parent = new Typecho_Widget_Helper_Form_Element_Text('parent', NULL, 0, '关联记录', '关联的记录ID，无则为0');
 		$parent ->input->setAttribute('class', 'text-s w-30');
-		$parent->addRule('isInteger', '请正确输入ID');
 		$form->addInput($parent);
 
 		$parent_order = new Typecho_Widget_Helper_Form_Element_Text('parent_order', NULL, 0, '关联顺序', '关联的记录排序，无则为0');
 		$parent_order ->input->setAttribute('class', 'text-s w-30');
-		$parent_order->addRule('isInteger', '请正确输入ID');
 		$form->addInput($parent_order);
 
 		$grade = new Typecho_Widget_Helper_Form_Element_radio('grade', $this->_config->dictGrade, 0, '显示分级');
 		$form->addInput($grade);
 
 		$status = new Typecho_Widget_Helper_Form_Element_Radio('status', $this->_config->dictStatus, 'wish', '记录当前状态 *');
-		$status->addRule('required', '必须选择记录状态');
 		$form->addInput($status);
 
 		$rate = new Typecho_Widget_Helper_Form_Element_Text('rate', NULL, 0, '评价', '请使用0-10的数字表示，0为无评价');
@@ -580,7 +588,6 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 		$rate->input->setAttribute('type', 'number');
 		$rate->input->setAttribute('min', '0');
 		$rate->input->setAttribute('max', '10');
-		$rate->addRule('isInteger', '请使用0-10的数字表示');
 		$form->addInput($rate);
 
 		$tags = new Typecho_Widget_Helper_Form_Element_Text('tags', NULL, NULL, '标签', '请使用空格分隔');
