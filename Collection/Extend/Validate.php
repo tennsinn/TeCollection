@@ -61,24 +61,6 @@ class Collection_Extend_Validate extends Typecho_Validate
 	}
 
 	/**
-	 * 分级名称设置检查
-	 *
-	 * @access public
-	 * @param string $value 分级设置名称组
-	 * @return bool
-	 */
-	public static function checkGrade($value)
-	{
-		$grades = explode(',', $value);
-		if(count($grades) > 10)
-			return false;
-		foreach($grades as $grade)
-			if(!trim($grade, ' '))
-				return false;
-		return true;
-	}
-
-	/**
 	 * 检测是否在数组中
 	 *
 	 * @access public

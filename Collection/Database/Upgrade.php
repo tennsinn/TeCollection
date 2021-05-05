@@ -11,6 +11,20 @@ if (!defined('__TYPECHO_ROOT_DIR__')) exit;
 class Collection_Database_Upgrade
 {
 	/**
+	 * 升级至v1.18.3
+	 *
+	 * @access public
+	 * @param Typecho_Db $db 数据库对象
+	 * @param string $adapter 数据库类型
+	 * @param string $prefix 数据表前缀
+	 * @return void
+	 */
+	public static function v1_18_3($db, $adapter, $prefix)
+	{
+		return _t('因分级名称设置迁移，请至Config.php中修改分级名称。');
+	}
+
+	/**
 	 * 升级至v1.14.5
 	 *
 	 * @access public

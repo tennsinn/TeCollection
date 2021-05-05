@@ -84,12 +84,9 @@ class Collection_Config extends Typecho_Widget
 	 * 分级名称字典
 	 *
 	 * @access public
-	 * @return array
+	 * @var array
 	 */
-	public function ___dictGrade()
-	{
-		return self::getGrade();
-	}
+	public $dictGrade = array('公开', '私密1', '私密2', '私密3', '私密4', '私密5', '私密6', '私密7', '私密8', '私密9');
 
 	/**
 	 * 源字典，仅名称
@@ -231,20 +228,6 @@ class Collection_Config extends Typecho_Widget
 		}
 		$str .= '}';
 		return $str;
-	}
-
-	/**
-	 * 获取分级名称
-	 *
-	 * @access public
-	 * @return array
-	 */
-	public static function getGrade()
-	{
-		$default = array(_t('公开'), _t('私密1'), _t('私密2'), _t('私密3'), _t('私密4'), _t('私密5'), _t('私密6'), _t('私密7'), _t('私密8'), _t('私密9'));
-		$grades = explode(',', Helper::options()->plugin('Collection')->grade);
-		$dictGrade = array_replace($default, $grades);
-		return $dictGrade;
 	}
 }
 ?>
