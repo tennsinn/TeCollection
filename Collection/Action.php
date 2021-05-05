@@ -387,10 +387,9 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 	/**
 	 * 获取收藏条目
 	 *
-	 * @param  integer $pageSize 分页大小
 	 * @return array
 	 */
-	public function showCollection($pageSize=20)
+	public function showCollection()
 	{
 		$status = isset($this->request->status) ? $this->request->get('status') : 'do';
 		$category = isset($this->request->category) ? $this->request->get('category') : 'subject';
@@ -447,14 +446,14 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 				$query->order($orderby, $order);
 			else
 				$query->order('time_touch', Typecho_Db::SORT_DESC);
-			$rows = $this->_db->fetchAll($query->page($page, $pageSize));
+			$rows = $this->_db->fetchAll($query->page($page, $this->_settings->page_size));
 			$query = $this->request->makeUriByRequest('page={page}');
 			/*foreach ($rows as $key => $value)
 			{
 				$rows[$key]['relatedPrev'] = $this->_db->fetchRow($this->_db->select('id', 'name', 'image')->from('table.collection')->where('id = ?', $value['parent']));
 				$rows[$key]['relatedNext'] = $this->_db->fetchRow($this->_db->select('id', 'name', 'image')->from('table.collection')->where('parent = ?', $value['id']));
 			}*/
-			$nav = new Typecho_Widget_Helper_PageNavigator_Box($num, $page, $pageSize, $query);
+			$nav = new Typecho_Widget_Helper_PageNavigator_Box($num, $page, $this->_settings->page_size, $query);
 			return array('result' => true, 'list' => $rows, 'nav' => $nav);
 		}
 		else
@@ -464,10 +463,9 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 	/**
 	 * 搜索
 	 *
-	 * @param  integer $pageSize 分页大小
 	 * @return array
 	 */
-	public function search($pageSize=20)
+	public function search()
 	{
 		if(!isset($this->request->keywords))
 			return array('result' => false, 'message' => '请输入关键字');
@@ -478,12 +476,12 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 		{
 			case 'Bangumi':
 			default:
-				$results = Collection_Source_Bangumi::searchSubject($this->request->get('keywords'), $this->request->get('class', 0), $pageSize, $page);
+				$results = Collection_Source_Bangumi::searchSubject($this->request->get('keywords'), $this->request->get('class', 0), $this->_settings->page_size, $page);
 				break;
 		}
 		if($results['result'])
 			$query = $this->request->makeUriByRequest('page={page}');
-			$nav = new Typecho_Widget_Helper_PageNavigator_Box($results['count'], $page, $pageSize, $query);
+			$nav = new Typecho_Widget_Helper_PageNavigator_Box($results['count'], $page, $this->_settings->page_size, $query);
 			$results['nav'] = $nav;
 		return $results;
 	}

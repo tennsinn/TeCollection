@@ -2,6 +2,7 @@
 
 ## v1.18
 
+- v1.18.1 add setting of page size to the plugin config
 - v1.18.0 fix the issue of redirecting to the unkown page after edits status
 
 ## v1.17
