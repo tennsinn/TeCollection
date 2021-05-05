@@ -124,10 +124,14 @@ echo "var dictGrade = ".$config->jsGrade.";\n";
 												<tr id="Collection-subject-<?php echo $subject['id']; ?>" data-subject="<?php echo htmlspecialchars(json_encode($subject)); ?>">
 													<td><input type="checkbox" name="id[]" value="<?php echo $subject['id']; ?>"></td>
 													<td>
-														<div class="Collection-subject-category"><?php echo $config->dictCategory[$subject['category']].' / '.$config->dictGrade[$subject['grade']]; ?></div>
+														<div class="Collection-subject-status"><?php echo $config->dictStatusAll[$subject['status']][$subject['class']].' / '.$config->dictGrade[$subject['grade']]; ?></div>
 														<div class="Collection-subject-image"><img src="<?php echo $subject['image'] ? $subject['image'] : Typecho_common::url('Collection/template/default_cover.jpg', $options->pluginUrl); ?>" width="100px"></div>
 														<div class="Collection-subject-type">
-															<?php if('series' != $subject['category'] && !is_null($subject['class']))
+															<?php
+															echo $config->dictCategory[$subject['category']];
+															if('series' != $subject['category'] && !is_null($subject['class']))
+															{
+																echo ' / ';
 																if($subject['class'] > 0 && $subject['class'] <= 6)
 																{
 																	echo $config->dictClass[$subject['class']].' / ';
@@ -138,6 +142,7 @@ echo "var dictGrade = ".$config->jsGrade.";\n";
 																}
 																else
 																	echo '未知 / 未知';
+															}
 															?>
 														</div>
 													</td>

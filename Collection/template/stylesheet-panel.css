@@ -1,19 +1,7 @@
-.typecho-option-tabs
-{
-	margin: 0px;
-}
-
-form
-{
-	margin-bottom: 0px;
-}
-
-.Collection-subject-edit-grade
-{
-	margin-left: 10px;
-}
-
-.operate-form
-{
-	min-width: 708px;
-}
+@charset "UTF-8";
+/* CSS for Panel of Typecho Plugin Collection */
+.typecho-option-tabs { margin: 0px; }
+form { margin-bottom: 0px; }
+.Collection-subject-edit-grade { margin-left: 10px; }
+.Collection-subject-status, .Collection-subject-type { font-size: 0.85em; }
+.operate-form { min-width: 708px; }
