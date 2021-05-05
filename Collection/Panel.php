@@ -69,11 +69,11 @@ echo "var dictGrade = ".$config->jsGrade.";\n";
 								</div>
 								<div class="search" role="search">
 									<input type="hidden" value="Collection/Panel.php" name="panel">
-									<input type="hidden" value="manage" name="do">
+									<input type="hidden" value="<?php echo $category; ?>" name="category">
 									<input type="hidden" value="<?php echo $class; ?>" name="class">
 									<input type="hidden" value="<?php echo $status; ?>" name="status">
 									<?php if ('' != $request->keywords || '' != $request->field): ?>
-										<a href="<?php $options->adminUrl('extending.php?panel=Collection%2FPanel.php' . (isset($request->class) ? '&class=' . htmlspecialchars($request->get('class')) : '') . (isset($request->status) ? '&status=' . htmlspecialchars($request->get('status')) : '')); ?>"><?php _e('&laquo; 取消筛选'); ?></a>
+										<a href="<?php $options->adminUrl('extending.php?panel=Collection%2FPanel.php&category='.$category.'&class='.$class.'&status='.$status); ?>"><?php _e('&laquo; 取消筛选'); ?></a>
 									<?php endif; ?>
 									<label>搜索</label>
 									<input type="text" class="text-s" placeholder="<?php _e('请输入关键字'); ?>" value="<?php echo htmlspecialchars($request->keywords); ?>"<?php if ('' == $request->keywords): ?> onclick="value='';name='keywords';" <?php else: ?> name="keywords"<?php endif; ?>>
