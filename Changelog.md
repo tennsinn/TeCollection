@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.18
+
+- v1.18.0 fix the issue of redirecting to the unkown page after edits status
+
 ## v1.17
 
 - v1.17.4 fix the issue of grade validation in plugin config

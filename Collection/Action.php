@@ -297,7 +297,7 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 		}
 		else
 			$this->widget('Widget_Notice')->set('未指明收藏状态', 'notice');
-		$this->response->goBack(Typecho_Common::url('extending.php?panel=Collection%2FPanel.php&status='.($status == 'delete' ? 'all' : $status), $this->_options->adminUrl));
+		$this->response->goBack(Typecho_Common::url('extending.php?panel=Collection%2FPanel.php&status='.($status == 'delete' ? 'all' : $status).'&page=1', $this->_options->adminUrl));
 	}
 
 	/**
