@@ -2,6 +2,7 @@
 
 ## v1.17
 
+- v1.17.4 fix the issue of grade validation in plugin config
 - v1.17.3 remove redundant condition sentences and replace the deprecated time function
 - v1.17.2 move all validation rules to the function validator
 - v1.17.1 allow validating the form with an external defined validator
