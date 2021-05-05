@@ -8,7 +8,7 @@ if (!defined('__TYPECHO_ROOT_DIR__')) exit;
  * @author 两仪天心
  * @copyright Copyright (c) 2020 Tennsinn
  * @license GNU General Public License v3.0
- * @version 1.18.4
+ * @version 1.18.5
  * @link http://tennsinn.com
  */
 class Collection_Plugin implements Typecho_Plugin_Interface
@@ -55,11 +55,17 @@ class Collection_Plugin implements Typecho_Plugin_Interface
 	 */
 	public static function config(Typecho_Widget_Helper_Form $form)
 	{
+		Typecho_Widget::widget('Collection_Config@panel')->to($config);
+
 		$page_size = new Typecho_Widget_Helper_Form_Element_Text('page_size', NULL, 20, _t('单页条目数量'), _t('单页显示的条目数量'));
 		$page_size->addRule('required', _t('内容不能为空'));
 		$page_size->addRule('isInteger', _t('内容必须为数字'));
 		$page_size->addRule(array('Collection_Extend_Validate', 'inRange'), _t('请填入大于0的数字'), 0);
 		$form->addInput($page_size);
+
+		$grade_output = new Typecho_Widget_Helper_Form_Element_Radio('grade_output', $config->dictGrade, 0, _t('对外显示分级上限'), _t('用于对外输出内容的分级上限'));
+		$grade_output->addRule(array('Collection_Extend_Validate', 'inArray'), _t('请选择现有分级'), array_keys($config->dictGrade));
+		$form->addInput($grade_output);
 
 		$arrayAnimation = array('fadeIn'=>'fadeIn', 'fadeInUp' => 'fadeInUp', 'fadeInDown' => 'fadeInDown', 'fadeInLeft' => 'fadeInLeft', 'fadeInRight' => 'fadeInRight', 'fadeInUpBig' => 'fadeInUpBig', 'fadeInDownBig' => 'fadeInDownBig', 'fadeInLeftBig' => 'fadeInLeftBig', 'fadeInRightBig' => 'fadeInRightBig', 'flipInX' => 'flipInX', 'bounceIn' => 'bounceIn', 'bounceInDown' => 'bounceInDown', 'bounceInUp' => 'bounceInUp', 'bounceInLeft' => 'bounceInLeft', 'bounceInRight' => 'bounceInRight', 'rotateIn' => 'rotateIn', 'rotateInDownLeft' => 'rotateInDownLeft', 'rotateInDownRight' => 'rotateInDownRight', 'rotateInUpLeft' => 'rotateInUpLeft', 'rotateInUpRight' => 'rotateInUpRight', 'rollIn' => 'rollIn');
 		$animation = new Typecho_Widget_Helper_Form_Element_Radio('animation', $arrayAnimation, 'fadeInUp', _t('展示模板列表显示动画'), _t('选择在展示模板显示列表时的动画效果'));

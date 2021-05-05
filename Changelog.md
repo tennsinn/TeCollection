@@ -2,6 +2,7 @@
 
 ## v1.18
 
+- v1.18.5 add setting of grade level to the plugin config to control the output of collection
 - v1.18.4 display subject status in item list
 - v1.18.3 move the setting of grade from plugin config to class Config
 - v1.18.2 fix the issue of jumping to category subject when searching for items

@@ -39,7 +39,8 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 		$minRate = ($rate[0]<=$rate[1] && $rate[0]>=0) ? $rate[0] : '0';
 		$maxRate = ($rate[0]<=$rate[1] && $rate[1]<=10) ? $rate[1] : '10';
 
-		$query = $this->_db->select()->from('table.collection')->where('grade = ?', 0);
+		$query = $this->_db->select()->from('table.collection');
+		$query->where('grade <= ?', $this->_settings->grade_output);
 		$query->where("category='".implode("' OR category='", $interCategory)."'");
 		$query->where("class='".implode("' OR class='", $interClass)."'");
 		if(in_array('null', $this->request->getArray('type')))
