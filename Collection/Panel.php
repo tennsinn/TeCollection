@@ -19,6 +19,7 @@ Typecho_Widget::widget('Collection_Config@panel')->to($config);
 <link rel="stylesheet" type="text/css" href="<?php $options->pluginUrl('Collection/template/stylesheet-panel.css'); ?>">
 <script type="text/javascript">
 <?php
+echo "var dictStatusAll = ".$config->jsStatusAll.";\n";
 echo "var dictCategory = ".$config->jsCategory.";\n";
 echo "var dictClass = ".$config->jsClass.";\n";
 echo "var dictType = ".$config->jsType.";\n";
@@ -408,10 +409,13 @@ echo "var dictGrade = ".$config->jsGrade.";\n";
 										var stringProgress = '';
 										if(data.result)
 										{
-											$('.Collection-subject-category', oldTr).html(dictCategory[subject.category]+' / '+dictGrade[subject.grade]);
+											$('.Collection-subject-status', oldTr).html(dictStatusAll[subject.status][subject.class]+' / '+dictGrade[subject.grade]);
 											$('.Collection-subject-image', oldTr).html('<img src="'+(subject.image ? subject.image : '<?php $options->pluginUrl('Collection/template/default_cover.jpg'); ?>')+'" width="100px">');
-											var tempHTML = ''
+											var tempHTML = '';
+											tempHTML += dictCategory[subject.category];
 											if('series' != subject.category && subject.class)
+											{
+												tempHTML += ' / ';
 												if(subject.class > 0 && subject.class <= 6)
 												{
 													tempHTML += dictClass[subject.class]+' / ';
@@ -422,6 +426,7 @@ echo "var dictGrade = ".$config->jsGrade.";\n";
 												}
 												else
 													tempHTML = '未知 / 未知';
+											}
 											$('.Collection-subject-type', oldTr).html(tempHTML);
 
 											if(subject.media_link)
