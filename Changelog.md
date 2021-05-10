@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.19
+
+- v1.19.0 add the basic function of batch modification
+
 ## v1.18
 
 - v1.18.6 fix the display of status after the item edited

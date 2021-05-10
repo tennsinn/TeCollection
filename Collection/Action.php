@@ -20,6 +20,7 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 		$this->widget("Widget_User")->pass("administrator");
 		$this->on($this->request->is('do=plusEp'))->plusEp();
 		$this->on($this->request->is('do=editSubject'))->editSubject();
+		$this->on($this->request->is('do=editColumn'))->editColumn();
 		$this->on($this->request->is('do=editStatus'))->editStatus();
 		$this->on($this->request->is('do=addSubject'))->addSubject();
 	}
@@ -96,40 +97,82 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 	 * @param integer $ep_count 进度总数
 	 * @return Collection_Extend_Validate
 	 */
-	private function validator($type = 'edit', $category = 'subject', $ep_count = NULL)
+	private function validator($type = 'edit', $category = 'subject', $ep_count = NULL, $column = NULL)
 	{
 		$validator = new Collection_Extend_Validate();
-		if('edit' == $type)
-			$validator->addRule('id', 'required', _t('缺少ID信息'));
-		$validator->addRules(array(
-			array('category', 'required', _t('必须选择大类')),
-			array('category', 'inArray', _t('请使用支持的大类'), $this->_config->arrayCategory),
-			array('name', 'required', _t('必须输入名称')),
-			array('image', 'url', _t('请输入有效图片地址')),
-			array('media_link', 'url', _t('请输入有效链接地址')),
-			array('source', 'required', _t('必须选择来源')),
-			array('source', 'inArray', _t('请使用支持的来源'), $this->_config->arraySource),
-			array('grade', 'isInteger', _t('请用0-9的数字表示级别')),
-			array('grade', 'inRange', _t('请用0-9的数字表示级别'), 0, 9),
-			array('status', 'required', _t('必须选择记录状态')),
-			array('rate', 'isInteger', _t('请使用0-10的数字表示评价')),
-			array('rate', 'inRange', _t('请使用0-10的数字表示评价'), 0, 10),
-		));
-		if('series' != $category)
-			$validator->addRules(array(
+		$valid_all = array(
+			'category' => array(
+				array('category', 'required', _t('必须选择大类')),
+				array('category', 'inArray', _t('请使用支持的大类'), $this->_config->arrayCategory),
+			),
+			'name' => array(
+				array('name', 'required', _t('必须输入名称')),
+			),
+			'image' => array(
+				array('image', 'url', _t('请输入有效图片地址')),
+			),
+			'media_link' => array(
+				array('media_link', 'url', _t('请输入有效链接地址')),
+			),
+			'source' => array(
+				array('source', 'required', _t('必须选择来源')),
+				array('source', 'inArray', _t('请使用支持的来源'), $this->_config->arraySource),
+			),
+			'grade' => array(
+				array('grade', 'isInteger', _t('请用0-9的数字表示级别')),
+				array('grade', 'inRange', _t('请用0-9的数字表示级别'), 0, 9),
+			),
+			'status' => array(
+				array('status', 'required', _t('必须选择记录状态')),
+			),
+			'rate' => array(
+				array('rate', 'isInteger', _t('请使用0-10的数字表示评价')),
+				array('rate', 'inRange', _t('请使用0-10的数字表示评价'), 0, 10),
+			),
+		);
+		$valid_subject = array(
+			'class' => array(
 				array('class', 'required', _t('必须选择分类')),
 				array('class', 'isInteger', _t('分类信息错误')),
 				array('class', 'inRange', _t('分类信息错误'), 1, 6),
+			),
+			'type' => array(
 				array('type', 'required', _t('必须选择类型')),
 				array('type', 'inArray', _t('类型信息错误'), $this->_config->arrayType),
+			),
+			'parent' => array(
 				array('parent', 'isInteger', _t('请输入正确的父记录ID')),
 				array('parent', 'inDb', _t('父记录不存在'), 'id', 0),
+			),
+			'parent_order' => array(
 				array('parent_order', 'isInteger', _t('请使用正整数序号')),
 				array('parent_order', 'inRange', _t('请使用正整数序号'), 0),
+			),
+			'ep_count' => array(
 				array('ep_count', 'isInteger', _t('请使用整数值标记进度')),
+			),
+			'ep_status' => array(
 				array('ep_status', 'isInteger', _t('请使用整数值标记进度')),
 				array('ep_status', 'isValidProgress', _t('请输入正确的进度'), $ep_count),
-			));
+			),
+		);
+		switch($type)
+		{
+			case 'edit':
+				$validator->addRule('id', 'required', _t('缺少ID信息'));
+			case 'new':
+				foreach($valid_all as $valids)
+					$validator->addRules($valids);
+				if('series' != $category)
+					foreach($valid_subject as $valids)
+						$validator->addRules($valids);
+				break;
+			case 'column':
+				$valids = array_merge($valid_all, $valid_subject);
+				if(in_array($column, array_keys($valids)))
+					$validator->addRules($valids[$column]);
+				break;
+		}
 		return $validator;
 	}
 
@@ -140,17 +183,15 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 	 */
 	private function editSubject()
 	{
-		$data = array('id', 'category', 'class', 'type', 'name', 'name_cn', 'author', 'publisher', 'published', 'ep_count', 'source', 'source_id', 'parent', 'parent_order', 'parent_label', 'grade', 'status', 'ep_status', 'rate', 'tags', 'comment', 'note');
-		$data = $this->request->from($data);
+		$columns = $this->_config->arrayColumn;
+		$data = $this->request->from($columns);
 		if($data['published'])
 			$data['published'] = strtotime($data['published']) - $this->_options->timezone + $this->_options->serverTimezone;
 		$data['image'] = $this->request->filter('url')->get('image');
 		$data['media_link'] = $this->request->filter('url')->get('media_link');
-
 		$validator = $this->validator('edit', $data['category'], $data['ep_count']);
 		if($error = $validator->run($data))
 			$this->response->throwJson(array('result' => false, 'message' => implode("\n", $error)));
-
 		if('series' == $data['category'])
 		{
 			$row = array(
@@ -174,12 +215,49 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 			$data['time_finish'] = Typecho_Date::time();
 			$json['status'] = 'collect';
 		}
-
 		$update = $this->_db->query($this->_db->update('table.collection')->where('id = ?', $data['id'])->rows($data));
 		if($update > 0)
 			$this->response->throwJson(array('result' => true, 'message' => _t('记录已修改')));
 		else
 			$this->response->throwJson(array('result' => false, 'message' => _t('记录修改失败')));
+	}
+
+	/**
+	 * 记录字段编辑
+	 *
+	 * @return void
+	 */
+	private function editColumn()
+	{
+		array_shift($columns = $this->_config->arrayColumn);
+		$column = $this->request->column;
+		if(!in_array($column, $columns))
+			$this->response->throwJson(array('result' => false, 'message' => _t('修改字段不存在')));
+		$data = array($column => $this->request->value, 'time_touch' => Typecho_Date::time());
+		$ids = $this->request->filter('int')->getArray('id');
+		$validator = $this->validator('column', NULL, NULL, $column);
+		$message = array();
+		$success = 0;
+		foreach($ids as $id)
+		{
+			if($error = $validator->run($data))
+				$message[] = $id.'：'.implode(' ', $error);
+			else
+			{
+				$update = $this->_db->query($this->_db->update('table.collection')->where('id = ?', $id)->rows($data));
+				if($update)
+					$success ++;
+			}
+		}
+		$result = '已成功更新：'.$success.'项。';
+		if($message)
+		{
+			$result .= implode('；', $message);
+			$this->widget('Widget_Notice')->set($result, 'notice');
+		}
+		else
+			$this->widget('Widget_Notice')->set($result, 'success');
+		$this->response->goBack();
 	}
 
 	/**

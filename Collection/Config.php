@@ -11,6 +11,14 @@ if (!defined('__TYPECHO_ROOT_DIR__')) exit;
 class Collection_Config extends Typecho_Widget
 {
 	/**
+	 * 条目字段名
+	 *
+	 * @access public
+	 * @var array
+	 */
+	public $arrayColumn = array('id', 'category', 'class', 'type', 'name', 'name_cn', 'author', 'publisher', 'published', 'ep_count', 'source', 'source_id', 'parent', 'parent_order', 'parent_label', 'grade', 'status', 'ep_status', 'rate', 'tags', 'comment', 'note');
+
+	/**
 	 * 状态字典，全类
 	 *
 	 * @access public

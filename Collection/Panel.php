@@ -54,8 +54,8 @@ echo "var dictGrade = ".$config->jsGrade.";\n";
 					</ul>
 					<div class="col-mb-12 typecho-list" role="main">
 						<?php $response = Typecho_Widget::widget('Collection_Action')->showCollection(); ?>
-						<div class="typecho-list-operate clearfix">
-							<form method="get">
+						<form method="post" class="operate-form">
+							<div class="typecho-list-operate clearfix">
 								<div class="operate">
 									<label><i class="sr-only"><?php _e('全选'); ?></i><input type="checkbox" class="typecho-table-select-all" /></label>
 									<div class="btn-group btn-drop">
@@ -65,6 +65,18 @@ echo "var dictGrade = ".$config->jsGrade.";\n";
 												<li><a lang="<?php _e('你确认要修改这些记录到'.$config->dictStatusAll[$value][$class].'吗?'); ?>" href="<?php $security->index('/action/collection?do=editStatus&status='.$value); ?>"><?php _e('修改到'.$config->dictStatusAll[$value][$class]); ?></a></li>
 											<?php endforeach; ?>
 											<li><a lang="<?php _e('你确认要删除记录中的这些记录吗?'); ?>" href="<?php $security->index('/action/collection?do=editStatus&status=delete'); ?>"><?php _e('删除记录'); ?></a></li>
+											<li class="multiline">
+												<button type="button" class="btn edit btn-s" rel="<?php $security->index('/action/collection?do=editColumn'); ?>"><?php _e('修改字段'); ?></button>
+												<select name="column">
+													<?php
+													$columns = $config->arrayColumn;
+													array_shift($columns);
+													foreach($columns as $column)
+														echo '<option value="'.$column.'">'.$column.'</option>';
+													?>
+												</select>
+												<input type="text" name="value" class="text-s">
+											</li>
 										</ul>
 									</div>
 								</div>
@@ -99,9 +111,7 @@ echo "var dictGrade = ".$config->jsGrade.";\n";
 									</select>
 									<button type="submit" class="btn btn-s"><?php _e('筛选'); ?></button>
 								</div>
-							</form>
-						</div>
-						<form method="post" class="operate-form">
+							</div>
 							<div class="typecho-table-wrap">
 								<table class="typecho-list-table">
 									<colgroup>
@@ -468,6 +478,11 @@ echo "var dictGrade = ".$config->jsGrade.";\n";
 								});
 
 								return false;
+							});
+
+							$('.dropdown-menu button.edit').click(function () {
+								var btn = $(this);
+								btn.parents('form').attr('action', btn.attr('rel')).submit();
 							});
 						});
 					</script>
