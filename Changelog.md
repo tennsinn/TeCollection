@@ -2,6 +2,7 @@
 
 ## v1.19
 
+- v1.19.1 add translation for the name of columns
 - v1.19.0 add the basic function of batch modification
 
 ## v1.18

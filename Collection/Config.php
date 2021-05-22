@@ -11,12 +11,15 @@ if (!defined('__TYPECHO_ROOT_DIR__')) exit;
 class Collection_Config extends Typecho_Widget
 {
 	/**
-	 * 条目字段名
+	 * 条目字段字典
 	 *
 	 * @access public
 	 * @var array
 	 */
-	public $arrayColumn = array('id', 'category', 'class', 'type', 'name', 'name_cn', 'author', 'publisher', 'published', 'ep_count', 'source', 'source_id', 'parent', 'parent_order', 'parent_label', 'grade', 'status', 'ep_status', 'rate', 'tags', 'comment', 'note');
+	public $dictColumn = array('id' => 'ID', 'category' => '大类', 'class' => '分类', 'type' => '类型', 'name' => '原名', 'name_cn' => '译名', 'image' => '封面', 
+		'ep_count' => '子集总数', 'author' => '作者', 'publisher' => '出版商', 'published' => '出版时间', 'source' => '信息来源', 'source_id' => '来源ID', 'media_link' => '媒体链接', 
+		'parent' => '关联记录', 'parent_order' => '关联顺序', 'parent_label' => '关联标签', 'grade' => '显示分级', 'status' => '状态', 'time_start' => '开始时间', 
+		'time_finish' => '结束时间', 'time_touch' => '修改时间', 'ep_status' => '当前进度', 'rate' => '评价', 'tags' => '标签', 'comment' => '评论', 'note' => '备注');
 
 	/**
 	 * 状态字典，全类
@@ -111,6 +114,17 @@ class Collection_Config extends Typecho_Widget
 	}
 
 	/**
+	 * 条目字段数组
+	 *
+	 * @access public
+	 * @return array
+	 */
+	public function ___arrayColumn()
+	{
+		return array_keys($this->dictColumn);
+	}
+
+	/**
 	 * 大类名称数组
 	 *
 	 * @access public
@@ -144,6 +158,17 @@ class Collection_Config extends Typecho_Widget
 	public function ___arraySource()
 	{
 		return array_keys($this->dictSource);
+	}
+
+	/**
+	 * 字段js字典
+	 *
+	 * @access public
+	 * @return string
+	 */
+	public function ___jsColumn()
+	{
+		return self::transArrayToJs($this->dictColumn);
 	}
 
 	/**

@@ -19,6 +19,7 @@ Typecho_Widget::widget('Collection_Config@panel')->to($config);
 <link rel="stylesheet" type="text/css" href="<?php $options->pluginUrl('Collection/template/stylesheet-panel.css'); ?>">
 <script type="text/javascript">
 <?php
+echo "var dictColumn = ".$config->jsColumn.";\n";
 echo "var dictStatusAll = ".$config->jsStatusAll.";\n";
 echo "var dictCategory = ".$config->jsCategory.";\n";
 echo "var dictClass = ".$config->jsClass.";\n";
@@ -72,7 +73,7 @@ echo "var dictGrade = ".$config->jsGrade.";\n";
 													$columns = $config->arrayColumn;
 													array_shift($columns);
 													foreach($columns as $column)
-														echo '<option value="'.$column.'">'.$column.'</option>';
+														echo '<option value="'.$column.'">'.$config->dictColumn[$column].'</option>';
 													?>
 												</select>
 												<input type="text" name="value" class="text-s">
