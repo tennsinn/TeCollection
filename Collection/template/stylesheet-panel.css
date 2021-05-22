@@ -5,3 +5,5 @@ form { margin-bottom: 0px; }
 .Collection-subject-edit-grade { margin-left: 10px; }
 .Collection-subject-status, .Collection-subject-type { font-size: 0.85em; }
 .operate-form { min-width: 708px; }
+.dropdown-menu .multiline label { color: #666; }
+.dropdown-menu .multiline a { border: none; background-color: #E9E9E6; cursor: pointer; -moz-border-radius: 2px; -webkit-border-radius: 2px; border-radius: 2px; display: inline-block; vertical-align: middle;}

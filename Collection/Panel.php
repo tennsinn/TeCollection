@@ -62,10 +62,13 @@ echo "var dictGrade = ".$config->jsGrade.";\n";
 									<div class="btn-group btn-drop">
 										<button class="btn dropdown-toggle btn-s" type="button"><?php _e('<i class="sr-only">操作</i>选中项'); ?> <i class="i-caret-down"></i></button>
 										<ul class="dropdown-menu">
-											<?php foreach(array('do', 'collect', 'wish', 'on_hold', 'dropped') as $value): ?>
-												<li><a lang="<?php _e('你确认要修改这些记录到'.$config->dictStatusAll[$value][$class].'吗?'); ?>" href="<?php $security->index('/action/collection?do=editStatus&status='.$value); ?>"><?php _e('修改到'.$config->dictStatusAll[$value][$class]); ?></a></li>
-											<?php endforeach; ?>
 											<li><a lang="<?php _e('你确认要删除记录中的这些记录吗?'); ?>" href="<?php $security->index('/action/collection?do=editStatus&status=delete'); ?>"><?php _e('删除记录'); ?></a></li>
+											<li class="multiline">
+												<label><?php _e('修改状态为'); ?></label>
+												<?php foreach($config->arrayStatus as $value): ?>
+												<a lang="<?php _e('你确认要修改这些记录到'.$config->dictStatusAll[$value][$class].'吗?'); ?>" href="<?php $security->index('/action/collection?do=editStatus&status='.$value); ?>"><?php _e($config->dictStatusAll[$value][$class]); ?></a>
+												<?php endforeach; ?>
+											</li>
 											<li class="multiline">
 												<button type="button" class="btn edit btn-s" rel="<?php $security->index('/action/collection?do=editColumn'); ?>"><?php _e('修改字段'); ?></button>
 												<select name="column">
@@ -206,28 +209,41 @@ echo "var dictGrade = ".$config->jsGrade.";\n";
 									</tbody>
 								</table>
 							</div>
-						</form>
-						<div class="typecho-list-operate clearfix">
-							<form method="get">
+							<div class="typecho-list-operate clearfix">
 								<div class="operate">
 									<label><i class="sr-only"><?php _e('全选'); ?></i><input type="checkbox" class="typecho-table-select-all" /></label>
 									<div class="btn-group btn-drop">
-										<button class="dropdown-toggle btn-s" type="button"><?php _e('<i class="sr-only">操作</i>选中项'); ?> <i class="i-caret-down"></i></button>
+										<button class="btn dropdown-toggle btn-s" type="button"><?php _e('<i class="sr-only">操作</i>选中项'); ?> <i class="i-caret-down"></i></button>
 										<ul class="dropdown-menu">
-											<?php foreach(array('do', 'collect', 'wish', 'on_hold', 'dropped') as $value): ?>
-												<li><a lang="<?php _e('你确认要修改这些记录到'.$config->dictStatusAll[$value][$class].'吗?'); ?>" href="<?php $security->index('/action/collection?do=editStatus&status='.$value); ?>"><?php _e('修改到'.$config->dictStatusAll[$value][$class]); ?></a></li>
-											<?php endforeach; ?>
 											<li><a lang="<?php _e('你确认要删除记录中的这些记录吗?'); ?>" href="<?php $security->index('/action/collection?do=editStatus&status=delete'); ?>"><?php _e('删除记录'); ?></a></li>
+											<li class="multiline">
+												<label><?php _e('修改状态为'); ?></label>
+												<?php foreach($config->arrayStatus as $value): ?>
+												<a lang="<?php _e('你确认要修改这些记录到'.$config->dictStatusAll[$value][$class].'吗?'); ?>" href="<?php $security->index('/action/collection?do=editStatus&status='.$value); ?>"><?php _e($config->dictStatusAll[$value][$class]); ?></a>
+												<?php endforeach; ?>
+											</li>
+											<li class="multiline">
+												<button type="button" class="btn edit btn-s" rel="<?php $security->index('/action/collection?do=editColumn'); ?>"><?php _e('修改字段'); ?></button>
+												<select name="column">
+													<?php
+													$columns = $config->arrayColumn;
+													array_shift($columns);
+													foreach($columns as $column)
+														echo '<option value="'.$column.'">'.$config->dictColumn[$column].'</option>';
+													?>
+												</select>
+												<input type="text" name="value" class="text-s">
+											</li>
 										</ul>
 									</div>
 								</div>
-							</form>
-							<?php if($response['result']): ?>
+								<?php if($response['result']): ?>
 								<ul class="typecho-pager">
 									<?php $response['nav']->render(_t('&laquo;'), _t('&raquo;')); ?>
 								</ul>
-							<?php endif; ?>
-						</div>
+								<?php endif; ?>
+							</div>
+						</form>
 					</div>
 					<script type="text/javascript">
 						$(document).ready(function () {

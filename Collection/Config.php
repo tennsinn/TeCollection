@@ -125,6 +125,17 @@ class Collection_Config extends Typecho_Widget
 	}
 
 	/**
+	 * 状态数组
+	 *
+	 * @access public
+	 * @return array
+	 */
+	public function ___arrayStatus()
+	{
+		return array_keys($this->dictStatus);
+	}
+
+	/**
 	 * 大类名称数组
 	 *
 	 * @access public
