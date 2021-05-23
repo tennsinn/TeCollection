@@ -18,15 +18,38 @@ Typecho_Widget::widget('Collection_Config@panel')->to($config);
 <link rel="stylesheet" type="text/css" href="<?php $options->pluginUrl('Collection/template/stylesheet-common.css'); ?>">
 <link rel="stylesheet" type="text/css" href="<?php $options->pluginUrl('Collection/template/stylesheet-panel.css'); ?>">
 <script type="text/javascript">
-<?php
-echo "var dictColumn = ".$config->jsColumn.";\n";
-echo "var dictStatusAll = ".$config->jsStatusAll.";\n";
-echo "var dictCategory = ".$config->jsCategory.";\n";
-echo "var dictClass = ".$config->jsClass.";\n";
-echo "var dictType = ".$config->jsType.";\n";
-echo "var dictSource = ".$config->jsSource.";\n";
-echo "var dictGrade = ".$config->jsGrade.";\n";
-?>
+	var dictColumn = <?=$config->jsColumn?>;
+	var dictStatusAll = <?=$config->jsStatusAll?>;
+	var dictCategory = <?=$config->jsCategory?>;
+	var dictClass = <?=$config->jsClass?>;
+	var dictType = <?=$config->jsType?>;
+	var dictSource = <?=$config->jsSource?>;
+	var dictGrade = <?=$config->jsGrade?>;
+
+	var transArrayToOption = function(dict, subname=null) {
+		var tempHTML = '';
+		var tempArray = {};
+		$.each(dict, function(key, value){
+			if(subname)
+				tempHTML += '<option value="'+key+'">'+value[subname]+'</option>';
+			else if('object' == typeof(value)) {
+				$.each(value, function(subkey, subvalue) {
+					tempHTML += '<option value="'+subkey+'">'+subvalue+'</option>';
+				});
+				tempArray[key] = tempHTML;
+				tempHTML = '';
+			}
+			else
+				tempHTML += '<option value="'+key+'">'+value+'</option>';
+		});
+		return tempHTML ? tempHTML : tempArray;
+	};
+	var select_options = {};
+		select_options['category'] = transArrayToOption(dictCategory);
+		select_options['class'] = transArrayToOption(dictClass);
+		select_options['type'] = transArrayToOption(dictType);
+		select_options['source'] = transArrayToOption(dictSource, 'name');
+		select_options['grade'] = transArrayToOption(dictGrade);
 </script>
 <div class="main">
 	<div class="body container">
@@ -279,32 +302,15 @@ echo "var dictGrade = ".$config->jsGrade.";\n";
 								var string = '<tr class="Collection-subject-edit">'
 									+ '<td> </td>'
 									+ '<td><form method="post" action="'+t.attr('rel')+'" class="Collection-subject-edit-content">'
-										+ '<p><label for="'+id+'-category"><?=_t('大类')?></label><select id="'+id+'-category" name="category" class="w-100">';
-								$.each(dictCategory, function(key, value){
-									string += '<option value="'+key+'">'+value+'</option>';
-								});
-								string += '</select></p>'
+										+ '<p><label for="'+id+'-category"><?=_t('大类')?></label><select id="'+id+'-category" name="category" class="w-100">'+select_options['category']+'</select></p>'
 										+ '<p><label for="'+id+'-image"><?=_t('封面')?></label>'
 										+ '<textarea name="image" id="'+id+'-image" rows="3" class="w-100 mono"></textarea></p>'
-										+ '<p><label for="'+id+'-class"><?=_t('种类')?></label><select id="'+id+'-class" name="class" class="w-100">';
-								$.each(dictClass, function(key, value){
-									string += '<option value="'+key+'">'+value+'</option>';
-								});
-								string += '</select></p>'
-										+ '<p><label for="'+id+'-type"><?=_t('类型')?></label><select id="'+id+'-type" name="type" class="w-100">';
-								if(subject.class && subject.class > 0 && subject.class <=6)
-									$.each(dictType[subject.class], function(key, value){
-										string += '<option value="'+key+'">'+value+'</option>';
-									});
-								string += '</select></p>'
+										+ '<p><label for="'+id+'-class"><?=_t('种类')?></label><select id="'+id+'-class" name="class" class="w-100">'+select_options['class']+'</select></p>'
+										+ '<p><label for="'+id+'-type"><?=_t('类型')?></label><select id="'+id+'-type" name="type" class="w-100">'+select_options['type'][subject.class]+'</select></p>'
 									+ '<p><label for="'+id+'-author"><?=_t('作者')?></label><input type="text" id="'+id+'-author" name="author" class="text-s"></p>'
 									+ '<p><label for="'+id+'-publisher"><?=_t('出版商')?></label><input type="text" id="'+id+'-publisher" name="publisher" class="text-s"></p>'
 									+ '<p><label for="'+id+'-published"><?=_t('出版时间')?></label><input type="text" id="'+id+'-published" name="published" class="text-s"></p>'
-									+ '<p><label for="'+id+'-source"><?=_t('信息来源')?></label><select id="'+id+'-source" name="source" class="w-100">'
-								$.each(dictSource, function(key, value){
-									string += '<option value="'+key+'">'+value['name']+'</option>';
-								});
-								string += '</select></p>'
+									+ '<p><label for="'+id+'-source"><?=_t('信息来源')?></label><select id="'+id+'-source" name="source" class="w-100">'+select_options['source']+'</select></p>'
 									+ '<p><label for="'+id+'-source_id"><?=_t('来源ID')?></label><input type="text" id="'+id+'-source_id" name="source_id" class="text-s"></p>'
 									+ '</form></td>'
 									+ '<td><form method="post" action="'+t.attr('rel')+'" class="Collection-subject-edit-info">'
@@ -318,11 +324,7 @@ echo "var dictGrade = ".$config->jsGrade.";\n";
 									+ '</form></td>'
 									+ '<td><form method="post" action="'+t.attr('rel')+'" class="Collection-subject-edit-content">'
 									+ '<p><label for="'+id+'-media_link"><?=_t('媒体链接')?></label><input type="text" name="media_link" id="'+id+'-media_link" class="text-s w-100"></p>'
-									+ '<p><label for="'+id+'-grade"><?=_t('显示分级')?></label><select id="'+id+'-grade" name="grade" class="w-100">'
-								$.each(dictGrade, function(key, value){
-									string += '<option value="'+key+'">'+value+'</option>';
-								});
-								string += '</select></p>'
+									+ '<p><label for="'+id+'-grade"><?=_t('显示分级')?></label><select id="'+id+'-grade" name="grade" class="w-100">'+select_options['grade']+'</select></p>'
 									+ '<p><label for="'+id+'-note"><?=_t('备注')?></label>'
 									+ '<textarea id="'+id+'-note" name="note" rows="2" class="w-100 mono"></textarea></p>'
 									+ '<p><label for="'+id+'-rate"><?=_t('评价')?></label><input type="text" name="rate" id="'+id+'-rate" class="text-s w-100"></p>'
@@ -370,13 +372,9 @@ echo "var dictGrade = ".$config->jsGrade.";\n";
 								$('select[name=category]', edit).change(reactCategory);
 
 								$('select[name=class]', edit).change(function(){
-									var tempHTML = '';
 									var valClass = $('select[name=class]', edit).val();
 									if(valClass && valClass > 0 && valClass <= 6)
-										$.each(dictType[valClass], function(key, value){
-											tempHTML += '<option value="'+key+'">'+value+'</option>';
-										});
-									$('select[name=type]', edit).html(tempHTML);
+										$('select[name=type]', edit).html(select_options['type'][valClass]);
 								});
 
 								$('input[name=published]').mask('9999-99-99').datepicker({
@@ -597,20 +595,18 @@ echo "var dictGrade = ".$config->jsGrade.";\n";
 						</div>
 						<script type="text/javascript">
 							$(document).ready(function(){
-								var dictClass = {
-									'Bangumi':{0:'全部', 1:'书籍', 2:'动画', 3:'音乐', 4:'游戏', 5:'广播', 6:'影视'}
-								};
-								var objectSource = $('select[name=source]');
-								var changeSource = function(){
-									var tempHTML = '';
-									$.each(dictClass[objectSource.val()], function(key, value){
-										tempHTML += '<option value ='+key+'>'+value+'</option>';
+								var dictSearch = {};
+									$.each(dictSource, function(key, val) {
+										if(val['search'])
+											dictSearch[key] = val['search'];
 									});
-									$('select[name=class]').html(tempHTML);
-								}
+								var select_search = transArrayToOption(dictSearch);
+								var changeSource = function(){
+									$('select[name=class]').html(select_search[$('select[name=source]').val()]);
+								};
 								changeSource();
-								$('select[name=class]').val(<?php echo $request->get('class'); ?>);
-								objectSource.change(function(){
+								$('select[name=class]').val(<?=$class?>);
+								$('select[name=source]').change(function(){
 									changeSource();
 								});
 							});

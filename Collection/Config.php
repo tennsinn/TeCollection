@@ -83,7 +83,7 @@ class Collection_Config extends Typecho_Widget
 	 */
 	public $dictSource = array(
 		'Collection' => array('name' => '收藏', 'url' => NULL, 'search' => false),
-		'Bangumi' => array('name' => 'Bangumi', 'url' => 'http://bgm.tv/subject/', 'search' => true),
+		'Bangumi' => array('name' => 'Bangumi', 'url' => 'http://bgm.tv/subject/', 'search' => array('全部','书籍','动画','音乐','游戏','广播','影视')),
 		'Douban' => array('name' => '豆瓣', 'url' => 'https://www.douban.com/subject/', 'search' => false),
 		'Steam' => array('name' => 'Steam', 'url' => 'http://store.steampowered.com/app/', 'search' => false),
 		'Wandoujia' => array('name' => '豌豆荚', 'url' => 'http://www.wandoujia.com/apps/', 'search' => false),
@@ -262,13 +262,12 @@ class Collection_Config extends Typecho_Widget
 		{
 			if(is_array($value))
 			{
-				$str .= '"'.$key.'":{';
-				foreach ($value as $subkey => $subvalue)
-					$str .= '"'.$subkey.'":"'.$subvalue.'",';
-				$str .= '},';
+				$str .= '"'.$key.'":';
+				$str .= self::transArrayToJs($value);
+				$str .= ',';
 			}
 			else
-				$str .= '"'.$key.'":"'.$value.'",';
+				$str .= '"'.$key.'":"'.str_replace('"', '\"', $value).'",';
 		}
 		$str .= '}';
 		return $str;
