@@ -2,6 +2,7 @@
 
 ## v1.19
 
+- v1.19.8 separate the different parts of Panel to individual files
 - v1.19.7 move the volumn control of batch modification to Config
 - v1.19.6 auto change the options based on the selection of the column
 - v1.19.5 fix the status display when class is NULL
