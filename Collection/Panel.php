@@ -96,7 +96,7 @@ Typecho_Widget::widget('Collection_Config@panel')->to($config);
 												<button type="button" class="btn edit btn-s" rel="<?php $security->index('/action/collection?do=editColumn'); ?>"><?php _e('修改字段'); ?></button>
 												<select name="column">
 													<?php
-													$columns = array_diff($config->arrayColumn, array('id','status','time_touch'));
+													$columns = $config->batchColumn;
 													foreach($columns as $column)
 														echo '<option value="'.$column.'">'.$config->dictColumn[$column].'</option>';
 													?>

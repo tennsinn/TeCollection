@@ -125,6 +125,17 @@ class Collection_Config extends Typecho_Widget
 	}
 
 	/**
+	 * 允许批量条目字段数组
+	 *
+	 * @access public
+	 * @return array
+	 */
+	public function ___batchColumn()
+	{
+		return array_diff($this->arrayColumn, array('id','name','status','time_touch'));
+	}
+
+	/**
 	 * 状态数组
 	 *
 	 * @access public

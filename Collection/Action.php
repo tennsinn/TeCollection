@@ -229,7 +229,7 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 	 */
 	private function editColumn()
 	{
-		$columns = array_diff($this->_config->arrayColumn, array('id','status','time_touch'));
+		$columns = $this->_config->batchColumn;
 		$column = $this->request->column;
 		if(!in_array($column, $columns))
 			$this->response->throwJson(array('result' => false, 'message' => _t('修改字段不存在')));
