@@ -161,7 +161,7 @@ Typecho_Widget::widget('Collection_Config@panel')->to($config);
 												<tr id="Collection-subject-<?php echo $subject['id']; ?>" data-subject="<?php echo htmlspecialchars(json_encode($subject)); ?>">
 													<td><input type="checkbox" name="id[]" value="<?php echo $subject['id']; ?>"></td>
 													<td>
-														<div class="Collection-subject-status"><?php echo $config->dictStatusAll[$subject['status']][$subject['class']].' / '.$config->dictGrade[$subject['grade']]; ?></div>
+														<div class="Collection-subject-status"><?php echo $config->dictStatusAll[$subject['status']][$subject['class']?$subject['class']:0].' / '.$config->dictGrade[$subject['grade']]; ?></div>
 														<div class="Collection-subject-image"><img src="<?php echo $subject['image'] ? $subject['image'] : Typecho_common::url('Collection/template/default_cover.jpg', $options->pluginUrl); ?>" width="100px"></div>
 														<div class="Collection-subject-type">
 															<?php
@@ -432,7 +432,10 @@ Typecho_Widget::widget('Collection_Config@panel')->to($config);
 										var stringProgress = '';
 										if(data.result)
 										{
-											$('.Collection-subject-status', oldTr).html(dictStatusAll[subject.status][subject.class]+' / '+dictGrade[subject.grade]);
+											if('series' == subject.category || null == (subject.class))
+												$('.Collection-subject-status', oldTr).html(dictStatusAll[subject.status][0]+' / '+dictGrade[subject.grade]);
+											else
+												$('.Collection-subject-status', oldTr).html(dictStatusAll[subject.status][subject.class]+' / '+dictGrade[subject.grade]);
 											$('.Collection-subject-image', oldTr).html('<img src="'+(subject.image ? subject.image : '<?php $options->pluginUrl('Collection/template/default_cover.jpg'); ?>')+'" width="100px">');
 											var tempHTML = '';
 											tempHTML += dictCategory[subject.category];
