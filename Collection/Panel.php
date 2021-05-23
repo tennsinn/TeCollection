@@ -101,7 +101,11 @@ Typecho_Widget::widget('Collection_Config@panel')->to($config);
 														echo '<option value="'.$column.'">'.$config->dictColumn[$column].'</option>';
 													?>
 												</select>
-												<input type="text" name="value" class="text-s">
+												<select name="value">
+												<?php foreach($config->dictCategory as $key => $val)
+													echo '<option value="'.$key.'">'.$val.'</option>';
+												?>
+												</select>
 											</li>
 										</ul>
 									</div>
@@ -232,32 +236,6 @@ Typecho_Widget::widget('Collection_Config@panel')->to($config);
 								</table>
 							</div>
 							<div class="typecho-list-operate clearfix">
-								<div class="operate">
-									<label><i class="sr-only"><?php _e('全选'); ?></i><input type="checkbox" class="typecho-table-select-all" /></label>
-									<div class="btn-group btn-drop">
-										<button class="btn dropdown-toggle btn-s" type="button"><?php _e('<i class="sr-only">操作</i>选中项'); ?> <i class="i-caret-down"></i></button>
-										<ul class="dropdown-menu">
-											<li><a lang="<?php _e('你确认要删除记录中的这些记录吗?'); ?>" href="<?php $security->index('/action/collection?do=editStatus&status=delete'); ?>"><?php _e('删除记录'); ?></a></li>
-											<li class="multiline">
-												<label><?php _e('修改状态为'); ?></label>
-												<?php foreach($config->arrayStatus as $value): ?>
-												<a lang="<?php _e('你确认要修改这些记录到'.$config->dictStatusAll[$value][$class].'吗?'); ?>" href="<?php $security->index('/action/collection?do=editStatus&status='.$value); ?>"><?php _e($config->dictStatusAll[$value][$class]); ?></a>
-												<?php endforeach; ?>
-											</li>
-											<li class="multiline">
-												<button type="button" class="btn edit btn-s" rel="<?php $security->index('/action/collection?do=editColumn'); ?>"><?php _e('修改字段'); ?></button>
-												<select name="column">
-													<?php
-													$columns = array_diff($config->arrayColumn, array('id','status','time_touch'));
-													foreach($columns as $column)
-														echo '<option value="'.$column.'">'.$config->dictColumn[$column].'</option>';
-													?>
-												</select>
-												<input type="text" name="value" class="text-s">
-											</li>
-										</ul>
-									</div>
-								</div>
 								<?php if($response['result']): ?>
 								<ul class="typecho-pager">
 									<?php $response['nav']->render(_t('&laquo;'), _t('&raquo;')); ?>
@@ -500,6 +478,27 @@ Typecho_Widget::widget('Collection_Config@panel')->to($config);
 								var btn = $(this);
 								btn.parents('form').attr('action', btn.attr('rel')).submit();
 							});
+
+							$('.dropdown-menu select[name=column]').change(function () {
+								if(select_options.hasOwnProperty($(this).val()))
+								{
+									if('type' == $(this).val())
+										if('0' == <?=$class?>)
+										{
+											options = '';
+											$.each(select_options['type'],function(key,val){
+												options += val;
+											});
+											$(this).next().replaceWith('<select name="value">'+options+'</select>');
+										}
+										else
+											$(this).next().replaceWith('<select name="value">'+select_options[$(this).val()][<?=$class?>]+'</select>');
+									else
+										$(this).next().replaceWith('<select name="value">'+select_options[$(this).val()]+'</select>');
+								}
+								else
+									$(this).next().replaceWith('<input type="text" name="value" class="text-s">');
+							})
 						});
 					</script>
 				<?php else: ?>

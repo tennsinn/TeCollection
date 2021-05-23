@@ -2,6 +2,7 @@
 
 ## v1.19
 
+- v1.19.6 auto change the options based on the selection of the column
 - v1.19.5 fix the status display when class is NULL
 - v1.19.4 use a variable to store the options of select input in html format
 - v1.19.3 exclude status and time_touched from the batch modification
