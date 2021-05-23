@@ -2,6 +2,7 @@
 
 ## v1.19
 
+- v1.19.3 exclude status and time_touched from the batch modification
 - v1.19.2 update the style of the dropdown menu in the manage panel
 - v1.19.1 add translation for the name of columns
 - v1.19.0 add the basic function of batch modification

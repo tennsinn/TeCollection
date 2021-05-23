@@ -73,8 +73,7 @@ echo "var dictGrade = ".$config->jsGrade.";\n";
 												<button type="button" class="btn edit btn-s" rel="<?php $security->index('/action/collection?do=editColumn'); ?>"><?php _e('修改字段'); ?></button>
 												<select name="column">
 													<?php
-													$columns = $config->arrayColumn;
-													array_shift($columns);
+													$columns = array_diff($config->arrayColumn, array('id','status','time_touch'));
 													foreach($columns as $column)
 														echo '<option value="'.$column.'">'.$config->dictColumn[$column].'</option>';
 													?>
@@ -226,8 +225,7 @@ echo "var dictGrade = ".$config->jsGrade.";\n";
 												<button type="button" class="btn edit btn-s" rel="<?php $security->index('/action/collection?do=editColumn'); ?>"><?php _e('修改字段'); ?></button>
 												<select name="column">
 													<?php
-													$columns = $config->arrayColumn;
-													array_shift($columns);
+													$columns = array_diff($config->arrayColumn, array('id','status','time_touch'));
 													foreach($columns as $column)
 														echo '<option value="'.$column.'">'.$config->dictColumn[$column].'</option>';
 													?>
