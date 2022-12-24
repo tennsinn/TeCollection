@@ -100,6 +100,14 @@ class Collection_Config extends Typecho_Widget
 	public $dictGrade = array('公开', '私密', '绝密', '禁忌');
 
 	/**
+	 * 评价名称字典
+	 *
+	 * @access public
+	 * @var array
+	 */
+	public $dictRate = array('0 未评价', '1 不忍直视', '2 很差', '3 差', '4 较差', '5 不过不失', '6 还行', '7 推荐', '8 力荐', '9 神作', '10 超神作');
+
+	/**
 	 * 源字典，仅名称
 	 *
 	 * @access public
@@ -246,6 +254,17 @@ class Collection_Config extends Typecho_Widget
 	public function ___jsGrade()
 	{
 		return self::transArrayToJs($this->dictGrade);
+	}
+
+	/**
+	 * 评价js字典
+	 *
+	 * @access public
+	 * @return string
+	 */
+	public function ___jsRate()
+	{
+		return self::transArrayToJs($this->dictRate);
 	}
 
 	/**

@@ -6,6 +6,7 @@ var dictClass = <?=$config->jsClass?>;
 var dictType = <?=$config->jsType?>;
 var dictSource = <?=$config->jsSource?>;
 var dictGrade = <?=$config->jsGrade?>;
+var dictRate = <?=$config->jsRate?>;
 
 var transArrayToOption = function(dict, subname=null) {
 	var tempHTML = '';
@@ -31,4 +32,5 @@ var select_options = {};
 	select_options['type'] = transArrayToOption(dictType);
 	select_options['source'] = transArrayToOption(dictSource, 'name');
 	select_options['grade'] = transArrayToOption(dictGrade);
+	select_options['rate'] = transArrayToOption(dictRate);
 </script>

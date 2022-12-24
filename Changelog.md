@@ -2,6 +2,7 @@
 
 ## v1.20
 
+- v1.20.1 add definations of rate refers to Bangumi
 - v1.20.0 change grade to totally 4 levels
 
 ## v1.19

@@ -59,7 +59,7 @@ $(document).ready(function () {
 			+ '<p><label for="'+id+'-grade"><?=_t('显示分级')?></label><select id="'+id+'-grade" name="grade" class="w-100">'+select_options['grade']+'</select></p>'
 			+ '<p><label for="'+id+'-note"><?=_t('备注')?></label>'
 			+ '<textarea id="'+id+'-note" name="note" rows="2" class="w-100 mono"></textarea></p>'
-			+ '<p><label for="'+id+'-rate"><?=_t('评价')?></label><input type="text" name="rate" id="'+id+'-rate" class="text-s w-100"></p>'
+			+ '<p><label for="'+id+'-rate"><?=_t('评价')?></label><select id="'+id+'-rate" name="rate" class="w-100">'+select_options['rate']+'</select></p>'
 			+ '<p><label for="'+id+'-tags"><?=_t('标签')?></label><input type="text" name="tags" id="'+id+'-tags" class="text-s w-100"></p>'
 			+ '<p><label for="'+id+'-comment"><?=_t('吐槽')?></label><textarea id="'+id+'-comment" name="comment" rows="6" class="w-100 mono"></textarea></p>'
 			+ '<p><button type="submit" class="btn btn-s primary"><?=_t('提交')?></button>'
