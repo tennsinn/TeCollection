@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.20
+
+- v1.20.0 change grade to totally 4 levels
+
 ## v1.19
 
 - v1.19.8 separate the different parts of Panel to individual files

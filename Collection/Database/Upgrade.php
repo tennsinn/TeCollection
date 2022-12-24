@@ -11,6 +11,23 @@ if (!defined('__TYPECHO_ROOT_DIR__')) exit;
 class Collection_Database_Upgrade
 {
 	/**
+	 * 升级至v1.20
+	 *
+	 * @access public
+	 * @param Typecho_Db $db 数据库对象
+	 * @param string $adapter 数据库类型
+	 * @param string $prefix 数据表前缀
+	 * @return void
+	 */
+	public static function v1_20_0($db, $adapter, $prefix)
+	{
+		$db->query($db->update('table.collection')->rows(array('grade' => 1))->where('grade >= ?', 1)->where('grade <= ?', 3));
+		$db->query($db->update('table.collection')->rows(array('grade' => 2))->where('grade >= ?', 4)->where('grade <= ?', 6));
+		$db->query($db->update('table.collection')->rows(array('grade' => 3))->where('grade >= ?', 7)->where('grade <= ?', 9));
+		return _t('显示分级调整为公开、私密、绝密、禁忌四级。原1-3级更新为私密，4-6级更新为绝密，7-9级更新为禁忌。');
+	}
+
+	/**
 	 * 升级至v1.18.3
 	 *
 	 * @access public

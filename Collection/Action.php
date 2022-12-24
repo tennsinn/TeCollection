@@ -119,8 +119,8 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 				array('source', 'inArray', _t('请使用支持的来源'), $this->_config->arraySource),
 			),
 			'grade' => array(
-				array('grade', 'isInteger', _t('请用0-9的数字表示级别')),
-				array('grade', 'inRange', _t('请用0-9的数字表示级别'), 0, 9),
+				array('grade', 'isInteger', _t('请用0-3的数字表示级别')),
+				array('grade', 'inRange', _t('请用0-3的数字表示级别'), 0, 3),
 			),
 			'status' => array(
 				array('status', 'required', _t('必须选择记录状态')),

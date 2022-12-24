@@ -97,7 +97,7 @@ class Collection_Config extends Typecho_Widget
 	 * @access public
 	 * @var array
 	 */
-	public $dictGrade = array('公开', '私密1', '私密2', '私密3', '私密4', '私密5', '私密6', '私密7', '私密8', '私密9');
+	public $dictGrade = array('公开', '私密', '绝密', '禁忌');
 
 	/**
 	 * 源字典，仅名称
