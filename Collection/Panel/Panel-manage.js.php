@@ -87,7 +87,7 @@ $(document).ready(function () {
 		$('input[name=ep_count]', edit).val(subject.ep_count);
 		$('select[name=grade]', edit).val(subject.grade);
 		$('textarea[name=note]', edit).val(subject.note);
-		$('input[name=rate]', edit).val(subject.rate);
+		$('select[name=rate]', edit).val(subject.rate);
 		$('input[name=tags]', edit).val(subject.tags);
 		$('textarea[name=comment]', edit).val(subject.comment).focus();
 
@@ -118,10 +118,6 @@ $(document).ready(function () {
 			dayNamesMin     :   ['<?php _e('日'); ?>', '<?php _e('一'); ?>', '<?php _e('二'); ?>', '<?php _e('三'); ?>', '<?php _e('四'); ?>', '<?php _e('五'); ?>', '<?php _e('六'); ?>'],
 			dateFormat      :   'yy-mm-dd',
 			timezone        :   <?php $options->timezone(); ?> / 60,
-		});
-
-		$('input[name=rate]', edit).change(function(){
-			$('label[for="'+id+'-rate"]', edit).html('评价：'+'<span class="Collection-subject-rate-star Collection-subject-rate-star-rating"></span>'.repeat($('input[name=rate]', edit).val())+'<span class="Collection-subject-rate-star Collection-subject-rate-star-blank"></span>'.repeat(10-$('input[name=rate]', edit).val()));
 		});
 
 		$('.cancel', edit).click(function () {
