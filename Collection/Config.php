@@ -28,10 +28,10 @@ class Collection_Config extends Typecho_Widget
 	 * @var array
 	 */
 	public $dictStatusAll = array(
-		'all' => array('全部', '书籍', '动画', '音乐', '游戏', '广播', '影视'),
-		'do' => array('进行', '在读', '在看', '在听', '在玩', '在听', '在看'),
-		'collect' => array('完成', '读过', '看过', '听过', '玩过', '听过', '看过'),
-		'wish' => array('计划', '想读', '想看', '想听', '想玩', '想听', '想看'),
+		'all' => array('全部', '书籍', '动画', '音乐', '游戏', '演出', '影视'),
+		'do' => array('进行', '在读', '在看', '在听', '在玩', '在看', '在看'),
+		'collect' => array('完成', '读过', '看过', '听过', '玩过', '看过', '看过'),
+		'wish' => array('计划', '想读', '想看', '想听', '想玩', '想看', '想看'),
 		'on_hold' => array('搁置', '搁置', '搁置', '搁置', '搁置', '搁置', '搁置'),
 		'dropped' => array('抛弃', '抛弃', '抛弃', '抛弃', '抛弃', '抛弃', '抛弃')
 	);
@@ -58,7 +58,7 @@ class Collection_Config extends Typecho_Widget
 	 * @access public
 	 * @var array
 	 */
-	public $dictClass = array(1 => '书籍', 2 => '动画', 3 => '音乐', 4 => '游戏', 5 => '广播', 6 => '影视');
+	public $dictClass = array(1 => '书籍', 2 => '动画', 3 => '音乐', 4 => '游戏', 5 => '演出', 6 => '影视');
 
 	/**
 	 * 类型字典
@@ -71,7 +71,7 @@ class Collection_Config extends Typecho_Widget
 		2 => array('TV' => 'TV', 'Movie' => '剧场', 'OVA' => 'OVA', 'OAD' => 'OAD', 'SP' => 'SP'),
 		3 => array('Album' => '专辑', 'Single' => '单曲', 'Maxi' => 'Maxi', 'EP' => '细碟', 'Selections' => '选集'),
 		4 => array('iOS' => 'iOS', 'Android' => 'Android', 'PSP' => 'PSP', 'PSV' => 'PSV', 'PS4' => 'PS4', 'NDS' => 'NDS', '3DS' => '3DS', 'NSwitch' => 'NSwitch', 'XBox' => 'XBox', 'Windows' => 'Windows', 'Online' => '网游', 'Table' => '桌游'),
-		5 => array('RadioDrama' => '广播剧', 'Drama' => '歌剧'),
+		5 => array('Radio' => '广播', 'Drama' => '话剧', 'Opera' => '歌剧', 'TalkShow' => '脱口秀', 'Musical' => '歌舞', 'Circus' => '马戏', 'Acrobatics' => '杂技'),
 		6 => array('Film' => '电影', 'Teleplay' => '电视剧', 'Documentary' => '纪录片', 'TalkShow' => '脱口秀', 'VarietyShow' => '综艺')
 	);
 
@@ -83,7 +83,7 @@ class Collection_Config extends Typecho_Widget
 	 */
 	public $dictSource = array(
 		'Collection' => array('name' => '收藏', 'url' => NULL, 'search' => false),
-		'Bangumi' => array('name' => 'Bangumi', 'url' => 'http://bgm.tv/subject/', 'search' => array('全部','书籍','动画','音乐','游戏','广播','影视')),
+		'Bangumi' => array('name' => 'Bangumi', 'url' => 'http://bgm.tv/subject/', 'search' => array('全部','书籍','动画','音乐','游戏','演出','影视')),
 		'Douban' => array('name' => '豆瓣', 'url' => 'https://www.douban.com/subject/', 'search' => false),
 		'Steam' => array('name' => 'Steam', 'url' => 'http://store.steampowered.com/app/', 'search' => false),
 		'Wandoujia' => array('name' => '豌豆荚', 'url' => 'http://www.wandoujia.com/apps/', 'search' => false),
