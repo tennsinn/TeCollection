@@ -107,7 +107,7 @@
 								<td><input type="checkbox" name="id[]" value="<?php echo $subject['id']; ?>"></td>
 								<td>
 									<div class="Collection-subject-status"><?php echo $config->dictStatusAll[$subject['status']][$subject['class']?$subject['class']:0].' / '.$config->dictGrade[$subject['grade']]; ?></div>
-									<div class="Collection-subject-image"><img src="<?php echo $subject['image'] ? $subject['image'] : Typecho_common::url('Collection/template/default_cover.jpg', $options->pluginUrl); ?>" width="100px"></div>
+									<div class="Collection-subject-image"><img src="<?php echo $subject['image'] ? $subject['image'] : Typecho_common::url('Collection/Cover/'.$subject['id'].'.jpg', $options->pluginUrl); ?>" width="100px"></div>
 									<div class="Collection-subject-type">
 										<?php
 										echo $config->dictCategory[$subject['category']];
