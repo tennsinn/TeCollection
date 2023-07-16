@@ -185,15 +185,13 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 	{
 		$columns = $this->_config->arrayColumn;
 		$data = $this->request->from($columns);
-		if(!empty($data['published']) && '1970-01-01' != $data['published'])
-			$data['published'] = strtotime($data['published']) - $this->_options->timezone + $this->_options->serverTimezone;
-		else
-			unset($data['published']);
+		// validate data
 		$data['image'] = $this->request->filter('url')->get('image');
 		$data['media_link'] = $this->request->filter('url')->get('media_link');
 		$validator = $this->validator('edit', $data['category'], $data['ep_count']);
 		if($error = $validator->run($data))
 			$this->response->throwJson(array('result' => false, 'message' => implode("\n", $error)));
+		// data process
 		if('series' == $data['category'])
 		{
 			$row = array(
@@ -210,22 +208,28 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 			);
 			$data = array_replace($data, $row);
 		}
-		$data['time_touch'] = Typecho_Date::time();
-		if($data['status'] == 'do' && ($data['ep_count'] > 0 && $data['ep_count'] == $data['ep_status']))
+		else
 		{
-			$data['status'] = 'collect';
-			$data['time_finish'] = Typecho_Date::time();
+			if(!empty($data['published']) && '1970-01-01' != $data['published'])
+				$data['published'] = strtotime($data['published']) - $this->_options->timezone + $this->_options->serverTimezone;
+			else
+				$data['published'] = NULL;
+			if($data['status'] == 'do' && ($data['ep_count'] > 0 && $data['ep_count'] == $data['ep_status']))
+			{
+				$data['status'] = 'collect';
+				$data['time_finish'] = Typecho_Date::time();
+			}
 		}
+		// clean the blank value
 		foreach($data as $key => $val)
-		{
 			if('' == $val)
-				unset($data[$key]);
-		}
+				$data[$key] = NULL;
+		$data['time_touch'] = Typecho_Date::time();
 		$update = $this->_db->query($this->_db->update('table.collection')->where('id = ?', $data['id'])->rows($data));
 		if($update > 0)
 			$this->response->throwJson(array('result' => true, 'message' => _t('记录已修改')));
 		else
-			$this->response->throwJson(array('result' => false, 'message' => _t('记录修改失败')));
+			$this->response->throwJson(array('result' => false, 'message' => _t('无记录更新')));
 	}
 
 	/**
