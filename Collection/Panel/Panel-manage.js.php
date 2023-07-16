@@ -163,7 +163,7 @@ $(document).ready(function () {
 						$('.Collection-subject-status', oldTr).html(dictStatusAll[subject.status][0]+' / '+dictGrade[subject.grade]);
 					else
 						$('.Collection-subject-status', oldTr).html(dictStatusAll[subject.status][subject.class]+' / '+dictGrade[subject.grade]);
-					$('.Collection-subject-image', oldTr).html('<img src="'+(subject.image ? subject.image : '<?php $options->pluginUrl('Collection/template/default_cover.jpg'); ?>')+'" width="100px">');
+					$('.Collection-subject-image', oldTr).html('<img src="'+(subject.image ? subject.image : '<?php $options->pluginUrl('Collection/Cover/'); ?>'+subject.id+'.jpg')+'" width="100%">');
 					var tempHTML = '';
 					tempHTML += dictCategory[subject.category];
 					if('series' != subject.category && subject.class)
