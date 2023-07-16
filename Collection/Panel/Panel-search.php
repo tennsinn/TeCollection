@@ -30,10 +30,10 @@
 		<div class="typecho-table-wrap">
 			<table class="typecho-list-table">
 				<colgroup>
-					<col width="20px">
-					<col width="120px">
-					<col width="180px">
-					<col width="">
+					<col width="3%">
+					<col width="12%">
+					<col width="25%">
+					<col width="50%">
 				</colgroup>
 				<thead>
 					<tr>

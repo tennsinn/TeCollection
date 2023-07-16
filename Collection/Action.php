@@ -654,7 +654,7 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 		$form->addInput($rate);
 
 		$tags = new Typecho_Widget_Helper_Form_Element_Text('tags', NULL, NULL, '标签', '请使用空格分隔');
-		$tags->input->setAttribute('class', 'text-s');
+		$tags->input->setAttribute('class', 'text-s w-100');
 		$form->addInput($tags);
 
 		$comment = new Typecho_Widget_Helper_Form_Element_Textarea('comment', NULL, NULL, '评论');

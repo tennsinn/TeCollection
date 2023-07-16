@@ -39,31 +39,30 @@ $(document).ready(function () {
 				+ '<textarea name="image" id="'+id+'-image" rows="3" class="w-100 mono"></textarea></p>'
 				+ '<p><label for="'+id+'-class"><?=_t('种类')?></label><select id="'+id+'-class" name="class" class="w-100">'+select_options['class']+'</select></p>'
 				+ '<p><label for="'+id+'-type"><?=_t('类型')?></label><select id="'+id+'-type" name="type" class="w-100">'+select_options['type'][subject.class]+'</select></p>'
-			+ '<p><label for="'+id+'-author"><?=_t('作者')?></label><input type="text" id="'+id+'-author" name="author" class="text-s"></p>'
-			+ '<p><label for="'+id+'-publisher"><?=_t('出版商')?></label><input type="text" id="'+id+'-publisher" name="publisher" class="text-s"></p>'
-			+ '<p><label for="'+id+'-published"><?=_t('出版时间')?></label><input type="text" id="'+id+'-published" name="published" class="text-s"></p>'
+			+ '<p><label for="'+id+'-author"><?=_t('作者')?></label><input type="text" id="'+id+'-author" name="author" class="text-s w-100"></p>'
+			+ '<p><label for="'+id+'-publisher"><?=_t('出版商')?></label><input type="text" id="'+id+'-publisher" name="publisher" class="text-s w-100"></p>'
+			+ '<p><label for="'+id+'-published"><?=_t('出版时间')?></label><input type="text" id="'+id+'-published" name="published" class="text-s w-100"></p>'
 			+ '<p><label for="'+id+'-source"><?=_t('信息来源')?></label><select id="'+id+'-source" name="source" class="w-100">'+select_options['source']+'</select></p>'
-			+ '<p><label for="'+id+'-source_id"><?=_t('来源ID')?></label><input type="text" id="'+id+'-source_id" name="source_id" class="text-s"></p>'
+			+ '<p><label for="'+id+'-source_id"><?=_t('来源ID')?></label><input type="text" id="'+id+'-source_id" name="source_id" class="text-s w-100"></p>'
 			+ '</form></td>'
 			+ '<td><form method="post" action="'+t.attr('rel')+'" class="Collection-subject-edit-info">'
-			+ '<p><label for="'+id+'-name"><?=_t('原名')?></label><input type="text" id="'+id+'-name" name="name" class="text-s"></p>'
-			+ '<p><label for="'+id+'-name_cn"><?=_t('译名')?></label><input type="text" id="'+id+'-name_cn" name="name_cn" class="text-s"></p>'
-			+ '<p><label for="'+id+'-parent"><?=_t('关联记录')?></label><input type="text" id="'+id+'-parent" name="parent" class="text-s"></p>'
-			+ '<p><label for="'+id+'-parent_order"><?=_t('关联顺序')?></label><input type="text" id="'+id+'-parent_order" name="parent_order" class="text-s"></p>'
-			+ '<p><label for="'+id+'-parent_label"><?=_t('关联标签')?></label><input type="text" id="'+id+'-parent_label" name="parent_label" class="text-s"></p>'
-			+ '<p><label for="'+id+'-ep_status"><?=_t('主进度')?></label><input type="text" id="'+id+'-ep_status" name="ep_status" class="text-s"></p>'
-			+ '<p><label for="'+id+'-ep_count"><?=_t('主进度总数')?></label><input type="text" name="ep_count" id="'+id+'-ep_count" class="text-s"></p>'
+			+ '<p><label for="'+id+'-name"><?=_t('原名')?></label><input type="text" id="'+id+'-name" name="name" class="text-s w-100"></p>'
+			+ '<p><label for="'+id+'-name_cn"><?=_t('译名')?></label><input type="text" id="'+id+'-name_cn" name="name_cn" class="text-s w-100"></p>'
+			+ '<p><label for="'+id+'-parent"><?=_t('关联记录')?></label><input type="text" id="'+id+'-parent" name="parent" class="text-s w-100"></p>'
+			+ '<p><label for="'+id+'-parent_order"><?=_t('关联顺序')?></label><input type="text" id="'+id+'-parent_order" name="parent_order" class="text-s w-100"></p>'
+			+ '<p><label for="'+id+'-parent_label"><?=_t('关联标签')?></label><input type="text" id="'+id+'-parent_label" name="parent_label" class="text-s w-100"></p>'
+			+ '<p><label for="'+id+'-ep_status"><?=_t('主进度')?></label><input type="text" id="'+id+'-ep_status" name="ep_status" class="text-s w-100"></p>'
+			+ '<p><label for="'+id+'-ep_count"><?=_t('主进度总数')?></label><input type="text" name="ep_count" id="'+id+'-ep_count" class="text-s w-100"></p>'
 			+ '</form></td>'
 			+ '<td><form method="post" action="'+t.attr('rel')+'" class="Collection-subject-edit-content">'
-			+ '<p><label for="'+id+'-media_link"><?=_t('媒体链接')?></label><input type="text" name="media_link" id="'+id+'-media_link" class="text-s w-100"></p>'
+			+ '<p><label for="'+id+'-media_link"><?=_t('媒体链接')?></label><input type="text" name="media_link" id="'+id+'-media_link" class="text-s w-100 w-100"></p>'
 			+ '<p><label for="'+id+'-grade"><?=_t('显示分级')?></label><select id="'+id+'-grade" name="grade" class="w-100">'+select_options['grade']+'</select></p>'
 			+ '<p><label for="'+id+'-note"><?=_t('备注')?></label>'
 			+ '<textarea id="'+id+'-note" name="note" rows="2" class="w-100 mono"></textarea></p>'
 			+ '<p><label for="'+id+'-rate"><?=_t('评价')?></label><select id="'+id+'-rate" name="rate" class="w-100">'+select_options['rate']+'</select></p>'
-			+ '<p><label for="'+id+'-tags"><?=_t('标签')?></label><input type="text" name="tags" id="'+id+'-tags" class="text-s w-100"></p>'
+			+ '<p><label for="'+id+'-tags"><?=_t('标签')?></label><input type="text" name="tags" id="'+id+'-tags" class="text-s w-100 w-100"></p>'
 			+ '<p><label for="'+id+'-comment"><?=_t('吐槽')?></label><textarea id="'+id+'-comment" name="comment" rows="6" class="w-100 mono"></textarea></p>'
-			+ '<p><button type="submit" class="btn btn-s primary"><?=_t('提交')?></button>'
-			+ '<button type="button" class="btn btn-s cancel"><?=_t('取消')?></button></p>'
+			+ '<p><button type="submit" class="btn btn-s primary"><?=_t('提交')?></button> <button type="button" class="btn btn-s cancel"><?=_t('取消')?></button></p>'
 			+ '</form></td>'
 			+ '</tr>';
 		var edit = $(string).data('id', id).data('subject', subject).insertAfter(tr);
@@ -247,7 +246,7 @@ $(document).ready(function () {
 				$(this).next().replaceWith('<select name="value">'+select_options[$(this).val()]+'</select>');
 		}
 		else
-			$(this).next().replaceWith('<input type="text" name="value" class="text-s">');
+			$(this).next().replaceWith('<input type="text" name="value" class="text-s w-100">');
 	})
 });
 </script>
