@@ -159,18 +159,18 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 		switch($type)
 		{
 			case 'edit':
-				$validator->addRule('id', 'required', _t('缺少ID信息'));
+				$validator->addRule2('id', 'required', _t('缺少ID信息'));
 			case 'new':
 				foreach($valid_all as $valids)
-					$validator->addRules($valids);
+					$validator->addRules2($valids);
 				if('series' != $category)
 					foreach($valid_subject as $valids)
-						$validator->addRules($valids);
+						$validator->addRules2($valids);
 				break;
 			case 'column':
 				$valids = array_merge($valid_all, $valid_subject);
 				if(in_array($column, array_keys($valids)))
-					$validator->addRules($valids[$column]);
+					$validator->addRules2($valids[$column]);
 				break;
 		}
 		return $validator;
@@ -185,8 +185,10 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 	{
 		$columns = $this->_config->arrayColumn;
 		$data = $this->request->from($columns);
-		if($data['published'])
+		if(!empty($data['published']) && '1970-01-01' != $data['published'])
 			$data['published'] = strtotime($data['published']) - $this->_options->timezone + $this->_options->serverTimezone;
+		else
+			unset($data['published']);
 		$data['image'] = $this->request->filter('url')->get('image');
 		$data['media_link'] = $this->request->filter('url')->get('media_link');
 		$validator = $this->validator('edit', $data['category'], $data['ep_count']);
@@ -213,7 +215,11 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 		{
 			$data['status'] = 'collect';
 			$data['time_finish'] = Typecho_Date::time();
-			$json['status'] = 'collect';
+		}
+		foreach($data as $key => $val)
+		{
+			if(empty($val))
+				unset($data[$key]);
 		}
 		$update = $this->_db->query($this->_db->update('table.collection')->where('id = ?', $data['id'])->rows($data));
 		if($update > 0)
@@ -388,7 +394,7 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 	{
 		$data = $this->formInput()->getParams(array('category','ep_count'));
 		$validator = $this->validator('new', $data['category'], $data['ep_count']);
-		$message = $this->formInput()->validate($validator);
+		$message = $this->formInput()->validate2($validator);
 		if($message)
 			$this->widget('Widget_Notice')->set($message, 'notice');
 		else

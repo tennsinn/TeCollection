@@ -38,7 +38,7 @@ class Collection_Extend_Validate extends Typecho_Validate
 	 * @param string $message 错误字符串
 	 * @return Collection_Extend_Validate
 	 */
-	public function addRule($key, $rule, $message)
+	public function addRule2($key, $rule, $message)
 	{
 		$this->_items[] = $key;
 		$params = func_get_args();
@@ -53,10 +53,10 @@ class Collection_Extend_Validate extends Typecho_Validate
 	 * @param array $rules 验证规则数组
 	 * @return Collection_Extend_Validate
 	 */
-	public function addRules(array $rules)
+	public function addRules2(array $rules)
 	{
 		foreach($rules as $rule)
-			$this->addRule(...$rule);
+			$this->addRule2(...$rule);
 		return $this;
 	}
 

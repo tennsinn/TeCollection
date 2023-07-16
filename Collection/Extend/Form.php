@@ -16,7 +16,7 @@ class Collection_Extend_Form extends Typecho_Widget_Helper_Form
 	 * @access public
 	 * @return mixed
 	 */
-	public function validate(Collection_Extend_Validate $validator = NULL)
+	public function validate2(Collection_Extend_Validate $validator = NULL)
 	{
 		$inputs = $this->getInputs();
 		$id = md5(implode('"', array_keys($inputs)));
