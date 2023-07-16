@@ -46,7 +46,7 @@ Typecho_Widget::widget('Collection_Config@panel')->to($config);
 		</div>
 	</div>
 </div>
-<script src="<?php $options->adminStaticUrl('js', 'timepicker.js?v=' . $suffixVersion); ?>"></script>
+<script src="<?php $options->adminStaticUrl('js', 'timepicker.js'); ?>"></script>
 
 <?php
 include 'copyright.php';

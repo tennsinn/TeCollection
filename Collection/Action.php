@@ -218,7 +218,7 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 		}
 		foreach($data as $key => $val)
 		{
-			if(empty($val))
+			if('' == $val)
 				unset($data[$key]);
 		}
 		$update = $this->_db->query($this->_db->update('table.collection')->where('id = ?', $data['id'])->rows($data));
