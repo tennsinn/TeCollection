@@ -16,7 +16,7 @@
 			<div class="search" role="search">
 				<input type="hidden" value="Collection/Panel.php" name="panel">
 				<input type="hidden" value="search" name="do">
-				<input type="text" class="text-s" placeholder="<?php _e('请输入关键字'); ?>" value="<?php echo htmlspecialchars($request->keywords); ?>"<?php if ('' == $request->keywords): ?> onclick="value='';name='keywords';" <?php else: ?> name="keywords"<?php endif; ?>>
+				<input type="text" class="text-s" placeholder="<?php _e('请输入关键字'); ?>" value="<?= htmlspecialchars($request->keywords) ?>"<?php if ('' == $request->keywords): ?> onclick="value='';name='keywords';" <?php else: ?> name="keywords"<?php endif; ?>>
 				<select name="source">
 					<option value="Bangumi"<?php if($request->get('source') == 'Bangumi'): ?> selected="ture"<?php endif;?>>Bangumi</option>
 				</select>
@@ -47,31 +47,18 @@
 					<?php if($response['result']): ?>
 						<?php foreach($response['list'] as $source_id => $subject): ?>
 							<tr>
-								<td><input type="checkbox" name="source_id[]" value="<?php echo $source_id; ?>"></td>
-								<td><img src="<?php echo $subject['image']; ?>" width="100px"></td>
-								<td class="Collection-box-title"><div>
-									<i class="Collection-subject-class-ico Collection-subject-class-<?php echo $subject['class']; ?>"></i>
-									<?php
-										echo '<a href="';
-										switch($request->get('source'))
-										{
-											case 'Bangumi':
-												echo 'http://bgm.tv/subject/';
-												break;
-											case 'Douban':
-												$arrayDoubanClass = array('1' => 'book', '3' => 'music', '6' => 'movie');
-												echo 'http://'.$arrayDoubanClass[$subject['class']].'.douban.com/subject/';
-												break;
-										}
-										echo $source_id.'">'.$subject['name'].'</a></div>';
-										echo $subject['name_cn'] ? '<div><small>'.$subject['name_cn'].'</small></div>' : '';
-									?>
+								<td><input type="checkbox" name="source_id[]" value="<?= $source_id ?>"></td>
+								<td><img src="<?= $subject['image'] ?>" width="100px"></td>
+								<td class="Collection-box-title">
+									<div><i class="Collection-subject-class-ico Collection-subject-class-<?= $subject['class'] ?>"></i>
+									<a href="<?= Collection_Source_Bangumi::getLink($source_id) ?>"><?= $subject['name'] ?></a></div>
+									<?= $subject['name_cn']  ? '<div><small>'.$subject['name_cn'].'</small></div>' : ''?>
 								</td>
-								<td class="Collection-box-info"><?php echo $subject['info']; ?></td>
+								<td class="Collection-box-info"><?= $subject['info'] ?></td>
 							</tr>
 						<?php endforeach; ?>
 					<?php else: ?>
-						<tr><td colspan="4"><h6 class="typecho-list-table-title"><?php echo $response['message']; ?></h6></td></tr>
+						<tr><td colspan="4"><h6 class="typecho-list-table-title"><?= $response['message'] ?></h6></td></tr>
 					<?php endif; ?>
 				</tbody>
 			</table>

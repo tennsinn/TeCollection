@@ -130,17 +130,17 @@
 								</td>
 								<td class="Collection-subject-meta">
 									<div class="Collection-subject-name">
-										<?php
-											if($subject['media_link'])
-												echo '<a href="'.$subject['media_link'].'" target="_blank"><i class="Collection-subject-class-ico Collection-subject-class-.'.$subject['class'].'"></i></a>';
-											else
-												echo '<i class="Collection-subject-class-ico Collection-subject-class-.'.$subject['class'].'"></i>';
-											echo '<small>(#'.$subject['id'].')</small>';
-											if(array_key_exists($subject['source'], $config->dictSource) && ('Collection' != $subject['source']))
-												echo '<a href="'.$config->dictSource[$subject['source']]['url'].$subject['source_id'].'" target="_blank">'.$subject['name'].'</a>';
-											else
-												echo $subject['name'];
-										?>
+										<?php if($subject['media_link']): ?>
+										<a href="<?=$subject['media_link']?>" target="_blank"><i class="Collection-subject-class-ico Collection-subject-class-<?=$subject['class']?>"></i></a>
+										<?php else: ?>
+										<i class="Collection-subject-class-ico Collection-subject-class-<?=$subject['class']?>"></i>
+										<?php endif; ?>
+										<small>(#<?=$subject['id']?>)</small>
+										<?php if(array_key_exists($subject['source'], $config->dictSource) && ('Collection' != $subject['source'])): ?>
+										<a href="<?=$config->dictSource[$subject['source']]['url'].$subject['source_id']?>" target="_blank"><?=$subject['name']?></a>
+										<?php else: ?>
+										<?=$subject['name']?>
+										<?php endif; ?>
 									</div>
 									<div class="Collection-subject-name_cn">
 										<?php echo $subject['name_cn'] ? $subject['name_cn'] : ''; ?>
