@@ -149,10 +149,16 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 				array('parent_order', 'inRange', _t('请使用正整数序号'), 0),
 			),
 			'ep_count' => array(
-				array('ep_count', 'isInteger', _t('请使用整数值标记进度')),
+				array('ep_count', 'isInteger', _t('请使用正整数记录进度总数')),
+				array('ep_count', 'inRange', _t('请使用正整数记录进度总数'), 0),
+			),
+			'ep_start' => array(
+				array('ep_start', 'isInteger', _t('请使用正整数值标记进度起始')),
+				array('ep_start', 'inRange', _t('请使用正整数值标记进度起始'), 0),
 			),
 			'ep_status' => array(
-				array('ep_status', 'isInteger', _t('请使用整数值标记进度')),
+				array('ep_status', 'isInteger', _t('请使用正整数值标记进度')),
+				array('ep_status', 'inRange', _t('请使用正整数值标记进度'), 0),
 				array('ep_status', 'isValidProgress', _t('请输入正确的进度'), $ep_count),
 			),
 		);
@@ -201,6 +207,7 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 				'publisher' => NULL,
 				'published' => NULL,
 				'ep_count' => NULL,
+				'ep_start' => NULL,
 				'parent' => 0,
 				'parent_order' => 0,
 				'parent_label' => NULL,
@@ -412,17 +419,17 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 			else
 			{
 				$progress = $this->request->getArray('progress');
+				$ep_count = NULL;
+				$ep_start = NULL;
+				$ep_status = NULL;
 				if(in_array('ep_progress', $progress))
 				{
 					if(!is_null($this->request->ep_count))
 						$ep_count = min(999, max(0, intval($this->request->ep_count)));
 					if(!is_null($this->request->ep_status))
 						$ep_status = min($ep_count, max(0, intval($this->request->ep_status)));
-				}
-				else
-				{
-					$ep_count = NULL;
-					$ep_status = NULL;
+					if(!is_null($this->request->ep_start))
+						$ep_start = $this->request->ep_start;
 				}
 				$time_start = NULL;
 				$time_finish = NULL;
@@ -461,6 +468,7 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 						'publisher' => $this->request->publisher,
 						'published' => $published,
 						'ep_count' => $ep_count,
+						'ep_start' => $ep_start,
 						'parent' => $this->request->parent,
 						'parent_order' => $this->request->parent_order,
 						'parent_label' => $this->request->parent_label,
@@ -631,7 +639,7 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 		$form->addInput($image);
 
 		$editProgress = array(
-			'ep_progress' => '输入主进度：<input type="text" class="text-s num" name="ep_status"> / <input type="text" class="text num text-s" name="ep_count"> ',
+			'ep_progress' => '输入主进度：<input type="text" class="text-s num" name="ep_status"> / <input type="text" class="text num text-s" name="ep_count"> / <input type="text" class="text num text-s" name="ep_start"> ',
 		);
 		$progress = new Typecho_Widget_Helper_Form_Element_Checkbox('progress', $editProgress, NULL, '进度信息', '选择将要添加的信息，默认为0/0，不选择则认为无进度项');
 		$form->addInput($progress->multiMode());

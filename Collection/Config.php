@@ -17,7 +17,7 @@ class Collection_Config extends Typecho_Widget
 	 * @var array
 	 */
 	public $dictColumn = array('id' => 'ID', 'category' => '大类', 'class' => '分类', 'type' => '类型', 'name' => '原名', 'name_cn' => '译名', 'image' => '封面', 
-		'ep_count' => '子集总数', 'author' => '作者', 'publisher' => '出版商', 'published' => '出版时间', 'source' => '信息来源', 'source_id' => '来源ID', 'media_link' => '媒体链接', 
+		'ep_count' => '子集总数', 'ep_start' => '子集起始', 'author' => '作者', 'publisher' => '出版商', 'published' => '出版时间', 'source' => '信息来源', 'source_id' => '来源ID', 'media_link' => '媒体链接', 
 		'parent' => '关联记录', 'parent_order' => '关联顺序', 'parent_label' => '关联标签', 'grade' => '显示分级', 'status' => '状态', 'time_start' => '开始时间', 
 		'time_finish' => '结束时间', 'time_touch' => '修改时间', 'ep_status' => '当前进度', 'rate' => '评价', 'tags' => '标签', 'comment' => '评论', 'note' => '备注');
 

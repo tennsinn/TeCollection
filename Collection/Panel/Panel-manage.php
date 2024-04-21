@@ -149,13 +149,15 @@
 										echo '<div id="Collection-subject-'.$subject['id'].'-ep">';
 										if(!is_null($subject['ep_count']) && !is_null($subject['ep_status']))
 										{
+											$ep_current = $subject['ep_status'] + (NULL == $subject['ep_start'] ? 1 : $subject['ep_start']) - 1;
+											$ep_end = (NULL == $subject['ep_start'] ? 1 : $subject['ep_start']) + $subject['ep_count'] - 1;
 											echo '<label for="Collection-subject-'.$subject['id'].'-progress-ep">'._t('主进度').'</label>';
-											echo '<div id="Collection-subject-'.$subject['id'].'-progress-ep" class="Collection-subject-progress"><div class="Collection-subject-progress-inner" style="color:white; width:'.($subject['ep_count'] ? $subject['ep_status']/$subject['ep_count']*100 : 50).'%"><small>'.$subject['ep_status'].' / '.($subject['ep_count'] ? $subject['ep_count'] : '??').'</small></div></div>';
+											echo '<div id="Collection-subject-'.$subject['id'].'-progress-ep" class="Collection-subject-progress"><div class="Collection-subject-progress-inner" style="color:white; width:'.($subject['ep_count'] ? $subject['ep_status']/$subject['ep_count']*100 : 50).'%"><small>'.($ep_current < 0 ? '??' : $ep_current).' / '.($ep_end > 0 ? $ep_end : '??').'</small></div></div>';
 											if(!$subject['ep_count'] || $subject['ep_count']>$subject['ep_status'])
 											{
 												echo '<div class="hidden-by-mouse"><small><a href="#'.$subject['id'].'" rel="';
 												$security->index('/action/collection?do=plusEp');
-												echo '" class="Collection-subject-progress-plus" id="Collection-subject-'.$subject['id'].'-progress-ep-plus">ep.'.($subject['ep_status']+1).'已'.$config->dictStatusAll['collect'][$subject['class']].'</a></small></div>';
+												echo '" class="Collection-subject-progress-plus" id="Collection-subject-'.$subject['id'].'-progress-ep-plus">ep.'.($ep_current+1).'已'.$config->dictStatusAll['collect'][$subject['class']].'</a></small></div>';
 											}
 										}
 										echo '</div>';

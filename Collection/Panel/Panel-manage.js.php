@@ -15,7 +15,9 @@ $(document).ready(function () {
 				else
 					t.html('ep.'+(Number(data.ep_status)+1)+'已看过');
 				tr.data('subject', subject);
-				t.parent().parent().prev().html('<div class="Collection-subject-progress-inner" style="color:white; width:'+(subject.ep_count != 0 ? subject.ep_status/subject.ep_count*100 : 50)+'%"><small>'+subject.ep_status+' / '+(subject.ep_count != 0 ? subject.ep_count : '??')+'</small></div>');
+				ep_current = Number(subject.ep_status) + (null === subject.ep_start ? 1 : Number(subject.ep_start)) - 1;
+				ep_end = (null === subject.ep_start ? 1 : Number(subject.ep_start)) + Number(subject.ep_count) - 1;
+				t.parent().parent().prev().html('<div class="Collection-subject-progress-inner" style="color:white; width:'+(subject.ep_count > 0 ? subject.ep_status/subject.ep_count*100 : 50)+'%"><small>'+(ep_current < 0 ? '??' : ep_current)+' / '+(ep_end > 0 ? ep_end : '??')+'</small></div>');
 				if(subject.ep_count != 0 && subject.ep_status == subject.ep_count)
 					t.parent().parent().remove();
 			}
@@ -53,6 +55,7 @@ $(document).ready(function () {
 			+ '<p><label for="'+id+'-parent_label"><?=_t('关联标签')?></label><input type="text" id="'+id+'-parent_label" name="parent_label" class="text-s w-100"></p>'
 			+ '<p><label for="'+id+'-ep_status"><?=_t('主进度')?></label><input type="text" id="'+id+'-ep_status" name="ep_status" class="text-s w-100"></p>'
 			+ '<p><label for="'+id+'-ep_count"><?=_t('主进度总数')?></label><input type="text" name="ep_count" id="'+id+'-ep_count" class="text-s w-100"></p>'
+			+ '<p><label for="'+id+'-ep_start"><?=_t('主进度起始')?></label><input type="text" name="ep_start" id="'+id+'-ep_start" class="text-s w-100"></p>'
 			+ '</form></td>'
 			+ '<td><form method="post" action="'+t.attr('rel')+'" class="Collection-subject-edit-content">'
 			+ '<p><label for="'+id+'-media_link"><?=_t('媒体链接')?></label><input type="text" name="media_link" id="'+id+'-media_link" class="text-s w-100 w-100"></p>'
@@ -84,6 +87,7 @@ $(document).ready(function () {
 		$('input[name=parent_label]', edit).val(subject.parent_label);
 		$('input[name=ep_status]', edit).val(subject.ep_status);
 		$('input[name=ep_count]', edit).val(subject.ep_count);
+		$('input[name=ep_start]', edit).val(subject.ep_start);
 		$('select[name=grade]', edit).val(subject.grade);
 		$('textarea[name=note]', edit).val(subject.note);
 		$('select[name=rate]', edit).val(subject.rate);
@@ -150,6 +154,7 @@ $(document).ready(function () {
 				subject['parent_order'] = 0;
 				subject['parent_label'] = null;
 				subject['ep_count'] = null;
+				subject['ep_start'] = null;
 				subject['ep_status'] = null;
 			}
 
@@ -197,10 +202,12 @@ $(document).ready(function () {
 						$('#Collection-subject-'+subject.id+'-ep', oldTr).html('');
 					else
 					{
+						ep_current = Number(subject.ep_status) + ('' == subject.ep_start ? 1 : Number(subject.ep_start)) - 1;
+						ep_end = ('' == subject.ep_start ? 1 : Number(subject.ep_start)) + Number(subject.ep_count) - 1;
 						stringProgress += '<label for="Collection-subject-'+subject.id+'-progress-ep">主进度</label>'
-							+ '<div id="Collection-subject-'+subject.id+'-progress-ep" class="Collection-subject-progress"><div class="Collection-subject-progress-inner" style="color:white; width:'+(subject.ep_count != 0 ? subject.ep_status/subject.ep_count*100 : 50)+'%"><small>'+subject.ep_status+' / '+(subject.ep_count != 0 ? subject.ep_count : '??')+'</small></div></div>';
+							+ '<div id="Collection-subject-'+subject.id+'-progress-ep" class="Collection-subject-progress"><div class="Collection-subject-progress-inner" style="color:white; width:'+(subject.ep_count > 0 ? subject.ep_status/subject.ep_count*100 : 50)+'%"><small>'+(ep_current < 0 ? '??' : ep_current)+' / '+(ep_end > 0 ? ep_end : '??')+'</small></div></div>';
 						if(subject.ep_count == '0' || Number(subject.ep_count) > Number(subject.ep_status))
-							stringProgress += '<div class="hidden-by-mouse"><small><a href="#'+subject.id+'" rel="<?php $security->index('/action/collection?do=plusEp'); ?>" class="Collection-subject-progress-plus" id="Collection-subject-'+subject.id+'-progress-ep-plus">ep.'+String(Number(subject.ep_status)+1)+'已'+arrayStatus[String(subject.class-1)]+'</a></small></div>';
+							stringProgress += '<div class="hidden-by-mouse"><small><a href="#'+subject.id+'" rel="<?php $security->index('/action/collection?do=plusEp'); ?>" class="Collection-subject-progress-plus" id="Collection-subject-'+subject.id+'-progress-ep-plus">ep.'+(ep_current+1)+'已'+arrayStatus[String(subject.class-1)]+'</a></small></div>';
 						$('#Collection-subject-'+subject.id+'-ep', oldTr).html(stringProgress);
 						$('.Collection-subject-progress-plus', oldTr).click(clickPlusEp);
 					}

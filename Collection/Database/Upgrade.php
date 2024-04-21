@@ -11,6 +11,32 @@ if (!defined('__TYPECHO_ROOT_DIR__')) exit;
 class Collection_Database_Upgrade
 {
 	/**
+	 * 升级至v1.22
+	 *
+	 * @access public
+	 * @param Typecho_Db $db 数据库对象
+	 * @param string $adapter 数据库类型
+	 * @param string $prefix 数据表前缀
+	 * @return void
+	 */
+	public static function v1_22_0($db, $adapter, $prefix)
+	{
+		switch($adapter)
+		{
+			case 'Mysql':
+				$db->query('ALTER TABLE `'.$prefix.'collection` ADD `ep_start` smallint unsigned default NULL', Typecho_Db::WRITE);
+				break;
+			case 'Pgsql':
+				$db->query('ALTER TABLE "'.$prefix.'collection" ADD COLUMN "ep_start" INT NULL DEFAULT NULL', Typecho_Db::WRITE);
+				break;
+			case 'SQLite':
+				$db->query('ALTER TABLE "'.$prefix.'collection" ADD COLUMN "ep_start" int(5) default NULL', Typecho_Db::WRITE);
+				break;
+		}
+		return _t('新增集数显示起始值。');
+	}
+
+	/**
 	 * 升级至v1.20
 	 *
 	 * @access public
