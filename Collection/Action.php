@@ -413,7 +413,7 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 			if($this->request->source != 'Collection')
 				$row_temp = $this->_db->fetchRow($this->_db->select()->from('table.collection')->where('source = ?', $this->request->source)->where('source_id = ?', $source_id));
 			else
-				$row_temp = $this->_db->fetchRow($this->_db->select()->from('table.collection')->where('name = ?', $this->request->name)->where('category = ?', $this->request->category));
+				$row_temp = $this->_db->fetchRow($this->_db->select()->from('table.collection')->where('name = ?', $this->request->name)->where('class = ?', $this->request->class)->where('category = ?', $this->request->category)->where('type = ?', $this->request->type));
 			if($row_temp)
 				$this->widget('Widget_Notice')->set('当前记录已存在', 'notice');
 			else
