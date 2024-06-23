@@ -68,7 +68,7 @@ class Collection_Config extends Typecho_Widget
 	 */
 	public $dictType = array(
 		1 => array('Novel' => '小说', 'Comic' => '漫画', 'Doujinshi' => '同人志', 'Textbook' => '教材'),
-		2 => array('TV' => 'TV', 'Movie' => '剧场', 'OVA' => 'OVA', 'OAD' => 'OAD', 'SP' => 'SP'),
+		2 => array('TV' => 'TV', 'Movie' => '剧场', 'OVA' => 'OVA', 'OAD' => 'OAD', 'SP' => 'SP', 'WEB' => 'WEB'),
 		3 => array('Album' => '专辑', 'Single' => '单曲', 'Maxi' => 'Maxi', 'EP' => '细碟', 'Selections' => '选集'),
 		4 => array('iOS' => 'iOS', 'Android' => 'Android', 'PSP' => 'PSP', 'PSV' => 'PSV', 'PS4' => 'PS4', 'NDS' => 'NDS', '3DS' => '3DS', 'NSwitch' => 'NSwitch', 'XBox' => 'XBox', 'Windows' => 'Windows', 'Online' => '网游', 'Table' => '桌游'),
 		5 => array('Radio' => '广播', 'Drama' => '话剧', 'Opera' => '歌剧', 'TalkShow' => '脱口秀', 'Musical' => '歌舞', 'Circus' => '马戏', 'Acrobatics' => '杂技'),
@@ -88,7 +88,9 @@ class Collection_Config extends Typecho_Widget
 		'Steam' => array('name' => 'Steam', 'url' => 'http://store.steampowered.com/app/', 'search' => false),
 		'Wandoujia' => array('name' => '豌豆荚', 'url' => 'http://www.wandoujia.com/apps/', 'search' => false),
 		'TapTap' => array('name' => 'TapTap', 'url' => 'https://www.taptap.com/app/', 'search' => false),
-		'BiliBili' => array('name' => 'BiliBili', 'url' => 'https://www.bilibili.com/bangumi/media/', 'search' => false)
+		'BiliBili' => array('name' => 'BiliBili', 'url' => 'https://www.bilibili.com/bangumi/media/', 'search' => false),
+		'BiliManga' => array('name' => 'BiliBili漫画', 'url' => 'https://manga.bilibili.com/detail/', 'search' => false),
+		'KuaiKan' => array('name' => '快看漫画', 'url' => 'https://www.kuaikanmanhua.com/web/topic/', 'search' => false),
 	);
 
 	/**
