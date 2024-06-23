@@ -10,13 +10,13 @@ $(document).ready(function () {
 			if(data.result)
 			{
 				subject.ep_status = data.ep_status;
+				ep_current = Number(subject.ep_status) + (null === subject.ep_start ? 1 : Number(subject.ep_start)) - 1;
+				ep_end = (null === subject.ep_start ? 1 : Number(subject.ep_start)) + Number(subject.ep_count) - 1;
 				if(data.status == 'collect')
 					subject.status = 'collect';
 				else
-					t.html('ep.'+(Number(data.ep_status)+1)+'已看过');
+					t.html('ep.'+(ep_current+1)+'已看过');
 				tr.data('subject', subject);
-				ep_current = Number(subject.ep_status) + (null === subject.ep_start ? 1 : Number(subject.ep_start)) - 1;
-				ep_end = (null === subject.ep_start ? 1 : Number(subject.ep_start)) + Number(subject.ep_count) - 1;
 				t.parent().parent().prev().html('<div class="Collection-subject-progress-inner" style="color:white; width:'+(subject.ep_count > 0 ? subject.ep_status/subject.ep_count*100 : 50)+'%"><small>'+(ep_current < 0 ? '??' : ep_current)+' / '+(ep_end > 0 ? ep_end : '??')+'</small></div>');
 				if(subject.ep_count != 0 && subject.ep_status == subject.ep_count)
 					t.parent().parent().remove();
