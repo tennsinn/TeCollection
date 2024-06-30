@@ -82,15 +82,14 @@ class Collection_Config extends Typecho_Widget
 	 * @var array
 	 */
 	public $dictSource = array(
-		'Collection' => array('name' => '收藏', 'url' => NULL, 'search' => false),
-		'Bangumi' => array('name' => 'Bangumi', 'url' => 'http://bgm.tv/subject/', 'search' => array('全部','书籍','动画','音乐','游戏','演出','影视')),
-		'Douban' => array('name' => '豆瓣', 'url' => 'https://www.douban.com/subject/', 'search' => false),
-		'Steam' => array('name' => 'Steam', 'url' => 'http://store.steampowered.com/app/', 'search' => false),
-		'Wandoujia' => array('name' => '豌豆荚', 'url' => 'http://www.wandoujia.com/apps/', 'search' => false),
-		'TapTap' => array('name' => 'TapTap', 'url' => 'https://www.taptap.com/app/', 'search' => false),
-		'BiliBili' => array('name' => 'BiliBili', 'url' => 'https://www.bilibili.com/bangumi/media/', 'search' => false),
-		'BiliManga' => array('name' => 'BiliBili漫画', 'url' => 'https://manga.bilibili.com/detail/', 'search' => false),
-		'KuaiKan' => array('name' => '快看漫画', 'url' => 'https://www.kuaikanmanhua.com/web/topic/', 'search' => false),
+		'Collection' => '收藏',
+		'Bangumi' => 'Bangumi',
+		'Douban' => '豆瓣',
+		'Steam' => 'Steam',
+		'Wandoujia' => '豌豆荚',
+		'TapTap' => 'TapTap',
+		'BiliBili' => 'BiliBili',
+		'KuaiKan' => '快看漫画',
 	);
 
 	/**
@@ -108,20 +107,6 @@ class Collection_Config extends Typecho_Widget
 	 * @var array
 	 */
 	public $dictRate = array('0 未评价', '1 不忍直视', '2 很差', '3 差', '4 较差', '5 不过不失', '6 还行', '7 推荐', '8 力荐', '9 神作', '10 超神作');
-
-	/**
-	 * 源字典，仅名称
-	 *
-	 * @access public
-	 * @return array
-	 */
-	public function ___dictSourceName()
-	{
-		$dictSourceName = array();
-		foreach($this->dictSource as $key => $value)
-			$dictSourceName[$key] = $value['name'];
-		return $dictSourceName;
-	}
 
 	/**
 	 * 条目字段数组

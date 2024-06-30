@@ -192,8 +192,8 @@ $(document).ready(function () {
 					else
 						tempHTML = '<i class="Collection-subject-class-ico Collection-subject-class-'+subject.class+'"></i>';
 					tempHTML += '<small>(#'+subject.id+')</small>';
-					if(dictSource.hasOwnProperty(subject.source) && (subject.source != 'Collection'))
-						tempHTML += '<a href="' + dictSource[subject.source]['url'] + subject.source_id + '" target="_blank">' + subject.name + '</a>';
+					if(data.link)
+						tempHTML += '<a href="' + data.link + '" target="_blank">' + subject.name + '</a>';
 					else
 						tempHTML += subject.name;
 					$('.Collection-subject-name', oldTr).html(tempHTML);

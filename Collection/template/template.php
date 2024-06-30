@@ -79,7 +79,6 @@ $dictOrderby = array('id' => 'ID', 'rate' => '评价', 'time_touch' => '最后�
 <script>
 var dictTypeTrans = <?php echo $config->jsType; ?>;
 var dictStatusTrans = <?php echo $config->jsStatusAll; ?>;
-var dictSource = <?php echo $config->jsSource; ?>;
 
 $(document).ready(function(){
 
@@ -117,8 +116,8 @@ $(document).ready(function(){
 						+ '<i class="Collection-subject-class-ico Collection-subject-class-'+subject.class+'"></i>'
 						+ '<small>（'+dictTypeTrans[subject.class][subject.type]+'）</small>';
 					}
-					if(subject.source != 'Collection')
-						tempHTML += '<a href="'+dictSource[subject.source]['url']+subject.source_id+'" target="_blank">'+subject.name+'</a>';
+					if(data.link)
+						tempHTML += '<a href="'+data.link+'" target="_blank">'+subject.name+'</a>';
 					else
 						tempHTML += subject.name;
 					if(subject.name_cn)

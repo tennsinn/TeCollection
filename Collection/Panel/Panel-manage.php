@@ -136,8 +136,8 @@
 										<i class="Collection-subject-class-ico Collection-subject-class-<?=$subject['class']?>"></i>
 										<?php endif; ?>
 										<small>(#<?=$subject['id']?>)</small>
-										<?php if(array_key_exists($subject['source'], $config->dictSource) && ('Collection' != $subject['source'])): ?>
-										<a href="<?=$config->dictSource[$subject['source']]['url'].$subject['source_id']?>" target="_blank"><?=$subject['name']?></a>
+										<?php $link = Collection_Source::getLink($subject['source'], $subject['source_id'], $subject['class']); if($link): ?>
+										<a href="<?=$link?>" target="_blank"><?=$subject['name']?></a>
 										<?php else: ?>
 										<?=$subject['name']?>
 										<?php endif; ?>

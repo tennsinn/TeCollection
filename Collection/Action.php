@@ -59,6 +59,8 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 			if(in_array($this->request->get('orderby'), array('id', 'rate', 'time_touch', 'time_start', 'time_finish')) && in_array($this->request->get('order'), array('DESC', 'ASC')))
 				$query->order($this->request->get('orderby'), $this->request->get('order'));
 			$rows = $this->_db->fetchAll($query);
+			foreach($rows as $row)
+				$row['link'] = Collection_Source::getLink($row['source'], $row['source_id'], $row['class']);
 			$this->response->throwJson(array('result' => true, 'count' => $num, 'list' => $rows));
 		}
 		else
@@ -234,7 +236,7 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 		$data['time_touch'] = Typecho_Date::time();
 		$update = $this->_db->query($this->_db->update('table.collection')->where('id = ?', $data['id'])->rows($data));
 		if($update > 0)
-			$this->response->throwJson(array('result' => true, 'message' => _t('记录已修改')));
+			$this->response->throwJson(array('result' => true, 'message' => _t('记录已修改'), 'link' => Collection_Source::getLink($data['source'], $data['source_id'], $data['class'])));
 		else
 			$this->response->throwJson(array('result' => false, 'message' => _t('无记录更新')));
 	}
@@ -625,7 +627,7 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 		$published->input->setAttribute('class', 'w-40');
 		$form->addInput($published);
 
-		$source = new Typecho_Widget_Helper_Form_Element_Select('source', $this->_config->dictSourceName, 'Collection', '信息来源 *');
+		$source = new Typecho_Widget_Helper_Form_Element_Select('source', $this->_config->dictSource, 'Collection', '信息来源 *');
 		$form->addInput($source);
 
 		$source_id = new Typecho_Widget_Helper_Form_Element_Text('source_id', NULL, NULL, '来源ID');

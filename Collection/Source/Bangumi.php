@@ -10,6 +10,7 @@ if (!defined('__TYPECHO_ROOT_DIR__')) exit;
  */
 class Collection_Source_Bangumi
 {
+	const SEARCH = true;
 	const SERVER = 'https://api.bgm.tv';
 
 	/**
@@ -124,7 +125,7 @@ class Collection_Source_Bangumi
 	 * @param array $source_id 条目ID
 	 * @return string
 	 */
-	public static function getLink($source_id)
+	public static function getLink($source_id, $class)
 	{
 		$link = 'http://bgm.tv/subject/'.$source_id;
 		return $link;

@@ -30,7 +30,7 @@ var select_options = {};
 	select_options['category'] = transArrayToOption(dictCategory);
 	select_options['class'] = transArrayToOption(dictClass);
 	select_options['type'] = transArrayToOption(dictType);
-	select_options['source'] = transArrayToOption(dictSource, 'name');
+	select_options['source'] = transArrayToOption(dictSource);
 	select_options['grade'] = transArrayToOption(dictGrade);
 	select_options['rate'] = transArrayToOption(dictRate);
 </script>
