@@ -106,6 +106,7 @@ class Collection_Source_Bangumi
 					case '作者':
 					case '开发':
 					case '动画制作':
+					case '作画':
 						$info['author'] = $info['author'] ? $info['author'].' / '.$val['name'] : $val['name'];
 						break;
 					case '出版社':

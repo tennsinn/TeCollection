@@ -51,7 +51,7 @@
 								<td><img src="<?= $subject['image'] ?>" width="100px"></td>
 								<td class="Collection-box-title">
 									<div><i class="Collection-subject-class-ico Collection-subject-class-<?= $subject['class'] ?>"></i>
-									<a href="<?= Collection_Source_Bangumi::getLink($source_id) ?>"><?= $subject['name'] ?></a></div>
+									<a href="<?= Collection_Source_Bangumi::getLink($source_id, $subject['class']) ?>"><?= $subject['name'] ?></a></div>
 									<?= $subject['name_cn']  ? '<div><small>'.$subject['name_cn'].'</small></div>' : ''?>
 								</td>
 								<td class="Collection-box-info"><?= $subject['info'] ?></td>
