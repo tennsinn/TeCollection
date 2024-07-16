@@ -210,8 +210,8 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 				'published' => NULL,
 				'ep_count' => NULL,
 				'ep_start' => NULL,
-				'parent' => 0,
-				'parent_order' => 0,
+				'parent' => '0',
+				'parent_order' => '0',
 				'parent_label' => NULL,
 				'ep_status' => NULL,
 			);

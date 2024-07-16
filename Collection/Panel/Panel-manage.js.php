@@ -191,7 +191,7 @@ $(document).ready(function () {
 						tempHTML = '<a href="'+subject.media_link+'" target="_blank"><i class="Collection-subject-class-ico Collection-subject-class-'+subject.class+'"></i></a>';
 					else
 						tempHTML = '<i class="Collection-subject-class-ico Collection-subject-class-'+subject.class+'"></i>';
-					tempHTML += '<small>(#'+subject.id+')</small>';
+					tempHTML += '<small>(#'+subject.id+')</small>\n';
 					if(data.link)
 						tempHTML += '<a href="' + data.link + '" target="_blank">' + subject.name + '</a>';
 					else
