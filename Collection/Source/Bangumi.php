@@ -50,11 +50,17 @@ class Collection_Source_Bangumi
 	public static function searchSubject($keywords, $class=0, $pageSize=20, $page=1)
 	{
 		$response = @file_get_contents(self::SERVER.'/search/subject/'.$keywords.'?responseGroup=large&max_results='.$pageSize.'&start='.($page-1)*$pageSize.'&type='.$class);
+		if(empty($response))
+			return array('result' => false, 'message' => '搜索超时');
 		$response = json_decode($response, true);
-		if(!$response || (isset($response['results']) && !$response['results']))
-			return array('result' => false, 'message' => '搜索到0个结果');
+		if(!isset($response['results']) && !isset($response['error']))
+			return array('result' => false, 'message' => '搜索被拒绝');
 		else if(!isset($response['results']) && isset($response['error']))
-			return array('result' => false, 'message' => '关键字：'.$keywords.' 搜索出现错误 '.$response['code'].':'.$response['error']);
+			if(404 == $response['code'])
+				return array('result' => false, 'message' => '关键字：'.$keywords.' 搜索到0个结果 '.$response['code'].':'.$response['error']);
+			else
+				return array('result' => false, 'message' => '关键字：'.$keywords.' 搜索出现错误 '.$response['code'].':'.$response['error']);
+
 		foreach($response['list'] as $key => $value)
 		{
 			$info = '';

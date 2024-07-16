@@ -579,9 +579,11 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 				break;
 		}
 		if($results['result'])
+		{
 			$query = $this->request->makeUriByRequest('page={page}');
 			$nav = new Typecho_Widget_Helper_PageNavigator_Box($results['count'], $page, $this->_settings->page_size, $query);
 			$results['nav'] = $nav;
+		}
 		return $results;
 	}
 

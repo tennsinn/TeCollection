@@ -40,7 +40,7 @@ class Collection_Source_Douban
 				$link = 'https://www.douban.com/location/drama/'.$source_id;
 				break;
 			default:
-				$link = false;
+				$link = 'https://www.douban.com/subject/'.$source_id;
 		}
 		return $link;
 	}
