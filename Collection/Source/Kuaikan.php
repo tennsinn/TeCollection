@@ -19,7 +19,7 @@ class Collection_Source_Kuaikan
 	 * @param array $source_id 条目ID
 	 * @return string
 	 */
-	public static function getLink($source_id, $class)
+	public static function getLink($source_id, $class, $type)
 	{
 		$link = 'https://www.kuaikanmanhua.com/web/topic/'.$source_id;
 		return $link;

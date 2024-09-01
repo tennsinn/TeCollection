@@ -136,7 +136,7 @@
 										<i class="Collection-subject-class-ico Collection-subject-class-<?=$subject['class']?>"></i>
 										<?php endif; ?>
 										<small>(#<?=$subject['id']?>)</small>
-										<?php $link = Collection_Source::getLink($subject['source'], $subject['source_id'], $subject['class']); if($link): ?>
+										<?php $link = Collection_Source::getLink($subject['source'], $subject['source_id'], $subject['class'], $subject['type']); if($link): ?>
 										<a href="<?=$link?>" target="_blank"><?=$subject['name']?></a>
 										<?php else: ?>
 										<?=$subject['name']?>

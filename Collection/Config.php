@@ -71,7 +71,7 @@ class Collection_Config extends Typecho_Widget
 		2 => array('TV' => 'TV', 'Movie' => '剧场', 'OVA' => 'OVA', 'OAD' => 'OAD', 'SP' => 'SP', 'WEB' => 'WEB'),
 		3 => array('Album' => '专辑', 'Single' => '单曲', 'Maxi' => 'Maxi', 'EP' => '细碟', 'Selections' => '选集'),
 		4 => array('iOS' => 'iOS', 'Android' => 'Android', 'PSP' => 'PSP', 'PSV' => 'PSV', 'PS4' => 'PS4', 'NDS' => 'NDS', '3DS' => '3DS', 'NSwitch' => 'NSwitch', 'XBox' => 'XBox', 'Windows' => 'Windows', 'Online' => '网游', 'Table' => '桌游'),
-		5 => array('Radio' => '广播', 'Drama' => '话剧', 'Opera' => '歌剧', 'TalkShow' => '脱口秀', 'Musical' => '歌舞', 'Circus' => '马戏', 'Acrobatics' => '杂技'),
+		5 => array('Radio' => '广播', 'Drama' => '话剧', 'Opera' => '歌剧', 'TalkShow' => '脱口秀', 'Musical' => '音乐剧', 'Circus' => '马戏', 'Acrobatics' => '杂技', 'Exhibition' => '展览'),
 		6 => array('Film' => '电影', 'Teleplay' => '电视剧', 'Documentary' => '纪录片', 'TalkShow' => '脱口秀', 'VarietyShow' => '综艺')
 	);
 

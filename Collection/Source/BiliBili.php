@@ -19,7 +19,7 @@ class Collection_Source_BiliBili
 	 * @param array $source_id 条目ID
 	 * @return string
 	 */
-	public static function getLink($source_id, $class)
+	public static function getLink($source_id, $class, $type)
 	{
 		switch($class)
 		{

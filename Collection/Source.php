@@ -17,11 +17,11 @@ class Collection_Source
 	 * @param string $value 分级设置名称组
 	 * @return bool|string
 	 */
-	public static function getLink($source, $source_id, $class)
+	public static function getLink($source, $source_id, $class, $type = null)
 	{
 		if(!class_exists('Collection_Source_'.$source) || empty($source_id))
 			return false;
-		$link = call_user_func(array('Collection_Source_'.$source, 'getLink'), $source_id, $class);
+		$link = call_user_func(array('Collection_Source_'.$source, 'getLink'), $source_id, $class, $type);
 		return $link;
 	}
 }

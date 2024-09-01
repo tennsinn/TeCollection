@@ -60,7 +60,7 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 				$query->order($this->request->get('orderby'), $this->request->get('order'));
 			$rows = $this->_db->fetchAll($query);
 			foreach($rows as $row)
-				$row['link'] = Collection_Source::getLink($row['source'], $row['source_id'], $row['class']);
+				$row['link'] = Collection_Source::getLink($row['source'], $row['source_id'], $row['class'], $row['type']);
 			$this->response->throwJson(array('result' => true, 'count' => $num, 'list' => $rows));
 		}
 		else
@@ -236,7 +236,7 @@ class Collection_Action extends Typecho_Widget implements Widget_Interface_Do
 		$data['time_touch'] = Typecho_Date::time();
 		$update = $this->_db->query($this->_db->update('table.collection')->where('id = ?', $data['id'])->rows($data));
 		if($update > 0)
-			$this->response->throwJson(array('result' => true, 'message' => _t('记录已修改'), 'link' => Collection_Source::getLink($data['source'], $data['source_id'], $data['class'])));
+			$this->response->throwJson(array('result' => true, 'message' => _t('记录已修改'), 'link' => Collection_Source::getLink($data['source'], $data['source_id'], $data['class'], $data['type'])));
 		else
 			$this->response->throwJson(array('result' => false, 'message' => _t('无记录更新')));
 	}

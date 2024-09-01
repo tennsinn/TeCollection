@@ -19,7 +19,7 @@ class Collection_Source_Douban
 	 * @param array $source_id 条目ID
 	 * @return string
 	 */
-	public static function getLink($source_id, $class)
+	public static function getLink($source_id, $class, $type)
 	{
 		switch($class)
 		{
@@ -37,7 +37,10 @@ class Collection_Source_Douban
 				$link = 'https://www.douban.com/game/'.$source_id;
 				break;
 			case '5':
-				$link = 'https://www.douban.com/location/drama/'.$source_id;
+				if($type == 'Exhibition')
+					$link = 'https://www.douban.com/event/'.$source_id;
+				else
+					$link = 'https://www.douban.com/location/drama/'.$source_id;
 				break;
 			default:
 				$link = 'https://www.douban.com/subject/'.$source_id;

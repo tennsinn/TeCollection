@@ -132,7 +132,7 @@ class Collection_Source_Bangumi
 	 * @param array $source_id 条目ID
 	 * @return string
 	 */
-	public static function getLink($source_id, $class)
+	public static function getLink($source_id, $class, $type)
 	{
 		$link = 'http://bgm.tv/subject/'.$source_id;
 		return $link;
