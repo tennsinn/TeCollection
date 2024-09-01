@@ -10,8 +10,9 @@ $(document).ready(function () {
 			if(data.result)
 			{
 				subject.ep_status = data.ep_status;
-				ep_current = Number(subject.ep_status) + (null === subject.ep_start ? 1 : Number(subject.ep_start)) - 1;
-				ep_end = (null === subject.ep_start ? 1 : Number(subject.ep_start)) + Number(subject.ep_count) - 1;
+				ep_start = null === subject.ep_start ? 1 : Number(subject.ep_start);
+				ep_current = Number(subject.ep_status) + ep_start - 1;
+				ep_end = 0 == Number(subject.ep_count) ? 0 : ep_start + Number(subject.ep_count) - 1;
 				if(data.status == 'collect')
 					subject.status = 'collect';
 				else
@@ -202,8 +203,9 @@ $(document).ready(function () {
 						$('#Collection-subject-'+subject.id+'-ep', oldTr).html('');
 					else
 					{
-						ep_current = Number(subject.ep_status) + ('' == subject.ep_start ? 1 : Number(subject.ep_start)) - 1;
-						ep_end = ('' == subject.ep_start ? 1 : Number(subject.ep_start)) + Number(subject.ep_count) - 1;
+						ep_start = '' == subject.ep_start ? 1 : Number(subject.ep_start);
+						ep_current = Number(subject.ep_status) + ep_start - 1;
+						ep_end = 0 == Number(subject.ep_count) ? 0 : ep_start + Number(subject.ep_count) - 1;
 						stringProgress += '<label for="Collection-subject-'+subject.id+'-progress-ep">主进度</label>'
 							+ '<div id="Collection-subject-'+subject.id+'-progress-ep" class="Collection-subject-progress"><div class="Collection-subject-progress-inner" style="color:white; width:'+(subject.ep_count > 0 ? subject.ep_status/subject.ep_count*100 : 50)+'%"><small>'+(ep_current < 0 ? '??' : ep_current)+' / '+(ep_end > 0 ? ep_end : '??')+'</small></div></div>';
 						if(subject.ep_count == '0' || Number(subject.ep_count) > Number(subject.ep_status))

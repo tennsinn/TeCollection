@@ -149,8 +149,9 @@
 										echo '<div id="Collection-subject-'.$subject['id'].'-ep">';
 										if(!is_null($subject['ep_count']) && !is_null($subject['ep_status']))
 										{
-											$ep_current = $subject['ep_status'] + (NULL == $subject['ep_start'] ? 1 : $subject['ep_start']) - 1;
-											$ep_end = (NULL == $subject['ep_start'] ? 1 : $subject['ep_start']) + $subject['ep_count'] - 1;
+											$ep_start = NULL == $subject['ep_start'] ? 1 : $subject['ep_start'];
+											$ep_current = $subject['ep_status'] + $ep_start - 1;
+											$ep_end = 0 == $subject['ep_count'] ? 0 : $ep_start + $subject['ep_count'] - 1;
 											echo '<label for="Collection-subject-'.$subject['id'].'-progress-ep">'._t('主进度').'</label>';
 											echo '<div id="Collection-subject-'.$subject['id'].'-progress-ep" class="Collection-subject-progress"><div class="Collection-subject-progress-inner" style="color:white; width:'.($subject['ep_count'] ? $subject['ep_status']/$subject['ep_count']*100 : 50).'%"><small>'.($ep_current < 0 ? '??' : $ep_current).' / '.($ep_end > 0 ? $ep_end : '??').'</small></div></div>';
 											if(!$subject['ep_count'] || $subject['ep_count']>$subject['ep_status'])
