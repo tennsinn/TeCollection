@@ -17,7 +17,7 @@ class Collection_Source
 	 * @param string $value 分级设置名称组
 	 * @return bool|string
 	 */
-	public static function getLink($source, $source_id, $class, $type = null)
+	public static function getLink($source, $source_id, $class = null, $type = null)
 	{
 		if(!class_exists('Collection_Source_'.$source) || empty($source_id))
 			return false;
