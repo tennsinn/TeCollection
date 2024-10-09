@@ -10,13 +10,13 @@ $(document).ready(function () {
 			if(data.result)
 			{
 				subject.ep_status = data.ep_status;
-				ep_start = null === subject.ep_start ? 1 : Number(subject.ep_start);
+				ep_start = ('' == subject.ep_start || null == subject.ep_start) ? 1 : Number(subject.ep_start);
 				ep_current = Number(subject.ep_status) + ep_start - 1;
 				ep_end = 0 == Number(subject.ep_count) ? 0 : ep_start + Number(subject.ep_count) - 1;
 				if(data.status == 'collect')
 					subject.status = 'collect';
 				else
-					t.html('ep.'+(ep_current+1)+'已看过');
+					t.html('ep.'+(ep_current+1)+'已'+arrayStatus[String(subject.class-1)]);
 				tr.data('subject', subject);
 				t.parent().parent().prev().html('<div class="Collection-subject-progress-inner" style="color:white; width:'+(subject.ep_count > 0 ? subject.ep_status/subject.ep_count*100 : 50)+'%"><small>'+(ep_current < 0 ? '??' : ep_current)+' / '+(ep_end > 0 ? ep_end : '??')+'</small></div>');
 				if(subject.ep_count != 0 && subject.ep_status == subject.ep_count)
@@ -203,7 +203,7 @@ $(document).ready(function () {
 						$('#Collection-subject-'+subject.id+'-ep', oldTr).html('');
 					else
 					{
-						ep_start = '' == subject.ep_start ? 1 : Number(subject.ep_start);
+						ep_start = ('' == subject.ep_start || null == subject.ep_start) ? 1 : Number(subject.ep_start);
 						ep_current = Number(subject.ep_status) + ep_start - 1;
 						ep_end = 0 == Number(subject.ep_count) ? 0 : ep_start + Number(subject.ep_count) - 1;
 						stringProgress += '<label for="Collection-subject-'+subject.id+'-progress-ep">主进度</label>'

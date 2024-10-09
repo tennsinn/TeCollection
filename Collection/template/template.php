@@ -132,8 +132,8 @@ $(document).ready(function(){
 						+ '<div>'+dictStatusTrans[subject.status][subject.class]+'</div>';
 					if(subject.ep_count != null && subject.ep_status != null)
 					{
-						ep_current = Number(subject.ep_status) + (null === subject.ep_start ? 1 : Number(subject.ep_start)) - 1;
-						ep_end = (null === subject.ep_start ? 1 : Number(subject.ep_start)) + Number(subject.ep_count) - 1;
+						ep_current = Number(subject.ep_status) + (('' == subject.ep_start || null == subject.ep_start) ? 1 : Number(subject.ep_start)) - 1;
+						ep_end = (('' == subject.ep_start || null == subject.ep_start) ? 1 : Number(subject.ep_start)) + Number(subject.ep_count) - 1;
 						tempHTML += '<div class="Collection-subject-progress"><div class="Collection-subject-progress-inner" style="color:white; width:'+(subject.ep_count > 0 ? subject.ep_status/subject.ep_count*100 : 50)+'%"><small>'+(ep_current < 0 ? '??' : ep_current)+' / '+(ep_end > 0 ? ep_end : '??')+'</small></div></div>';
 					}
 					tempHTML += '</div>'
